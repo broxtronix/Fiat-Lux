@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/broxton/projects/openlase/tools/qplayvid/qplayvid.c
+libol.h
+/Users/broxton/projects/openlase/tools/qplayvid/libol.h
+trace.h
+/Users/broxton/projects/openlase/tools/qplayvid/trace.h
+stdio.h
+-
+errno.h
+-
+unistd.h
+-
+string.h
+-
+stdlib.h
+-
+jack/jack.h
+-
+math.h
+-
+pthread.h
+-
+qplayvid.h
+/Users/broxton/projects/openlase/tools/qplayvid/qplayvid.h
+libavcodec/avcodec.h
+-
+libavformat/avformat.h
+-
+
+/Users/broxton/projects/openlase/tools/qplayvid/qplayvid.h
+
+include/libol.h
+stdint.h
+-
+
+include/trace.h
+
