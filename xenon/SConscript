@@ -1,0 +1,74 @@
+import BuildSupport
+
+# -----------------
+# LOCAL ENVIRONMENT
+# ----------------
+Import('env')
+xenon_env = env.Clone()
+
+# Check for BOOST libraries
+conf = Configure(xenon_env)
+if not conf.CheckLib('boost_system-mt'):
+ conf.env['have-boost-system'] = "no"
+if not conf.CheckLib('boost_thread-mt'):
+ conf.env['have-boost-thread'] = "no"
+if not conf.CheckLib('boost_program_options-mt'):
+ conf.env['have-boost-program-options'] = "no"
+if not conf.CheckLib('jack'):
+ conf.env['have-jack'] = "no"
+conf.env.Append( LINKFLAGS = "-framework OpenGL" )
+xenon_env = conf.Finish()
+
+# -----------
+# CORE MODULE
+# -----------
+core_sources = Split("""Core/Stopwatch.cc
+                        Core/System.cc
+                        Core/Thread.cc
+                        Core/Settings.cc
+                        Core/Log.cc
+                        Core/Cache.cc
+                        Core/Time.cc
+                        Core/Parameters.cc
+                        Core/ConfigParser.cc
+                        Core/Debugging.cc
+                        Core/ProgressCallback.cc
+                        Core/Exception.cc""")
+
+core_lib_sources = core_sources
+core_lib_target  = "xenon_core"
+core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = core_lib_sources)
+
+# -----------
+# LUX MODULE
+# ----------
+lux_env = xenon_env.Clone()
+lux_env.Append(LINKFLAGS = " -Lxenon -lxenon_core")
+lux_headers = Split("""Lux/AudioClient.h
+                       Lux/SimulatorAudioClient.h""")
+lux_sources = Split("""Lux/AudioClient.cc
+                       Lux/SimulatorAudioClient.cc""")
+Depends(lux_sources, lux_headers)
+
+lux_lib_sources = lux_sources
+lux_lib_target  = "xenon_lux"
+lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)
+
+# ----------------
+# PYTHON BINDINGS
+# ----------------
+python_env = env.Clone()
+python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
+python_env.Append(LINKFLAGS= " -framework Python -Lxenon -lxenon_core")
+
+# Set up custom builders
+cython_bld = Builder(action = 'cython --cplus -o $TARGET $SOURCE')
+python_env.Append(BUILDERS = {'Cython' : cython_bld})
+
+python_sources = python_env.Cython('Python/xenon_core.cc', 'Python/xenon_core.pyx')
+python_lib_target  = "Python/xenon_core"
+python_lib = python_env.SharedLibrary(target = python_lib_target, source = python_sources, SHLIBPREFIX='', SHLIBSUFFIX='.so')
+
+Depends(python_lib, python_sources)
+Depends(python_lib, core_lib)
+Depends(lux_lib, core_lib)

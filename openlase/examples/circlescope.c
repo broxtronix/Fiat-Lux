@@ -127,7 +127,7 @@ int main (int argc, char *argv[])
 	}
 
 	while (1)
-		sleep(1);
+          sleep(1);
 	jack_client_close (client);
 	exit (0);
 }

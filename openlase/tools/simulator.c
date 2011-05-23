@@ -199,7 +199,7 @@ void draw_gl(void)
 void key_gl(unsigned char key, int x, int y)
 {
 	if (key == 27) {
-		jack_client_close (client);
+          jack_client_close (client);
 		glutDestroyWindow(window);
 		exit(0);
 	}
