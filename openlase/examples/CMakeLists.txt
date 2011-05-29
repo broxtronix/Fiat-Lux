@@ -16,11 +16,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-include_directories (${CMAKE_SOURCE_DIR}/include)
+include_directories (${CMAKE_SOURCE_DIR}/include /opt/local/include)
 link_directories (${CMAKE_BINARY_DIR}/libol)
 
 add_executable(circlescope circlescope.c)
 target_link_libraries(circlescope ${JACK_LIBRARIES} m)
+
+add_executable(otherscope otherscope.cc)
+target_link_libraries(otherscope ${JACK_LIBRARIES} m)
 
 add_executable(simple simple.c)
 target_link_libraries(simple openlase)
