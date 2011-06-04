@@ -15,11 +15,25 @@
 
 from libc.stdint cimport *
 
-cdef extern from "xenon/Core.h" namespace "xenon":
-	double xenon_time()
+cdef extern from "<string>" namespace "std":
+    cdef cppclass string:
+        string()
+        string(char *)
+        char * c_str()
+     
+cdef extern from "xenon/Lux.h" namespace "lux":
+    cdef cppclass SimulatorAudioClient:
+        SimulatorAudioClient(string)
+        void test()
 
-cpdef fl_time():
-	return xenon_time()
+cdef class LuxSimulatorAudioClient:
+    cdef SimulatorAudioClient *thisptr      # hold a C++ instance which we're wrapping
+    def __cinit__(self, char *name):
+        self.thisptr = new SimulatorAudioClient(string(name))
+    def __dealloc__(self):
+        del self.thisptr
+    def test(self):
+        self.thisptr.test()
 
 
 

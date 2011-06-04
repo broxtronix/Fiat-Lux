@@ -3,6 +3,7 @@
 
 #include <xenon/Lux/AudioClient.h>
 #include <string>
+#include <iostream>
 
 namespace lux {
 
@@ -10,7 +11,7 @@ namespace lux {
 #define LUX_SIMULATOR_BUF_SAMPLES (LUX_SIMULATOR_HIST_SAMPLES+48000)
 
   typedef struct {
-    float x, y, g;
+    float x, y, r, g, b, a;
   } bufsample_t;
 
   class SimulatorAudioClient : public AudioClient {
@@ -19,7 +20,7 @@ namespace lux {
     int m_psize;
     
   public:
-    
+
     SimulatorAudioClient(std::string name) : 
       AudioClient(name), m_buf_widx(0), m_psize(2) {}
     virtual ~SimulatorAudioClient() {}
@@ -31,6 +32,8 @@ namespace lux {
     void laser_color(float g, float ascale);
     void draw_gl();
     void resize_gl(int width, int height);
+
+    void test() { std::cout << "It worked!!\n"; }
   };
 
 }

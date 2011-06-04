@@ -6,17 +6,26 @@ import BuildSupport
 Import('env')
 xenon_env = env.Clone()
 
-# Check for BOOST libraries
+# Check for BOOST & JACK libraries
 conf = Configure(xenon_env)
-if not conf.CheckLib('boost_system-mt'):
- conf.env['have-boost-system'] = "no"
-if not conf.CheckLib('boost_thread-mt'):
- conf.env['have-boost-thread'] = "no"
-if not conf.CheckLib('boost_program_options-mt'):
- conf.env['have-boost-program-options'] = "no"
-if not conf.CheckLib('jack'):
- conf.env['have-jack'] = "no"
-conf.env.Append( LINKFLAGS = "-framework OpenGL" )
+
+
+if not conf.CheckLibWithHeader('boost_system-mt', 'boost/shared_ptr.hpp', 'c++'):
+    print 'ERROR: Could not locate boost_system library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('boost_thread-mt', 'boost/shared_ptr.hpp', 'c++'):
+    print 'ERROR: Could not locate boost_thread library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('boost_program_options-mt', 'boost/shared_ptr.hpp', 'c++'):
+    print 'ERROR: Could not locate boost_program_options library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('boost_filesystem-mt', 'boost/shared_ptr.hpp', 'c++'):
+    print 'ERROR: Could not locate boost_filesystem library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
+    print 'ERROR: Could not locate jack library'
+    sys.exit(1)
+
 xenon_env = conf.Finish()
 
 # -----------
@@ -43,10 +52,14 @@ core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = co
 # LUX MODULE
 # ----------
 lux_env = xenon_env.Clone()
-lux_env.Append(LINKFLAGS = " -Lxenon -lxenon_core")
+lux_env.Append(LINKFLAGS= " -framework OpenGL")
+lux_env.Append(LIBPATH = ["."])
+lux_env.Append(LIBS = ["xenon_core"])
 lux_headers = Split("""Lux/AudioClient.h
+                       Lux/LaserAudioClient.h
                        Lux/SimulatorAudioClient.h""")
 lux_sources = Split("""Lux/AudioClient.cc
+                       Lux/LaserAudioClient.cc
                        Lux/SimulatorAudioClient.cc""")
 Depends(lux_sources, lux_headers)
 
@@ -59,16 +72,33 @@ lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_li
 # ----------------
 python_env = env.Clone()
 python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
-python_env.Append(LINKFLAGS= " -framework Python -Lxenon -lxenon_core")
+python_env.Append(LINKFLAGS= " -framework Python")
 
 # Set up custom builders
 cython_bld = Builder(action = 'cython --cplus -o $TARGET $SOURCE')
 python_env.Append(BUILDERS = {'Cython' : cython_bld})
+python_env.Append(LIBPATH = ["."])
 
-python_sources = python_env.Cython('Python/xenon_core.cc', 'Python/xenon_core.pyx')
-python_lib_target  = "Python/xenon_core"
-python_lib = python_env.SharedLibrary(target = python_lib_target, source = python_sources, SHLIBPREFIX='', SHLIBSUFFIX='.so')
+# python bindings for xenon_core
+py_xenon_core_env = python_env.Clone()
+py_xenon_core_env.Append(LIBS = ["xenon_core"])
+py_xenon_core_sources = python_env.Cython('Python/xenon_core.cc', 'Python/xenon_core.pyx')
+py_xenon_core_target  = "Python/xenon_core"
+py_xenon_core_lib = py_xenon_core_env.SharedLibrary(target = py_xenon_core_target,
+                                                    source = py_xenon_core_sources,
+                                                    SHLIBPREFIX='', SHLIBSUFFIX='.so')
 
-Depends(python_lib, python_sources)
-Depends(python_lib, core_lib)
+# python bindings for xenon_core
+py_xenon_lux_env = python_env.Clone()
+py_xenon_lux_env.Append(LIBS = ["xenon_lux"])
+py_xenon_lux_sources = python_env.Cython('Python/xenon_lux.cc', 'Python/xenon_lux.pyx')
+py_xenon_lux_target  = "Python/xenon_lux"
+py_xenon_lux_lib = py_xenon_lux_env.SharedLibrary(target = py_xenon_lux_target,
+                                                 source = py_xenon_lux_sources,
+                                                 SHLIBPREFIX='', SHLIBSUFFIX='.so')
+
+Depends(py_xenon_core_lib, py_xenon_core_sources)
+Depends(py_xenon_core_lib, core_lib)
+Depends(py_xenon_lux_lib, py_xenon_lux_sources)
+Depends(py_xenon_lux_lib, lux_lib)
 Depends(lux_lib, core_lib)
