@@ -27,6 +27,7 @@ if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
     sys.exit(1)
 
 xenon_env = conf.Finish()
+xenon_env.Append(CPPPATH = [".."])
 
 # -----------
 # CORE MODULE
@@ -55,14 +56,9 @@ lux_env = xenon_env.Clone()
 lux_env.Append(LINKFLAGS= " -framework OpenGL")
 lux_env.Append(LIBPATH = ["."])
 lux_env.Append(LIBS = ["xenon_core"])
-lux_headers = Split("""Lux/AudioClient.h
-                       Lux/LaserAudioClient.h
-                       Lux/SimulatorAudioClient.h""")
 lux_sources = Split("""Lux/AudioClient.cc
                        Lux/LaserAudioClient.cc
                        Lux/SimulatorAudioClient.cc""")
-Depends(lux_sources, lux_headers)
-
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"
 lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)
@@ -71,6 +67,7 @@ lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_li
 # PYTHON BINDINGS
 # ----------------
 python_env = env.Clone()
+python_env.Append(CPPPATH = [".."])
 python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
 python_env.Append(LINKFLAGS= " -framework Python")
 

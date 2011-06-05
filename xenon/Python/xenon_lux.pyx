@@ -23,8 +23,12 @@ cdef extern from "<string>" namespace "std":
      
 cdef extern from "xenon/Lux.h" namespace "lux":
     cdef cppclass SimulatorAudioClient:
-        SimulatorAudioClient(string)
-        void test()
+        SimulatorAudioClient(string) except +RuntimeError
+        void start() except +RuntimeError
+        void add_input_port(string) except +RuntimeError
+        void add_output_port(string) except +RuntimeError
+        void draw_gl() except +RuntimeError
+        void resize_gl(int, int) except +RuntimeError
 
 cdef class LuxSimulatorAudioClient:
     cdef SimulatorAudioClient *thisptr      # hold a C++ instance which we're wrapping
@@ -32,8 +36,21 @@ cdef class LuxSimulatorAudioClient:
         self.thisptr = new SimulatorAudioClient(string(name))
     def __dealloc__(self):
         del self.thisptr
-    def test(self):
-        self.thisptr.test()
+
+    def add_input_port(self, char *portname):
+        self.thisptr.add_input_port(string(portname))
+    def add_output_port(self, char *portname):
+        self.thisptr.add_output_port(string(portname))
+
+    def start(self):
+        self.thisptr.start()
+
+    def draw_gl(self):
+        self.thisptr.draw_gl()
+    def resize_gl(self, int width, int height):
+        self.thisptr.resize_gl(width, height)
+
+
 
 
 

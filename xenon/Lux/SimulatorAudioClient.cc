@@ -94,22 +94,25 @@ void lux::SimulatorAudioClient::draw_gl() {
 
 void lux::SimulatorAudioClient::resize_gl(int width, int height) {
   int min = width > height ? height : width;
-  m_psize = min/350.0;
+  glViewport((width-min)/2, (height-min)/2, min, min);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho (-1, 1, -1, 1, -1, 1);
+  glMatrixMode(GL_MODELVIEW);
 }
 
-int lux::SimulatorAudioClient::process_callback(nframes_t nframes) {
-  sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["x"], nframes);
-  sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["y"], nframes);
-  sample_t *i_g = (sample_t *) jack_port_get_buffer (m_ports["g"], nframes);
-  
-  nframes_t frm;
-  for (frm = 0; frm < nframes; frm++) {
+ int lux::SimulatorAudioClient::process_callback(nframes_t nframes) {
+  sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["in_x"], nframes);
+  sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["in_y"], nframes);
+  sample_t *i_g = (sample_t *) jack_port_get_buffer (m_ports["in_g"], nframes);
+
+  for (nframes_t frm = 0; frm < nframes; frm++) {
     m_buffer[m_buf_widx].x = *i_x++;
     m_buffer[m_buf_widx].y = *i_y++;
     m_buffer[m_buf_widx].g = *i_g++;
     
     m_buf_widx++;
-    if (m_buf_widx >= m_buffer_size)
+    if (m_buf_widx >= LUX_SIMULATOR_BUF_SAMPLES)
       m_buf_widx = 0;
   }
   

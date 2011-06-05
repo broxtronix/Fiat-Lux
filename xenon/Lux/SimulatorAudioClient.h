@@ -23,7 +23,7 @@ namespace lux {
 
     SimulatorAudioClient(std::string name) : 
       AudioClient(name), m_buf_widx(0), m_psize(2) {}
-    virtual ~SimulatorAudioClient() {}
+    virtual ~SimulatorAudioClient() { std::cout << "Cleaning up!\n"; } 
 
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);
@@ -33,7 +33,7 @@ namespace lux {
     void draw_gl();
     void resize_gl(int width, int height);
 
-    void test() { std::cout << "It worked!!\n"; }
+    void test() { std::cout << "It worked, I think!!\n"; }
   };
 
 }
