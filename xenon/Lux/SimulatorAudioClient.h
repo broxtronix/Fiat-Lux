@@ -29,7 +29,7 @@ namespace lux {
     virtual int process_callback(nframes_t nframes);
     
     // Methods for drawing in an OpenGL context
-    void laser_color(float g, float ascale);
+    void laser_color(float r, float g, float b, float ascale);
     void draw_gl();
     void resize_gl(int width, int height);
 

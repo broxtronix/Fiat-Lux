@@ -40,13 +40,13 @@ void lux::SimulatorAudioClient::draw_gl() {
 
   ridx = (m_buf_widx - LUX_SIMULATOR_HIST_SAMPLES + LUX_SIMULATOR_BUF_SAMPLES) % LUX_SIMULATOR_BUF_SAMPLES;
         
-  float lx, ly, lg;
-  lx = ly = lg = 0;
+  float lx, ly, lr, lg, lb;
+  lx = ly = lr = lg = lb = 0;
 
   float gdelay[2] = {0,0};
   
   for (i = 0; i<LUX_SIMULATOR_HIST_SAMPLES; i++) {
-    float g;
+    float r, g, b;
 
     bufsample_t s = m_buffer[ridx];
     // lowpass
@@ -70,24 +70,28 @@ void lux::SimulatorAudioClient::draw_gl() {
     factor = factor*factor;
     
     if (fabsf(s.x-lx) < 0.001 && fabsf(s.y-ly) < 0.001) {
+      r = (s.r-0.2) * factor * 1.4;
       g = (s.g-0.2) * factor * 1.4;
+      b = (s.b-0.2) * factor * 1.4;
       glBegin(GL_POINTS);
-      laser_color(g, 0.08);
+      laser_color(r, g, b, 0.08);
       glVertex3f(s.x, s.y, 0);
       glEnd();
     } else {
       g = (s.g-0.2) * factor * dfactor * 1.8;
       glBegin(GL_LINES);
-      laser_color(lg, 0.8);
+      laser_color(lr, lg, lb, 0.8);
       glVertex3f(lx, ly, 0);
-      laser_color(g, 0.8);
+      laser_color(r, g, b, 0.8);
       glVertex3f(s.x, s.y, 0);
       glEnd();
     }
     
     lx = s.x;
     ly = s.y;
+    lr = r;
     lg = g;
+    lb = b;
     
     ridx++;
     if (ridx >= LUX_SIMULATOR_BUF_SAMPLES)

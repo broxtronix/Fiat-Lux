@@ -37,10 +37,10 @@ class LuxThread(QtCore.QThread):
             ol.loadIdentity3()
             ol.loadIdentity()
 
-            font = ol.getDefaultFont()
-            s = "Hi There!"
-            w = ol.getStringWidth(font, 0.2, s)
-            ol.drawString(font, (-w/2,0.1), 0.2, ol.C_WHITE, s)
+            #font = ol.getDefaultFont()
+            #s = "Hi There!"
+            #w = ol.getStringWidth(font, 0.2, s)
+            #ol.drawString(font, (-w/2,0.1), 0.2, ol.C_WHITE, s)
 
             ol.perspective(60, 1, 1, 100)
             ol.translate3((0, 0, -3))
