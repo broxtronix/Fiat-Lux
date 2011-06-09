@@ -44,7 +44,7 @@ Font *olGetDefaultFont(void);
 float olGetCharWidth(Font *fnt, char c);
 float olGetStringWidth(Font *fnt, float height, const char *s);
 float olGetCharOverlap(Font *font, float height);
-float olDrawChar(Font *fnt, float x, float y, float height, uint32_t color, char c);
-float olDrawString(Font *fnt, float x, float y, float height, uint32_t color, const char *s);
+float olDrawChar(Font *fnt, float x, float y, float height, char c);
+float olDrawString(Font *fnt, float x, float y, float height, const char *s);
 
 #endif

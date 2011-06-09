@@ -43,7 +43,7 @@ float olGetCharOverlap(Font *font, float height)
 	return font->overlap * ratio;
 }
 
-float olDrawChar(Font *font, float x, float y, float height, uint32_t color, char c)
+float olDrawChar(Font *font, float x, float y, float height, char c)
 {
 	if (!font)
 		return 0;
@@ -57,7 +57,6 @@ float olDrawChar(Font *font, float x, float y, float height, uint32_t color, cha
 
 		olBegin(OL_BEZIERSTRIP);
 
-                olColor(color);
 		do {
 			olVertex3(x + p->x * ratio, y - p->y * ratio, 0);
 			if (p->flag == 1) {
@@ -72,13 +71,13 @@ float olDrawChar(Font *font, float x, float y, float height, uint32_t color, cha
 	return chr->width * ratio;
 }
 
-float olDrawString(Font *font, float x, float y, float height, uint32_t color, const char *s)
+float olDrawString(Font *font, float x, float y, float height, const char *s)
 {
 	float w = 0;
 	float ratio = height / font->height;
 
 	while(*s) {
-		w += olDrawChar(font, x+w, y, height, color, *s) - font->overlap * ratio;
+		w += olDrawChar(font, x+w, y, height, *s) - font->overlap * ratio;
 		s++;
 	}
 
