@@ -44,16 +44,22 @@ QtCore.QCoreApplication.setOrganizationName('False Profit LLC')
 QtCore.QCoreApplication.setOrganizationDomain('false-profit.com')
 QtCore.QCoreApplication.setApplicationName('Fiat Lux')
 
+# Start up the rest of the GUI
 import mainwindow
 mainWindow = mainwindow.MainWindow(settings)
 mainWindow.show()
 
 #time.sleep(1)
-
 splash.finish(mainWindow)
+
+# Start up the LUX main engine.  This starts a thread that runs lux plugins.
+import lux_engine
+lux_thread = lux_engine.LuxThread()
+lux_thread.start()
 
 # run the application
 result=app.exec_()
 
 # exit
+lux_thread.exit()
 sys.exit(result)

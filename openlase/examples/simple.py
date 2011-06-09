@@ -69,7 +69,7 @@ while True:
 		ol.vertex3((-1,  1, -1), ol.C_WHITE)
 		ol.end()
 
-	ftime = ol.renderFrame(60)
+	ftime = ol.renderFrame(60) # Takes max_fps as argument
 	frames += 1
 	time += ftime
 	print "Frame time: %f, FPS:%f"%(ftime, frames/time)
