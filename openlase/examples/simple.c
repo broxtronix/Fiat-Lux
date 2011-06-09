@@ -67,40 +67,44 @@ int main (int argc, char *argv[])
 		olTranslate3(0, 0, -3);
 
 		for(i=0; i<2; i++) {
-			olScale3(0.6, 0.6, 0.6);
+                  if (i == 1)
+                    olColor3(1.0,0.0,0.0);
+                  else
+                    olColor3(0.0,1.0,0.0);
 
-			olRotate3Z(time * M_PI * 0.1);
-			olRotate3Y(time * M_PI * 0.8);
-			olRotate3X(time * M_PI * 0.73);
+                  olScale3(0.6, 0.6, 0.6);
 
-			olBegin(OL_LINESTRIP);
-			olVertex3(-1, -1, -1, C_WHITE);
-			olVertex3( 1, -1, -1, C_WHITE);
-			olVertex3( 1,  1, -1, C_WHITE);
-			olVertex3(-1,  1, -1, C_WHITE);
-			olVertex3(-1, -1, -1, C_WHITE);
-			olVertex3(-1, -1,  1, C_WHITE);
-			olEnd();
+                  olRotate3Z(time * M_PI * 0.1);
+                  olRotate3Y(time * M_PI * 0.8);
+                  olRotate3X(time * M_PI * 0.73);
 
-			olBegin(OL_LINESTRIP);
-			olVertex3( 1,  1,  1, C_WHITE);
-			olVertex3(-1,  1,  1, C_WHITE);
-			olVertex3(-1, -1,  1, C_WHITE);
-			olVertex3( 1, -1,  1, C_WHITE);
-			olVertex3( 1,  1,  1, C_WHITE);
-			olVertex3( 1,  1, -1, C_WHITE);
-			olEnd();
+                  olBegin(OL_LINESTRIP);
+                  olVertex3(-1, -1, -1);
+                  olVertex3( 1, -1, -1);
+                  olVertex3( 1,  1, -1);
+                  olVertex3(-1,  1, -1);
+                  olVertex3(-1, -1, -1);
+                  olVertex3(-1, -1,  1);
+                  olEnd();
 
-			olBegin(OL_LINESTRIP);
-			olVertex3( 1, -1, -1, C_WHITE);
-			olVertex3( 1, -1,  1, C_WHITE);
-			olEnd();
+                  olBegin(OL_LINESTRIP);
+                  olVertex3( 1,  1,  1);
+                  olVertex3(-1,  1,  1);
+                  olVertex3(-1, -1,  1);
+                  olVertex3( 1, -1,  1);
+                  olVertex3( 1,  1,  1);
+                  olVertex3( 1,  1, -1);
+                  olEnd();
 
-			olBegin(OL_LINESTRIP);
-			olVertex3(-1,  1,  1, C_WHITE);
-			olVertex3(-1,  1, -1, C_WHITE);
-			olEnd();
+                  olBegin(OL_LINESTRIP);
+                  olVertex3( 1, -1, -1);
+                  olVertex3( 1, -1,  1);
+                  olEnd();
 
+                  olBegin(OL_LINESTRIP);
+                  olVertex3(-1,  1,  1);
+                  olVertex3(-1,  1, -1);
+                  olEnd();
 		}
 
 		ftime = olRenderFrame(60);

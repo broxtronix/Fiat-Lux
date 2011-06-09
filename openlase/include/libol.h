@@ -102,12 +102,14 @@ void olPerspective(float fovy, float aspect, float zNear, float zFar);
 
 void olResetColor(void);
 void olMultColor(uint32_t color);
+void olColor3(float red, float green, float blue);
+void olColor(uint32_t color);
 void olPushColor(void);
 void olPopColor(void);
 
 void olBegin(int prim);
-void olVertex(float x, float y, uint32_t color);
-void olVertex3(float x, float y, float z, uint32_t color);
+void olVertex(float x, float y);
+void olVertex3(float x, float y, float z);
 void olEnd(void);
 
 void olTransformVertex3(float *x, float *y, float *z);
@@ -121,10 +123,9 @@ void olSetVertex3Shader(Shader3Func f);
 
 void olSetPixelShader(ShaderFunc f);
 
-void olRect(float x1, float y1, float x2, float y2, uint32_t color);
-void olLine(float x1, float y1, float x2, float y2, uint32_t color);
-void olDot(float x, float y, int points, uint32_t color);
-
+void olRect(float x1, float y1, float x2, float y2);
+void olLine(float x1, float y1, float x2, float y2);
+void olDot(float x, float y, int points);
 float olRenderFrame(int max_fps);
 
 void olGetFrameInfo(OLFrameInfo *info);

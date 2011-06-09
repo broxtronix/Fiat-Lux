@@ -38,7 +38,7 @@ class LuxThread(QtCore.QThread):
             ol.loadIdentity()
 
             font = ol.getDefaultFont()
-            s = "Hi!"
+            s = "Hi There!"
             w = ol.getStringWidth(font, 0.2, s)
             ol.drawString(font, (-w/2,0.1), 0.2, ol.C_WHITE, s)
 
@@ -46,37 +46,43 @@ class LuxThread(QtCore.QThread):
             ol.translate3((0, 0, -3))
 
             for i in range(2):
+
+                if (i == 1):
+                    ol.color3(1.0,0.0,0.0);
+                else:
+                    ol.color3(0.0,1.0,0.0);
+                    
 		ol.scale3((0.6, 0.6, 0.6))
 		ol.rotate3Z(ftime * pi * 0.1)
 		ol.rotate3X(ftime * pi * 0.8)
 		ol.rotate3Y(ftime * pi * 0.73)
-
+                
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3((-1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1,  1, -1), ol.C_WHITE)
-		ol.vertex3((-1,  1, -1), ol.C_WHITE)
-		ol.vertex3((-1, -1, -1), ol.C_WHITE)
-		ol.vertex3((-1, -1,  1), ol.C_WHITE)
+		ol.vertex3((-1, -1, -1))
+		ol.vertex3(( 1, -1, -1))
+		ol.vertex3(( 1,  1, -1))
+		ol.vertex3((-1,  1, -1))
+		ol.vertex3((-1, -1, -1))
+		ol.vertex3((-1, -1,  1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP);
-		ol.vertex3(( 1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1, -1,  1), ol.C_WHITE)
-		ol.vertex3(( 1, -1,  1), ol.C_WHITE)
-		ol.vertex3(( 1,  1,  1), ol.C_WHITE)
-		ol.vertex3(( 1,  1, -1), ol.C_WHITE)
+		ol.vertex3(( 1,  1,  1))
+		ol.vertex3((-1,  1,  1))
+		ol.vertex3((-1, -1,  1))
+		ol.vertex3(( 1, -1,  1))
+		ol.vertex3(( 1,  1,  1))
+		ol.vertex3(( 1,  1, -1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3(( 1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1, -1,  1), ol.C_WHITE)
+		ol.vertex3(( 1, -1, -1))
+		ol.vertex3(( 1, -1,  1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3((-1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1,  1, -1), ol.C_WHITE)
+		ol.vertex3((-1,  1,  1))
+		ol.vertex3((-1,  1, -1))
 		ol.end()
 
             frame_render_time = ol.renderFrame(60) # Takes max_fps as argument

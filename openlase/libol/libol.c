@@ -556,20 +556,17 @@ static void point_to(float x, float y, uint32_t color)
 	return;
 }
 
-void olVertex(float x, float y, uint32_t color)
+void olVertex(float x, float y)
 {
 	if (!dstate.curobj)
 		return;
 
-	float nx, ny;
-
+        uint32_t color = curcol;
 	if(vpreshader)
 		vpreshader(&x, &y, &color);
 
-	color = colmul(color,curcol);
-
-	nx = mtx2d[0][0] * x + mtx2d[0][1] * y + mtx2d[0][2];
-	ny = mtx2d[1][0] * x + mtx2d[1][1] * y + mtx2d[1][2];
+	float nx = mtx2d[0][0] * x + mtx2d[0][1] * y + mtx2d[0][2];
+	float ny = mtx2d[1][0] * x + mtx2d[1][1] * y + mtx2d[1][2];
 
 	if(vshader)
 		vshader(&nx, &ny, &color);
@@ -1069,84 +1066,99 @@ void olPopMatrix3(void)
 
 void olTransformVertex3(float *x, float *y, float *z)
 {
-	float px;
-	float py;
-	float pz;
-	float pw;
+  float px;
+  float py;
+  float pz;
+  float pw;
 
-	px = mtx3d[0][0]**x + mtx3d[0][1]**y + mtx3d[0][2]**z + mtx3d[0][3];
-	py = mtx3d[1][0]**x + mtx3d[1][1]**y + mtx3d[1][2]**z + mtx3d[1][3];
-	pz = mtx3d[2][0]**x + mtx3d[2][1]**y + mtx3d[2][2]**z + mtx3d[2][3];
-	pw = mtx3d[3][0]**x + mtx3d[3][1]**y + mtx3d[3][2]**z + mtx3d[3][3];
-
-	px /= pw;
-	py /= pw;
-	pz /= pw;
-
-	*x = px;
-	*y = py;
-	*z = pz;
-}
-
-void olVertex3(float x, float y, float z, uint32_t color)
-{
-	if(v3shader)
-		v3shader(&x, &y, &z, &color);
-	olTransformVertex3(&x, &y, &z);
-	olVertex(x, y, color);
-}
-
-void olRect(float x1, float y1, float x2, float y2, uint32_t color)
-{
-	olBegin(OL_LINESTRIP);
-	olVertex(x1,y1,color);
-	olVertex(x1,y2,color);
-	olVertex(x2,y2,color);
-	olVertex(x2,y1,color);
-	olVertex(x1,y1,color);
-	olEnd();
-}
-
-void olLine(float x1, float y1, float x2, float y2, uint32_t color)
-{
-	olBegin(OL_LINESTRIP);
-	olVertex(x1,y1,color);
-	olVertex(x2,y2,color);
-	olEnd();
+  px = mtx3d[0][0]**x + mtx3d[0][1]**y + mtx3d[0][2]**z + mtx3d[0][3];
+  py = mtx3d[1][0]**x + mtx3d[1][1]**y + mtx3d[1][2]**z + mtx3d[1][3];
+  pz = mtx3d[2][0]**x + mtx3d[2][1]**y + mtx3d[2][2]**z + mtx3d[2][3];
+  pw = mtx3d[3][0]**x + mtx3d[3][1]**y + mtx3d[3][2]**z + mtx3d[3][3];
+  
+  px /= pw;
+  py /= pw;
+  pz /= pw;
+  
+  *x = px;
+  *y = py;
+  *z = pz;
 }
 
 
-void olDot(float x, float y, int samples, uint32_t color)
+void olVertex3(float x, float y, float z) 
 {
-	int i;
-	olBegin(OL_POINTS);
-	for (i = 0; i < samples; i++)
-		olVertex(x,y,color);
-	olEnd();
+  uint32_t color = curcol;
+  if(v3shader)
+    v3shader(&x, &y, &z, &color);
+  olTransformVertex3(&x, &y, &z);
+  olVertex(x, y);
+}
+
+void olRect(float x1, float y1, float x2, float y2)
+{
+  olBegin(OL_LINESTRIP);
+  olVertex(x1,y1);
+  olVertex(x1,y2);
+  olVertex(x2,y2);
+  olVertex(x2,y1);
+  olVertex(x1,y1);
+  olEnd();
+}
+
+void olLine(float x1, float y1, float x2, float y2)
+{
+  olBegin(OL_LINESTRIP);
+  olVertex(x1,y1);
+  olVertex(x2,y2);
+  olEnd();
+}
+
+
+void olDot(float x, float y, int samples)
+{
+  int i;
+  olBegin(OL_POINTS);
+  for (i = 0; i < samples; i++)
+    olVertex(x,y);
+  olEnd();
 }
 
 void olResetColor(void)
 {
-	curcol = C_WHITE;
+  curcol = C_WHITE;
 }
 
 void olMultColor(uint32_t color)
 {
-	curcol = colmul(curcol, color);
+  curcol = colmul(curcol, color);
+}
+
+void olColor3(float red, float green, float blue)
+{
+  uint32_t r = (uint32_t)(red * 255);
+  uint32_t g = (uint32_t)(green * 255);
+  uint32_t b = (uint32_t)(blue * 255);
+  curcol = (b>>16) | (g>>8) | r;
+  curcol = C_WHITE;
+}
+
+void olColor(uint32_t color) 
+{
+  curcol = color;
 }
 
 void olPushColor(void)
 {
-	cols[coldp] = curcol;
-	coldp++;
+  cols[coldp] = curcol;
+  coldp++;
 }
 
 void olPopColor(void)
 {
-	coldp--;
-	curcol = cols[coldp];
+  coldp--;
+  curcol = cols[coldp];
 }
-
 
 void olSetVertexPreShader(ShaderFunc f)
 {

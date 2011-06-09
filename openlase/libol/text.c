@@ -57,8 +57,9 @@ float olDrawChar(Font *font, float x, float y, float height, uint32_t color, cha
 
 		olBegin(OL_BEZIERSTRIP);
 
+                olColor(color);
 		do {
-			olVertex3(x + p->x * ratio, y - p->y * ratio, 0, color);
+			olVertex3(x + p->x * ratio, y - p->y * ratio, 0);
 			if (p->flag == 1) {
 				olEnd();
 				olBegin(OL_BEZIERSTRIP);

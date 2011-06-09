@@ -84,13 +84,14 @@ cdef extern from "libol.h":
 	void olPerspective(float fovy, float aspect, float zNear, float zFar)
 
 	void olResetColor()
+	void olColor3(float red, float green, float blue)
 	void olMultColor(uint32_t color)
 	void olPushColor()
 	void olPopColor()
 
 	void olBegin(int prim)
-	void olVertex(float x, float y, uint32_t color)
-	void olVertex3(float x, float y, float z, uint32_t color)
+	void olVertex(float x, float y)
+	void olVertex3(float x, float y, float z)
 	void olEnd()
 
 	void olTransformVertex3(float *x, float *y, float *z)
@@ -104,9 +105,9 @@ cdef extern from "libol.h":
 
 	void olSetPixelShader(ShaderFunc f)
 
-	void olRect(float x1, float y1, float x2, float y2, uint32_t color)
-	void olLine(float x1, float y1, float x2, float y2, uint32_t color)
-	void olDot(float x, float y, int points, uint32_t color)
+	void olRect(float x1, float y1, float x2, float y2)
+	void olLine(float x1, float y1, float x2, float y2)
+	void olDot(float x, float y, int points)
 
 	float olRenderFrame(int max_fps) nogil
 
@@ -122,6 +123,7 @@ cdef extern from "libol.h":
 	ctypedef void (*LogCallbackFunc)(char *msg)
 
 	void olSetLogCallback(LogCallbackFunc f)
+
 
 LINESTRIP = OL_LINESTRIP
 BEZIERSTRIP = OL_BEZIERSTRIP
@@ -286,17 +288,18 @@ cpdef perspective(float fovy, float aspect, float zNear, float zFar):
 	olPerspective(fovy, aspect, zNear, zFar)
 
 cpdef resetColor(): olResetColor()
+cpdef color3(float red, float green, float blue): olColor3(red, green, blue)
 cpdef multColor(uint32_t color): olMultColor(color)
 cpdef pushColor(): olPushColor()
 cpdef popColor(): olPopColor()
 
 cpdef begin(int prim): olBegin(prim)
-cpdef vertex(tuple coord, uint32_t color):
+cpdef vertex(tuple coord):
 	x, y = coord
-	olVertex(x, y, color)
-cpdef vertex3(tuple coord, uint32_t color):
+	olVertex(x, y)
+cpdef vertex3(tuple coord):
 	x, y, z = coord
-	olVertex3(x, y, z, color)
+	olVertex3(x, y, z)
 cpdef end(): olEnd()
 
 cpdef tuple transformVertex3(float x, float y, float z):
@@ -359,19 +362,19 @@ cpdef setPixelShader(object func):
 	else:
 		olSetPixelShader(NULL)
 
-cpdef rect(tuple start, tuple end, uint32_t color):
+cpdef rect(tuple start, tuple end):
 	x1, y1 = start
 	x2, y2 = end
-	olRect(x1, y1, x2, y2, color)
+	olRect(x1, y1, x2, y2)
 
-cpdef line(tuple start, tuple end, uint32_t color):
+cpdef line(tuple start, tuple end):
 	x1, y1 = start
 	x2, y2 = end
-	olLine(x1, y1, x2, y2, color)
+	olLine(x1, y1, x2, y2)
 
-cpdef dot(tuple coord, int points, uint32_t color):
+cpdef dot(tuple coord, int points):
 	x, y = coord
-	olDot(x, y, points, color)
+	olDot(x, y, points)
 
 cpdef float renderFrame(int max_fps):
 	cdef float ret

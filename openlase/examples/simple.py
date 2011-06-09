@@ -36,37 +36,42 @@ while True:
 	ol.translate3((0, 0, -3))
 
 	for i in range(2):
+		if (i == 1):
+                    ol.color3(1.0,0.0,0.0);
+                else:
+                    ol.color3(0.0,1.0,0.0);
+
 		ol.scale3((0.6, 0.6, 0.6))
 		ol.rotate3Z(time * pi * 0.1)
 		ol.rotate3X(time * pi * 0.8)
 		ol.rotate3Y(time * pi * 0.73)
 
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3((-1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1,  1, -1), ol.C_WHITE)
-		ol.vertex3((-1,  1, -1), ol.C_WHITE)
-		ol.vertex3((-1, -1, -1), ol.C_WHITE)
-		ol.vertex3((-1, -1,  1), ol.C_WHITE)
+		ol.vertex3((-1, -1, -1))
+		ol.vertex3(( 1, -1, -1))
+		ol.vertex3(( 1,  1, -1))
+		ol.vertex3((-1,  1, -1))
+		ol.vertex3((-1, -1, -1))
+		ol.vertex3((-1, -1,  1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP);
-		ol.vertex3(( 1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1, -1,  1), ol.C_WHITE)
-		ol.vertex3(( 1, -1,  1), ol.C_WHITE)
-		ol.vertex3(( 1,  1,  1), ol.C_WHITE)
-		ol.vertex3(( 1,  1, -1), ol.C_WHITE)
+		ol.vertex3(( 1,  1,  1))
+		ol.vertex3((-1,  1,  1))
+		ol.vertex3((-1, -1,  1))
+		ol.vertex3(( 1, -1,  1))
+		ol.vertex3(( 1,  1,  1))
+		ol.vertex3(( 1,  1, -1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3(( 1, -1, -1), ol.C_WHITE)
-		ol.vertex3(( 1, -1,  1), ol.C_WHITE)
+		ol.vertex3(( 1, -1, -1))
+		ol.vertex3(( 1, -1,  1))
 		ol.end()
 
 		ol.begin(ol.LINESTRIP)
-		ol.vertex3((-1,  1,  1), ol.C_WHITE)
-		ol.vertex3((-1,  1, -1), ol.C_WHITE)
+		ol.vertex3((-1,  1,  1))
+		ol.vertex3((-1,  1, -1))
 		ol.end()
 
 	ftime = ol.renderFrame(60) # Takes max_fps as argument

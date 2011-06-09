@@ -10,18 +10,22 @@
 #include <GL/glu.h>
 #endif
 
-void lux::SimulatorAudioClient::laser_color(float g, float ascale) {
-  float r, b;
-  r = b = 0;
-  if (g < 0)
-    g = 0;
-  if (g > 2.0)
-    g = 2.0;
-  if (g > 1.0) {
-    r = b = g - 1.0;
-    g = 1.0;
-  }
-  glColor4f(r, 1, b, g*ascale);
+ void lux::SimulatorAudioClient::laser_color(float r, float g, float b, float ascale) {
+
+   // This was the original laser_color code.  
+   //   float r, b;
+   //   r = b = 0;
+   //   if (g < 0)
+   //     g = 0;
+   //   if (g > 2.0)
+   //     g = 2.0;
+   //   if (g > 1.0) {
+   //     r = b = g - 1.0;
+   //     g = 1.0;
+   //   }
+   //   glColor4f(r, 1, b, g*ascale);
+   
+  glColor4f(r, g, b, ascale);
 }
 
 void lux::SimulatorAudioClient::draw_gl() {
@@ -104,12 +108,16 @@ void lux::SimulatorAudioClient::resize_gl(int width, int height) {
  int lux::SimulatorAudioClient::process_callback(nframes_t nframes) {
   sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["in_x"], nframes);
   sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["in_y"], nframes);
+  sample_t *i_r = (sample_t *) jack_port_get_buffer (m_ports["in_r"], nframes);
   sample_t *i_g = (sample_t *) jack_port_get_buffer (m_ports["in_g"], nframes);
+  sample_t *i_b = (sample_t *) jack_port_get_buffer (m_ports["in_b"], nframes);
 
   for (nframes_t frm = 0; frm < nframes; frm++) {
     m_buffer[m_buf_widx].x = *i_x++;
     m_buffer[m_buf_widx].y = *i_y++;
+    m_buffer[m_buf_widx].r = *i_r++;
     m_buffer[m_buf_widx].g = *i_g++;
+    m_buffer[m_buf_widx].b = *i_b++;
     
     m_buf_widx++;
     if (m_buf_widx >= LUX_SIMULATOR_BUF_SAMPLES)

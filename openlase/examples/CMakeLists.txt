@@ -42,7 +42,7 @@ else()
   message(STATUS "Will NOT build midiview (ALSA missing)")
 endif()
 
-add_executable(harp harp.c)
-target_link_libraries(harp openlase)
+#add_executable(harp harp.c)
+#target_link_libraries(harp openlase)
 
-add_subdirectory(27c3_slides)
+#add_subdirectory(27c3_slides)

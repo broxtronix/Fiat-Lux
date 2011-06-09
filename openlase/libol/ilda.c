@@ -188,11 +188,14 @@ void olDrawIlda(IldaFile *ild)
 	olBegin(OL_POINTS);
 	for (i = 0; i < ild->count; i++) {
 		//olLog("%f %f %f %d\n", p->x, p->y, p->z, p->is_blank);
-		if (p->is_blank)
-			olVertex(p->x, p->y, C_BLACK);
-		else
-			olVertex(p->x, p->y, C_WHITE);
-		p++;
+          if (p->is_blank) {
+            olColor(C_BLACK);
+            olVertex(p->x, p->y);
+          } else {
+            olColor(C_WHITE);
+            olVertex(p->x, p->y);
+          }
+          p++;
 	}
 	olEnd();
 }
@@ -205,11 +208,14 @@ void olDrawIlda3D(IldaFile *ild)
 	int i;
 	olBegin(OL_POINTS);
 	for (i = 0; i < ild->count; i++) {
-		if (p->is_blank)
-			olVertex3(p->x, p->y, p->z, C_BLACK);
-		else
-			olVertex3(p->x, p->y, p->z, C_WHITE);
-		p++;
+          if (p->is_blank) {
+            olColor(C_BLACK);
+            olVertex3(p->x, p->y, p->z);
+          } else {
+            olColor(C_WHITE);
+            olVertex3(p->x, p->y, p->z);
+          }
+          p++;
 	}
 	olEnd();
 }
