@@ -5,7 +5,7 @@ import pylase as ol
 from math import pi
 
 from parameters import lux, Parameter
-from plugins import LuxPlugin
+from lux_plugins import LuxPlugin
 
 class LuxEngine(QtCore.QThread):
 
@@ -61,7 +61,7 @@ class LuxEngine(QtCore.QThread):
                 ol.translate3((0, 0, -3))
 
                 for i in range(2):
-
+ 
                     if (i == 1):
                         ol.color3(1.0,0.0,0.0);
                     else:
