@@ -40,6 +40,10 @@ env.Append(LINKFLAGS = ' -L/usr/X11/lib -O3')
 
 # IMPORT ENVIRONMENT VARIABLES
 
+if os.environ.has_key('HOME'):
+    env['HOME'] = os.environ['HOME']
+    print("\t--> Setting HOME : " + os.environ['HOME'])
+
 if os.environ.has_key('CXX'):
     env.Replace(CXX = os.environ['CXX'])
     print("\t--> Using C++ compiler " + os.environ['CXX'])
@@ -59,6 +63,10 @@ if os.environ.has_key('CFLAGS'):
 if os.environ.has_key('LDFLAGS'):
     env.Append(LINKFLAGS = os.environ['LDFLAGS'])
     print("\t--> Appending custom LDFLAGS : " + os.environ['LDFLAGS'])
+
+if os.environ.has_key('PATH'):
+    env.Append(PATH = os.environ['PATH'])
+    print("\t--> Appending custom PATH : " + os.environ['PATH'])
 
 # SET UP BUILD DIRECTORY TARGET
 env['PREFIX'] = GetLaunchDir() + "/build/"
