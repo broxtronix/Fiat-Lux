@@ -18,13 +18,13 @@ class Settings:
         if defaultValue == None:
             return self._qt_settings.value(key)
         else:
-            return self._qt_settings.value(key, QtCore.QVariant(defaultValue))
+            return self._qt_settings.value(key, defaultValue)
 
     def setValue(self, key, value):
-        self._qt_settings.setValue(key, QtCore.QVariant(value))
+        self._qt_settings.setValue(key, value)
 
     def setExpression(self, key, value):
-        self._qt_settings.setValue(key, QtCore.QVariant(repr(value)))
+        self._qt_settings.setValue(key, repr(value))
 
     def getInteger(self, key, defaultValue=None):
         value, ok = self.value(key, defaultValue).toInt()
@@ -44,10 +44,11 @@ class Settings:
         
 
     def getString(self, key, defaultValue=None):
-        return str(self.value(key, defaultValue).toString())
+        return str(self.value(key, defaultValue))
 
     def getBool(self, key, defaultValue=None):
         return bool(self.value(key, defaultValue).toBool())
 
     def getExpression(self, key, defaultValue=None):
-        return eval(self.value(key, repr(defaultValue)).toString())
+        return eval(self.value(key, repr(defaultValue))
+)

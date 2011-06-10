@@ -1,6 +1,9 @@
 """
 Main application for Fiat Lux
 """
+import sip
+sip.setapi('QString', 2)
+sip.setapi('QVariant', 2)
 
 from PyQt4 import QtCore, QtGui
 import sys
@@ -54,12 +57,12 @@ splash.finish(mainWindow)
 
 # Start up the LUX main engine.  This starts a thread that runs lux plugins.
 import lux_engine
-lux_thread = lux_engine.LuxThread()
-lux_thread.start()
+lux_engine = lux_engine.LuxEngine()
+lux_engine.start()
 
 # run the application
 result=app.exec_()
 
 # exit
-lux_thread.exit()
+lux_engine.exit()
 sys.exit(result)
