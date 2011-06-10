@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 
 import os.path
 import display
-from console import IPythonConsole
+#from console import IPythonConsole
 
 class SettingsPanel(QtGui.QDockWidget):
     """

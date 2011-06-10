@@ -1,3 +1,4 @@
+import sys
 import BuildSupport
 
 # -----------------
@@ -53,7 +54,10 @@ core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = co
 # LUX MODULE
 # ----------
 lux_env = xenon_env.Clone()
-lux_env.Append(LINKFLAGS= " -framework OpenGL")
+if sys.platform == "darwin":
+    lux_env.Append(LINKFLAGS= " -framework OpenGL")
+elif sys.platform == "linux2":
+    lux_env.Append(LINKFLAGS= " -lGL")
 lux_env.Append(LIBPATH = ["."])
 lux_env.Append(LIBS = ["xenon_core"])
 lux_sources = Split("""Lux/AudioClient.cc
@@ -68,8 +72,12 @@ lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_li
 # ----------------
 python_env = env.Clone()
 python_env.Append(CPPPATH = [".."])
-python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
-python_env.Append(LINKFLAGS= " -framework Python")
+if sys.platform == "darwin":
+    python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
+    python_env.Append(LINKFLAGS= " -framework Python")
+elif sys.platform == "linux2":
+    python_env.Append(CXXFLAGS = " -I/usr/include/python2.6/")
+    python_env.Append(LINKFLAGS= " -lpython2.6")
 
 # Set up custom builders
 cython_bld = Builder(action = 'cython --cplus -o $TARGET $SOURCE')
