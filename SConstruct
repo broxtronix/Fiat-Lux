@@ -8,6 +8,10 @@ import SCons.Util
 env = Environment()
 conf = Configure(env)
 
+# Add osx include and lib paths
+env.Append(CPPPATH=["/opt/local/include"])
+env.Append(LIBPATH=["/opt/local/lib"])
+
 # AUTOCONFIGURATION
 
 if not conf.CheckCXX():
