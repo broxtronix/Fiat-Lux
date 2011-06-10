@@ -12,7 +12,12 @@ class LuxEngine(QtCore.QThread):
     def __init__(self, parent = None):
         QtCore.QThread.__init__(self, parent)
         self.exiting = False
-        self.current_plugin = None
+        self.current_plugin = 1
+
+        lux.register(Parameter( name = "simple_rate",
+                                description = "0..1   controls the rate of spinning cubes",
+                                default_value = 1.0 ))
+
 
     def __del__(self):
         self.exiting = True
@@ -98,7 +103,7 @@ class LuxEngine(QtCore.QThread):
                 frame_render_time = ol.renderFrame(60) # Takes max_fps as argument
                 frames += 1
                 ftime += frame_render_time
-                print "Frame time: %f, FPS:%f"%(frame_render_time, frame_render_time/ftime)
+                #print "Frame time: %f, FPS:%f"%(frame_render_time, frame_render_time/ftime)
             else:
                 time.sleep(0.1)
             
