@@ -19,5 +19,12 @@ else()
     PREFIX ""
     OUTPUT_NAME "pylase"
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+   # Mac OS X specific code
+   target_link_libraries(pylase openlase "-framework python")
+else()
   target_link_libraries(pylase openlase "-lpython2.6")
+endif()
+
 endif()
