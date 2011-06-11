@@ -3,13 +3,13 @@
 // signals as necessary to provide geometric and color calibration for
 // the projection system.
 //
-#include <xenon/Lux/LaserAudioClient.h>
+#include <xenon/Lux/LaserClient.h>
 
-lux::LaserAudioClient::LaserAudioClient(std::string name) :
+lux::LaserClient::LaserClient(std::string name) :
   AudioClient(name) {}
 
 // Called by Jack as new audio frames arrive
-int lux::LaserAudioClient::process_callback(nframes_t nframes) {
+int lux::LaserClient::process_callback(nframes_t nframes) {
 
 }
 

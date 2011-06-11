@@ -4,7 +4,10 @@
 using namespace xenon;
 
 lux::AudioClient::AudioClient(std::string name) : m_sample_rate(0), m_buffer_size(0) {
-  if ((m_client = jack_client_new (name.c_str())) == 0) {
+  jack_options_t jack_options;
+  jack_status_t jack_status;
+  //  if ((m_client = jack_client_open (name.c_str(), jack_options, &jack_status)) == 0) {
+  if (! (m_client = jack_client_new (name.c_str())) ) {
     xenon_throw( LogicErr() << "Failed to start AudioClient -- could not iniitialize Jack.  Is the Jack server running?" );
   }
 
@@ -18,12 +21,19 @@ lux::AudioClient::~AudioClient() {
   jack_client_close (m_client);
 }
 
-void lux::AudioClient::add_input_port(std::string name) {
+void lux::AudioClient::add_input_port(std::string const& name) {
   m_ports[name] = jack_port_register (m_client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 }
 
-void lux::AudioClient::add_output_port(std::string name) {
+void lux::AudioClient::add_output_port(std::string const& name) {
   m_ports[name] = jack_port_register (m_client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+}
+
+void lux::AudioClient::connect_ports(std::string const& src_port, std::string const& dst_port) {
+  if (jack_connect(m_client, src_port.c_str(), dst_port.c_str())) {
+    xenon_throw( LogicErr() << "AudioClient::connect_ports - could not connect " 
+                 << src_port << " to " << dst_port << "." );
+  }
 }
 
 void lux::AudioClient::start() const {

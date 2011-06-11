@@ -1,4 +1,4 @@
-#include <xenon/Lux/SimulatorAudioClient.h>
+#include <xenon/Lux/SimulatorClient.h>
 #include <jack/jack.h>
 #include <math.h>
 
@@ -10,7 +10,7 @@
 #include <GL/glu.h>
 #endif
 
- void lux::SimulatorAudioClient::laser_color(float r, float g, float b, float ascale) {
+ void lux::SimulatorClient::laser_color(float r, float g, float b, float ascale) {
 
    // This was the original laser_color code.  
    //   float r, b;
@@ -28,7 +28,7 @@
   glColor4f(r, g, b, ascale);
 }
 
-void lux::SimulatorAudioClient::draw_gl() {
+void lux::SimulatorClient::draw_gl() {
   int i, ridx;
 
   static int fno=0;
@@ -100,7 +100,7 @@ void lux::SimulatorAudioClient::draw_gl() {
   glEnd();
 }
 
-void lux::SimulatorAudioClient::resize_gl(int width, int height) {
+void lux::SimulatorClient::resize_gl(int width, int height) {
   int min = width > height ? height : width;
   glViewport((width-min)/2, (height-min)/2, min, min);
   glMatrixMode(GL_PROJECTION);
@@ -109,7 +109,7 @@ void lux::SimulatorAudioClient::resize_gl(int width, int height) {
   glMatrixMode(GL_MODELVIEW);
 }
 
- int lux::SimulatorAudioClient::process_callback(nframes_t nframes) {
+ int lux::SimulatorClient::process_callback(nframes_t nframes) {
   sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["in_x"], nframes);
   sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["in_y"], nframes);
   sample_t *i_r = (sample_t *) jack_port_get_buffer (m_ports["in_r"], nframes);

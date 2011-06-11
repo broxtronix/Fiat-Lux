@@ -61,8 +61,9 @@ elif sys.platform == "linux2":
 lux_env.Append(LIBPATH = ["."])
 lux_env.Append(LIBS = ["xenon_core"])
 lux_sources = Split("""Lux/AudioClient.cc
-                       Lux/LaserAudioClient.cc
-                       Lux/SimulatorAudioClient.cc""")
+                       Lux/LaserClient.cc
+                       Lux/SimulatorClient.cc
+                       Lux/AudioEngine.cc""")
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"
 lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)

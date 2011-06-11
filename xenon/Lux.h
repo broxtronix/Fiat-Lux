@@ -11,6 +11,8 @@
 #ifndef __XENON_LUX_H__
 #define __XENON_LUX_H__
 
-#include <xenon/Lux/SimulatorAudioClient.h>
+#include <xenon/Lux/SimulatorClient.h>
+#include <xenon/Lux/LaserClient.h>
+#include <xenon/Lux/AudioEngine.h>
 
 #endif // __XENON_LUX_H__

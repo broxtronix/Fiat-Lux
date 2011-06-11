@@ -11,12 +11,12 @@
 
 namespace lux {
 
-  class LaserAudioClient : public AudioClient {
+  class LaserClient : public AudioClient {
 
   public:
     
-    LaserAudioClient(std::string name);
-    virtual ~LaserAudioClient() {}
+    LaserClient(std::string name);
+    virtual ~LaserClient() {}
 
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);

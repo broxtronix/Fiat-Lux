@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui, QtOpenGL
 # custom importer for ARB functions
 from OpenGL import GL
 
-from xenon_lux import LuxSimulatorAudioClient
+from xenon_lux import LuxSimulatorClient
 
 import math
 import numpy
@@ -54,7 +54,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
-        self.audio_client = LuxSimulatorAudioClient("lux_simulator");
+        self.audio_client = LuxSimulatorClient("lux_simulator");
         self.audio_client.add_input_port("in_x")
         self.audio_client.add_input_port("in_y")
         self.audio_client.add_input_port("in_r")
@@ -63,6 +63,12 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.audio_client.add_input_port("in_a")
         self.audio_client.start()
 
+        self.audio_client.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
+        self.audio_client.connect_ports("lux_engine:out_x", "lux_simulator:in_x")
+        self.audio_client.connect_ports("lux_engine:out_r","lux_simulator:in_r")
+        self.audio_client.connect_ports("lux_engine:out_g","lux_simulator:in_g")
+        self.audio_client.connect_ports("lux_engine:out_b","lux_simulator:in_b")
+        
     def timerEvent(self, event):
         '''
         Call the OpenGL update function if necessary
