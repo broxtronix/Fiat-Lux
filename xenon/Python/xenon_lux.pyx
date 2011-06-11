@@ -31,6 +31,9 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void draw_gl() except +RuntimeError
         void resize_gl(int, int) except +RuntimeError
 
+    cdef cppclass AudioEngine:
+        AudioEngine(string) except +RuntimeError
+
 cdef class LuxSimulatorClient:
     cdef SimulatorClient *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, char *name):
@@ -55,5 +58,10 @@ cdef class LuxSimulatorClient:
 
 
 
-
-
+cdef class LuxAudioEngine:
+    cdef AudioEngine *thisptr      # hold a C++ instance which we're wrapping
+    def __cinit__(self, char *name):
+        self.thisptr = new AudioEngine(string(name))
+    def __dealloc__(self):
+        del self.thisptr
+        

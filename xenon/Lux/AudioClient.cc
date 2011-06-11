@@ -11,10 +11,17 @@ lux::AudioClient::AudioClient(std::string name) : m_sample_rate(0), m_buffer_siz
     xenon_throw( LogicErr() << "Failed to start AudioClient -- could not iniitialize Jack.  Is the Jack server running?" );
   }
 
+  // Force the buffer to be a (reasonable) 512 samples.
+  jack_set_buffer_size(m_client, 512);
+
+  // Register our static methods as jack callbacks.  Notice how we
+  // pass a pointer to this class instance here so that we can convert
+  // the static methods back into class instance methods.
   jack_set_process_callback (m_client, AudioClient::static_process_callback, this);
   jack_set_buffer_size_callback (m_client, AudioClient::static_buffer_size_callback, this);
   jack_set_sample_rate_callback (m_client, AudioClient::static_sample_rate_callback, this);
   jack_on_shutdown (m_client, AudioClient::static_shutdown_callback, this);
+
 }
 
 lux::AudioClient::~AudioClient() {

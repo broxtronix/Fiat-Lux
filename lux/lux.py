@@ -52,6 +52,10 @@ import lux_engine
 lux_engine = lux_engine.LuxEngine()
 lux_engine.start()
 
+# Start up the LUX main engine.  This starts a thread that runs lux plugins.
+import xenon_lux
+audio_engine = xenon_lux.LuxAudioEngine("lux_audio_engine")
+
 # Start up the rest of the GUI
 import mainwindow
 mainWindow = mainwindow.MainWindow(settings)
