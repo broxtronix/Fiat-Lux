@@ -1,0 +1,46 @@
+
+compiling on ubuntu
+-------------------
+you will need at least the following packages to compile fiat lux:
+scons libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-filesystem-dev \
+libjack-dev libjack-jackd2-dev python-qt4 python-cython libglu1-mesa-dev python-pyside.qtopengl \
+python-pyside.qtgui jackd cmake libncurses5 yasm
+
+
+if you're running maverick you'll need to compile cython-0.14 from source since 0.12 is the latest package
+
+
+
+to start compiling lux, type:
+scons
+
+assuming everything went well, now we need to let python know where stuff went:
+export PYTHONPATH=$PYTHONPATH:$path_to_lux/
+export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/openlase/python/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$path_to_lux/build/lib/
+sudo ldconfig
+
+cd openlase
+edit libol/trace.c, comment out #include <sys/malloc.h>
+edit tools/simulator.c, change to
+#include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+edit CMakeLists.txt, add the following line after set(CMAKE...
+set(CMAKE_ASM_YASM_COMPILER "/usr/bin/yasm")
+
+comment out the last line
+#add_subdirectory (examples)
+
+edit python/CMakeLists.txt,
+  target_link_libraries(pylase openlase "-lpython2.6")
+
+cmake .
+make
+
+now start jackd
+jackd -d alsa
+
+you may need to shut down some applications, for some hints:
+lsof | grep snd

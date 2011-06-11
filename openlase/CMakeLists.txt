@@ -21,6 +21,7 @@ project(openlase)
 cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Modules/")
+set(CMAKE_ASM_YASM_COMPILER "/usr/bin/yasm")
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(BITS 64)
@@ -48,4 +49,4 @@ add_subdirectory (libol)
 add_subdirectory (output)
 add_subdirectory (tools)
 add_subdirectory (python)
-add_subdirectory (examples)
+#add_subdirectory (examples)

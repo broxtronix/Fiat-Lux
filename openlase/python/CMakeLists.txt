@@ -19,5 +19,5 @@ else()
     PREFIX ""
     OUTPUT_NAME "pylase"
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-  target_link_libraries(pylase openlase "-framework python")
+  target_link_libraries(pylase openlase "-lpython2.6")
 endif()
