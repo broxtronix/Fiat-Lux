@@ -10,6 +10,8 @@ xenon_env = env.Clone()
 # Check for BOOST & JACK libraries
 conf = Configure(xenon_env)
 
+# HACK!  This needs to be done more elegantly
+conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
 
 if not conf.CheckLibWithHeader('boost_system-mt', 'boost/shared_ptr.hpp', 'c++'):
     print 'ERROR: Could not locate boost_system library'
@@ -24,6 +26,9 @@ if not conf.CheckLibWithHeader('boost_filesystem-mt', 'boost/shared_ptr.hpp', 'c
     print 'ERROR: Could not locate boost_filesystem library'
     sys.exit(1)
 if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
+    print 'ERROR: Could not locate jack library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
     print 'ERROR: Could not locate jack library'
     sys.exit(1)
 
@@ -71,7 +76,7 @@ lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_li
 # ----------------
 # PYTHON BINDINGS
 # ----------------
-python_env = env.Clone()
+python_env = xenon_env.Clone()
 python_env.Append(CPPPATH = [".."])
 if sys.platform == "darwin":
     python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
