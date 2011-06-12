@@ -17,13 +17,13 @@ class LuxEngine(QtCore.QThread):
         else: 
             self.current_plugin = LuxPlugin.plugins[0]()
 
-    def __del__(self):
-        self.exiting = True
-        self.wait()
+        # create a mutex for the state
+        self.lock = QtCore.QMutex()
 
-    # Called by other threads.
-    def exit(self):
-        print '\t--> Shutting down Lux Engine.'
+        print self.list_plugins()
+        
+
+    def __del__(self):
         self.exiting = True
         self.wait()
 
@@ -40,6 +40,7 @@ class LuxEngine(QtCore.QThread):
         ftime = 0
         frames = 0
         while not self.exiting:
+            self.lock.lock()
             if (self.current_plugin):
                 self.current_plugin.draw()
 
@@ -49,6 +50,32 @@ class LuxEngine(QtCore.QThread):
                 #print "Frame time: %f, FPS:%f"%(frame_render_time, frame_render_time/ftime)
             else:
                 time.sleep(0.1)
+            self.lock.unlock()
             
         # Shut down OpenLase
         ol.shutdown()
+
+    # ---------------  METHODS CALLED BY OTHER THREADS ----------------
+
+    def exit(self):
+        print '\t--> Shutting down Lux Engine.'
+        self.exiting = True
+        self.wait()
+
+    def next_plugin(self):
+         self.lock.lock()
+
+         self.lock.unlock()
+
+    def prev_plugin(self):
+         self.lock.lock()
+
+         self.lock.unlock()
+
+    def random_plugin(self):
+         self.lock.lock()
+
+         self.lock.unlock()
+
+    def list_plugins(self):
+        return [lambda x: x.name for plugin in LuxPlugin.plugins]
