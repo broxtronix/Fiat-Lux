@@ -5,10 +5,23 @@
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
+#include <AGL/agl.h>
 #else // Linux
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
+
+lux::SimulatorClient::SimulatorClient(std::string name) : 
+      AudioClient(name), m_buf_widx(0), m_psize(2) {
+  
+// #ifdef __APPLE__
+//   AGLContext aglContext;
+//   aglContext = aglGetCurrentContext();
+//   GLint swapInt = 1;
+//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+// #endif
+  
+}
 
  void lux::SimulatorClient::laser_color(float r, float g, float b, float ascale) {
 
@@ -33,6 +46,7 @@ void lux::SimulatorClient::draw_gl() {
 
   static int fno=0;
   fno++;
+  glClearColor(0.0,0.0,0.0,1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
   glLineWidth(m_psize);

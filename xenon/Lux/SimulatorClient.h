@@ -18,11 +18,11 @@ namespace lux {
     int m_buf_widx;
     bufsample_t m_buffer[LUX_SIMULATOR_BUF_SAMPLES];
     int m_psize;
+    int temp;
     
   public:
 
-    SimulatorClient(std::string name) : 
-      AudioClient(name), m_buf_widx(0), m_psize(2) {}
+    SimulatorClient(std::string name);
     virtual ~SimulatorClient() { std::cout << "Cleaning up!\n"; } 
 
     // Called by Jack as new audio frames arrive

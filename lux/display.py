@@ -24,7 +24,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Set up to sync with double-buffer, vertical refresh.  Add Alpha and Depth buffers.
         fmt = QtOpenGL.QGLFormat()
-        fmt.setSwapInterval(1)
+        fmt.setSwapInterval(2)
         fmt.setDoubleBuffer(True)
         fmt.setAlpha(True)
         fmt.setDepth(True)
@@ -54,6 +54,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
+        self.makeCurrent()
         self.audio_client = LuxSimulatorClient("lux_simulator");
         self.audio_client.add_input_port("in_x")
         self.audio_client.add_input_port("in_y")
@@ -120,6 +121,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         # Call out to the C++ code to do actual, efficient drawing
         self.audio_client.draw_gl()
         self.dirty = True
+        # self.swapBuffers();
 
 class SimulationSettings(QtGui.QWidget):
     """

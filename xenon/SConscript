@@ -60,7 +60,7 @@ core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = co
 # ----------
 lux_env = xenon_env.Clone()
 if sys.platform == "darwin":
-    lux_env.Append(LINKFLAGS= " -framework OpenGL")
+    lux_env.Append(LINKFLAGS= " -framework OpenGL -framework AGL")
 elif sys.platform == "linux2":
     lux_env.Append(LINKFLAGS= " -lGL")
 lux_env.Append(LIBPATH = ["."])
