@@ -19,6 +19,12 @@
     jack_port_t *m_out_y;
     jack_port_t *m_out_w;
 
+    int interval;
+    long nextSwitch;
+    struct timeval starttime;
+    sample_t* currentWave;
+    sample_t* nextWave;
+
     protected:
       nframes_t m_sample_rate;
       nframes_t m_buffer_size;
