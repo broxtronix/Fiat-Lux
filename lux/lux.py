@@ -1,34 +1,26 @@
 """
 Main application for Fiat Lux
 """
-import sip
-sip.setapi('QString', 2)
-sip.setapi('QVariant', 2)
-
-from PyQt4 import QtCore, QtGui
 import sys
 import os, time
 import os.path
+from settings import LuxSettings
+
 
 # allow eggs to be dropped into application folder, as well as script
 # overrides, etc.
 sys.path = ['.'] + sys.path
 
-from settings import Settings
-
 # create the application
+from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
 
 # load up settings
-qt_settings = QtCore.QSettings(QtCore.QSettings.IniFormat,
-                               QtCore.QSettings.UserScope,
-                               'False Profit LLC',
-                               'Fiat Lux')
-settings = Settings(qt_settings)
+settings = LuxSettings()
 
 # set defaults
 if (not settings.contains('app/resource_path') or
-    not os.path.exists(os.path.join(settings.getString('app/resource_path'), 'splash.png'))):
+    not os.path.exists(os.path.join(settings.value('app/resource_path'), 'splash.png'))):
     # load resource location
     cwd = os.getcwd()
     if not sys.argv[0]:
@@ -38,7 +30,7 @@ if (not settings.contains('app/resource_path') or
     settings.setValue('app/resource_path',resource_path)
 
 # Show the splash screen
-splash_path = os.path.join(settings.getString('app/resource_path'), 'splash.png')
+splash_path = os.path.join(settings.value('app/resource_path'), 'splash.png')
 splash = QtGui.QSplashScreen(QtGui.QPixmap(splash_path))
 splash.show()
 

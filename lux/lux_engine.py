@@ -1,5 +1,6 @@
 from PyQt4 import QtCore, QtGui
 import time
+import random
 
 import pylase as ol
 from parameters import lux, Parameter
@@ -10,18 +11,16 @@ class LuxEngine(QtCore.QThread):
 
     def __init__(self, parent = None):
         QtCore.QThread.__init__(self, parent)
+
+        # create a mutex and semaphore for managing this thread.
+        self.lock = QtCore.QMutex()
         self.exiting = False
 
-        if (len(LuxPlugin.plugins) == 0):
-            self.current_plugin = None
-        else: 
-            self.current_plugin = LuxPlugin.plugins[0]()
-
-        # create a mutex for the state
-        self.lock = QtCore.QMutex()
-
+        print "\t-->Loaded these plugins:"
         print self.list_plugins()
-        
+        self.current_plugin = None
+        self.random_plugin()
+        print self.current_plugin
 
     def __del__(self):
         self.exiting = True
@@ -67,15 +66,23 @@ class LuxEngine(QtCore.QThread):
 
          self.lock.unlock()
 
+    # Choose a random plugin from the list of those that have been loaded.
     def prev_plugin(self):
          self.lock.lock()
-
+         
          self.lock.unlock()
 
+    # Choose a random plugin from the list of those that have been loaded.
     def random_plugin(self):
          self.lock.lock()
-
+         if len(LuxPlugin.plugins) == 0:
+             self.current_plugin = None
+         else:
+             keys = LuxPlugin.plugins.keys()
+             self.current_plugin_key = random.choice(keys)
+             self.current_plugin = LuxPlugin.plugins[self.current_plugin_key]()
          self.lock.unlock()
 
     def list_plugins(self):
-        return [lambda x: x.name for plugin in LuxPlugin.plugins]
+        keys = LuxPlugin.plugins.keys()
+        return [(lambda k: LuxPlugin.plugins[k].name)(key) for key in keys]

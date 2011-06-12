@@ -1,54 +1,49 @@
-"""
-A wrapper for the Qt settings class
-"""
 
+# First we set the SIP API to force PyQt to use the more modern
+# QStrings and QVariants that are transparently converted into python
+# strings.
+#
+# Note: in order for this change to take effect, you need to import
+# settings.py *before* importing any other QT headers into your
+# program.  It's easiest to put this import statement at the very top
+# of your main program file.
+import sip
+sip.setapi('QString', 2)
+sip.setapi('QVariant', 2)
 from PyQt4 import QtCore
 
-class Error(Exception):
-    pass
+class LuxSettings(QtCore.QSettings):
+    """
+    The settings class manages state that persists between program
+    instances.  This settings class is fully re-entrant, and settings
+    can even be shared across multiple running instances of the
+    program.
 
-class Settings:
-    def __init__(self, settings):
-        self._qt_settings = settings
+    For more information, refer to the section on "Accessing Settings
+    from Multiple Threads or Processes Simultaneously" at
+    http://www.opendocs.net/pyqt/pyqt4/html/qsettings.html
+    """
 
-    def __getattr__(self, name):
-        return getattr(self._qt_settings,name)
+    def __init__(self):
+        QtCore.QSettings.__init__(self, QtCore.QSettings.IniFormat,
+                                  QtCore.QSettings.UserScope,
+                                  'False Profit LLC', 'Fiat Lux')
+        self.__initialised = True  # for __setattr__
 
-    def value(self, key, defaultValue=None):
-        if defaultValue == None:
-            return self._qt_settings.value(key)
-        else:
-            return self._qt_settings.value(key, defaultValue)
+    # To make the code cleaner, we will expose all of the Qt settings
+    # as attributes of the settings class. 
+    def __getattr__(self, key):
+        if (not self.contains(key)):
+            raise AttributeError("Settings object does not contain the key \"" + str(key) + "\"")
 
-    def setValue(self, key, value):
-        self._qt_settings.setValue(key, value)
+        return self.value(key)
 
-    def setExpression(self, key, value):
-        self._qt_settings.setValue(key, repr(value))
+    def __setattr__(self, key, value):
+        # this test allows attributes to be set in the __init__ method
+        if not self.__dict__.has_key('_Settings__initialised'):
+            return dict.__setattr__(self, key, value)
 
-    def getInteger(self, key, defaultValue=None):
-        value, ok = self.value(key, defaultValue).toInt()
-        if ok:
-            return int(value)
-        else:
-            raise Error('Unable to decode integer '+str(key)+' in settings')
+        # Otherwise, we delegate attributes to qsettings
+        return self.setValue(key, value)
 
-    def getFloat(self, key, defaultValue=None):
-        value, ok = self.value(key, defaultValue).toDouble()
-        if ok:
-            return float(value)
-        else:
-            print ('WARNING: Unable to decode float '+
-                   str(key) +' in settings. Returning default value.')
-            return 1.0
-        
-
-    def getString(self, key, defaultValue=None):
-        return str(self.value(key, defaultValue))
-
-    def getBool(self, key, defaultValue=None):
-        return bool(self.value(key, defaultValue).toBool())
-
-    def getExpression(self, key, defaultValue=None):
-        return eval(self.value(key, repr(defaultValue))
-)
+    

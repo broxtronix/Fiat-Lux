@@ -329,7 +329,7 @@ class MainWindow(QtGui.QMainWindow):
         """
         Return the actual location of a resource file
         """
-        return os.path.join(self.settings.getString('app/resource_path'),filename)
+        return os.path.join(self.settings.value('app/resource_path'),filename)
         
     # def changeZoom(self, newZoom):
     #     """
