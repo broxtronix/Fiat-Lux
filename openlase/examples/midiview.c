@@ -145,7 +145,7 @@ void circle(float x, float y, float r, uint32_t color)
 		segments = 50;
 	int i;
 	olBegin(OL_POINTS);
-	olVertex(r, 0, 0);
+	olVertex(r, 0);
 	for (i=0; i<=(2*segments+10); i++) {
 		float w = i * M_PI * 2.0 / segments;
 		uint32_t c = C_WHITE;
@@ -153,7 +153,7 @@ void circle(float x, float y, float r, uint32_t color)
 			c = C_GREY((10-(i-segments)) * 28);
 		else if (i < 3)
 			c = C_GREY(i * 85);
-		olVertex(r*cosf(w), r*sinf(w), c);
+		olVertex(r*cosf(w), r*sinf(w));
 	}
 	olEnd();
 	olPopColor();
