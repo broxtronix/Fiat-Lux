@@ -21,6 +21,10 @@ project(openlase)
 cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Modules/")
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # Linux specific code
+    set(CMAKE_ASM_YASM_COMPILER "/usr/bin/yasm")
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(BITS 64)
