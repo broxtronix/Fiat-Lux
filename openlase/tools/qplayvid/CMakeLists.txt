@@ -16,15 +16,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-if(QT4_FOUND AND FFMPEG_FOUND)
+if(QT4_FOUND)
+  message(STATUS "qt4 found")
+else()
+  message(STATUS "qt4 NOT found")
+endif()
+if(FFMPEG_FOUND)
+  message(STATUS "ffmpeg found")
+else()
+  message(STATUS "ffmpeg NOT found")
   include(${QT_USE_FILE})
 
-  QT4_WRAP_CPP(qplayvid_MOCS qplayvid_gui.h)
+  QT_WRAP_CPP(qplayvid_MOCS qplayvid_gui qplayvid_gui.h)
 
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
   add_executable(qplayvid qplayvid.c qplayvid_gui.cpp ${qplayvid_MOCS})
   target_link_libraries(qplayvid openlase ${FFMPEG_LIBRARIES} ${QT_LIBRARIES})
-else()
-  message(STATUS "Will NOT build qplayvid (Qt4 or FFmpeg missing)")
 endif()

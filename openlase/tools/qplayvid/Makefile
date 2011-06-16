@@ -30,27 +30,24 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/2.8.4/bin/cmake
+CMAKE_COMMAND = /usr/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/2.8.4/bin/cmake -E remove -f
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/Cellar/cmake/2.8.4/bin/ccmake
+RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/broxton/projects/openlase
+CMAKE_SOURCE_DIR = /home/fenn/code/Fiat-Lux/openlase/tools/qplayvid
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/broxton/projects/openlase
+CMAKE_BINARY_DIR = /home/fenn/code/Fiat-Lux/openlase/tools/qplayvid
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/Cellar/cmake/2.8.4/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
+	/usr/bin/cmake -i .
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -60,7 +57,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/Cellar/cmake/2.8.4/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -69,14 +66,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/broxton/projects/openlase && $(CMAKE_COMMAND) -E cmake_progress_start /Users/broxton/projects/openlase/CMakeFiles /Users/broxton/projects/openlase/tools/qplayvid/CMakeFiles/progress.marks
-	cd /Users/broxton/projects/openlase && $(MAKE) -f CMakeFiles/Makefile2 tools/qplayvid/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/broxton/projects/openlase/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/fenn/code/Fiat-Lux/openlase/tools/qplayvid/CMakeFiles /home/fenn/code/Fiat-Lux/openlase/tools/qplayvid/CMakeFiles/progress.marks
+	$(MAKE) -f CMakeFiles/Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/fenn/code/Fiat-Lux/openlase/tools/qplayvid/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f CMakeFiles/Makefile2 tools/qplayvid/clean
+	$(MAKE) -f CMakeFiles/Makefile2 clean
 .PHONY : clean
 
 # The main clean target
@@ -85,104 +82,18 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/broxton/projects/openlase && $(MAKE) -f CMakeFiles/Makefile2 tools/qplayvid/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f CMakeFiles/Makefile2 tools/qplayvid/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/broxton/projects/openlase && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-# Convenience name for target.
-tools/qplayvid/CMakeFiles/qplayvid.dir/rule:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f CMakeFiles/Makefile2 tools/qplayvid/CMakeFiles/qplayvid.dir/rule
-.PHONY : tools/qplayvid/CMakeFiles/qplayvid.dir/rule
-
-# Convenience name for target.
-qplayvid: tools/qplayvid/CMakeFiles/qplayvid.dir/rule
-.PHONY : qplayvid
-
-# fast build rule for target.
-qplayvid/fast:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/build
-.PHONY : qplayvid/fast
-
-moc_qplayvid_gui.o: moc_qplayvid_gui.cxx.o
-.PHONY : moc_qplayvid_gui.o
-
-# target to build an object file
-moc_qplayvid_gui.cxx.o:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/moc_qplayvid_gui.cxx.o
-.PHONY : moc_qplayvid_gui.cxx.o
-
-moc_qplayvid_gui.i: moc_qplayvid_gui.cxx.i
-.PHONY : moc_qplayvid_gui.i
-
-# target to preprocess a source file
-moc_qplayvid_gui.cxx.i:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/moc_qplayvid_gui.cxx.i
-.PHONY : moc_qplayvid_gui.cxx.i
-
-moc_qplayvid_gui.s: moc_qplayvid_gui.cxx.s
-.PHONY : moc_qplayvid_gui.s
-
-# target to generate assembly for a file
-moc_qplayvid_gui.cxx.s:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/moc_qplayvid_gui.cxx.s
-.PHONY : moc_qplayvid_gui.cxx.s
-
-qplayvid.o: qplayvid.c.o
-.PHONY : qplayvid.o
-
-# target to build an object file
-qplayvid.c.o:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid.c.o
-.PHONY : qplayvid.c.o
-
-qplayvid.i: qplayvid.c.i
-.PHONY : qplayvid.i
-
-# target to preprocess a source file
-qplayvid.c.i:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid.c.i
-.PHONY : qplayvid.c.i
-
-qplayvid.s: qplayvid.c.s
-.PHONY : qplayvid.s
-
-# target to generate assembly for a file
-qplayvid.c.s:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid.c.s
-.PHONY : qplayvid.c.s
-
-qplayvid_gui.o: qplayvid_gui.cpp.o
-.PHONY : qplayvid_gui.o
-
-# target to build an object file
-qplayvid_gui.cpp.o:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid_gui.cpp.o
-.PHONY : qplayvid_gui.cpp.o
-
-qplayvid_gui.i: qplayvid_gui.cpp.i
-.PHONY : qplayvid_gui.i
-
-# target to preprocess a source file
-qplayvid_gui.cpp.i:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid_gui.cpp.i
-.PHONY : qplayvid_gui.cpp.i
-
-qplayvid_gui.s: qplayvid_gui.cpp.s
-.PHONY : qplayvid_gui.s
-
-# target to generate assembly for a file
-qplayvid_gui.cpp.s:
-	cd /Users/broxton/projects/openlase && $(MAKE) -f tools/qplayvid/CMakeFiles/qplayvid.dir/build.make tools/qplayvid/CMakeFiles/qplayvid.dir/qplayvid_gui.cpp.s
-.PHONY : qplayvid_gui.cpp.s
 
 # Help Target
 help:
@@ -191,17 +102,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... qplayvid"
 	@echo "... rebuild_cache"
-	@echo "... moc_qplayvid_gui.o"
-	@echo "... moc_qplayvid_gui.i"
-	@echo "... moc_qplayvid_gui.s"
-	@echo "... qplayvid.o"
-	@echo "... qplayvid.i"
-	@echo "... qplayvid.s"
-	@echo "... qplayvid_gui.o"
-	@echo "... qplayvid_gui.i"
-	@echo "... qplayvid_gui.s"
 .PHONY : help
 
 
@@ -213,6 +114,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/broxton/projects/openlase && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

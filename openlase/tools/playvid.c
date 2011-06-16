@@ -504,7 +504,7 @@ int main (int argc, char *argv[])
 				OLTracePoint *p = o->points;
 				for (j = 0; j < o->count; j++) {
 					if (j % decimate == 0)
-						olVertex(p->x, p->y, C_WHITE);
+						olVertex(p->x, p->y);
 					p++;
 				}
 				olEnd();

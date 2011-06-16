@@ -257,7 +257,7 @@ int olInit(int buffer_count, int max_points)
     frames[i].audio_r = malloc(frames[i].pmax * sizeof(float));
   }
 
-  if ((client = jack_client_new ("lux_engine")) == 0) {
+  if ((client = jack_client_new ("engine")) == 0) {
     olLog ("jack server not running?\n");
     return -1;
   }
@@ -289,26 +289,26 @@ int olInit(int buffer_count, int max_points)
   //   olLog("%s\n", ports[2]);
   // }
 
-  if (jack_connect(client, "lux_engine:out_x", "lux_simulator:in_x")) {
-    olLog ("cannot connect to lux_simulator:in_x");
+  if (jack_connect(client, "engine:out_x", "simulator:in_x")) {
+    olLog ("cannot connect to simulator:in_x");
     return(-1);
   }
-  if (jack_connect(client, "lux_engine:out_y","lux_simulator:in_y")) {
-    olLog ("cannot connect to lux_simulator:in_y");
+  if (jack_connect(client, "engine:out_y","simulator:in_y")) {
+    olLog ("cannot connect to simulator:in_y");
     return(-1);
   }
-  if (jack_connect(client, "lux_engine:out_r","lux_simulator:in_r")) {
-    olLog ("cannot connect to lux_simulator:in_r");
+//  if (jack_connect(client, "engine:out_r","simulator:in_r")) {
+//    olLog ("cannot connect to simulator:in_r");
+//    return(-1);
+//  }
+  if (jack_connect(client, "engine:out_g","simulator:in_g")) {
+    olLog ("cannot connect to simulator:in_g");
     return(-1);
   }
-  if (jack_connect(client, "lux_engine:out_g","lux_simulator:in_g")) {
-    olLog ("cannot connect to lux_simulator:in_g");
-    return(-1);
-  }
-  if (jack_connect(client, "lux_engine:out_b","lux_simulator:in_b")) {
-    olLog ("cannot connect to lux_simulator:in_b");
-    return(-1);
-  }
+//  if (jack_connect(client, "engine:out_b","simulator:in_b")) {
+//    olLog ("cannot connect to simulator:in_b");
+//    return(-1);
+//  }
 
   olLoadIdentity();
   for(i=0; i<MTX_STACK_DEPTH; i++)
