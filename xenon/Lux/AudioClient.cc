@@ -21,7 +21,6 @@ lux::AudioClient::AudioClient(std::string name) : m_sample_rate(0), m_buffer_siz
   jack_set_buffer_size_callback (m_client, AudioClient::static_buffer_size_callback, this);
   jack_set_sample_rate_callback (m_client, AudioClient::static_sample_rate_callback, this);
   jack_on_shutdown (m_client, AudioClient::static_shutdown_callback, this);
-
 }
 
 lux::AudioClient::~AudioClient() {

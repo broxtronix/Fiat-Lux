@@ -3,10 +3,15 @@ Main window for Fiat Lux
 """
 
 from PyQt4 import QtCore, QtGui
+from settings import LuxSettings
 
 import os.path
 import display
 #from console import IPythonConsole
+
+# ----------------------------------------------------------------------------------
+#                           SETTINGS PANEL MANAGEMENT
+# ----------------------------------------------------------------------------------
 
 class SettingsPanel(QtGui.QDockWidget):
     """
@@ -17,16 +22,20 @@ class SettingsPanel(QtGui.QDockWidget):
 
         self.setObjectName(name)
         self.setWindowTitle(name)
+
         # the default label
         self.label = QtGui.QLabel(message)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+
         # the stack holding the label and setting page
         self.stack = QtGui.QStackedWidget()
         self.stack.addWidget(self.label)
+
         # the scroller holding the stack
         self.scroller = QtGui.QScrollArea()
         self.scroller.setWidget(self.stack)
         self.scroller.setWidgetResizable(True)
+
         # add the scoller
         self.setWidget(self.scroller)
 
@@ -87,14 +96,14 @@ class SettingsPanelManager:
             x.setText(y.windowTitle())
         return actions
 
-class MainWindow(QtGui.QMainWindow):
-    def __init__(self, settings, parent=None):
-        QtGui.QMainWindow.__init__(self, parent)
-        # set application settings
-        self.settings = settings
+# ----------------------------------------------------------------------------------
+#                               MAIN WINDOW CLASS
+# ----------------------------------------------------------------------------------
 
-        # set display stuff
-        self.zoom = 1.0
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
+        self.settings = LuxSettings()
 
         # set our title
         self.setWindowIcon(QtGui.QIcon())
@@ -110,10 +119,10 @@ class MainWindow(QtGui.QMainWindow):
 
         # set up the status bar
         self.statusBar_ = QtGui.QStatusBar(self)
-        self.zoomStatus = QtGui.QLabel()
-        self.zoomStatus.setMargin(2)
+        self.statusLabel = QtGui.QLabel()
+        self.statusLabel.setMargin(2)
         self.setStatus() # set a default status
-        self.statusBar_.addWidget(self.zoomStatus)
+        self.statusBar_.addWidget(self.statusLabel)
         self.setStatusBar(self.statusBar_)
 
         # setup our actions
@@ -202,150 +211,56 @@ class MainWindow(QtGui.QMainWindow):
         # set up the settings panels
         self.settingsManager = SettingsPanelManager(self)
         
-        # self.settingsManager.add(SettingsPanel(name = "Input",
-        #                                        message = "No input selected.\nPlease open an input from the Data menu"
-        #                                        ))
-        # self.settingsManager.add(SettingsPanel(name = "Output",
-        #                                        message = "No output selected.\nPlease choose an output from the Data menu"
-        #                                        ))
         self.settingsManager.add(SettingsPanel(name = "Simulation",
                                                message = "",
                                                widget = display.SimulationSettings(self.simWidget)
                                                ))
-        # self.settingsManager.add(SettingsPanel(name = "Lenslet",
-        #                                        message = "",
-        #                                        widget = display.LensletSettings(self.dispWidget)
-        #                                        ))
-        # self.settingsManager.add(SettingsPanel(name = "Optics",
-        #                                        message = "",
-        #                                        widget = display.OpticsSettings(self.dispWidget)
-        #                                        ))
-        
-        # # create the open input menu
-        # self.inputMenu = QtGui.QMenu('&Open input')
-        # self.inputActions = []
-        # # add in each input one by one
-        # for inputInstance in self.inputs:
-        #     inputAction = self.inputMenu.addAction(inputInstance.name)
-        #     inputAction.setStatusTip(inputInstance.description)
-        #     #inputAction.setCheckable(True)
-        #     self.connect(inputAction,
-        #                  QtCore.SIGNAL('triggered(bool)'),
-        #                  self.openInputInstance)
-        #     self.inputActions.append(inputAction)
-        # # create the close input action
-        # self.closeInputAction = QtGui.QAction('&Close input',
-        #                                       self)
-        # self.closeInputAction.setStatusTip('Close the currently open input.')
-        # self.closeInputAction.setEnabled(False)
-        # self.connect(self.closeInputAction,
-        #              QtCore.SIGNAL('triggered(bool)'),
-        #              self.closeInput)
-
-        # # create the open output menu
-        # self.outputMenu = QtGui.QMenu('O&pen output')
-        # self.outputActions = []
-        # # add in each output one by one
-        # defaultOutput = None
-        # for outputInstance in self.outputs:
-        #     outputAction = self.outputMenu.addAction(outputInstance.name)
-        #     outputAction.setStatusTip(outputInstance.description)
-        #     #outputAction.setCheckable(True)
-        #     if not defaultOutput:
-        #         defaultOutput = outputAction
-        #     self.connect(outputAction,
-        #                  QtCore.SIGNAL('triggered(bool)'),
-        #                  self.openOutputInstance)
-        #     self.outputActions.append(outputAction)
-        # # create the close output action
-        # self.closeOutputAction = QtGui.QAction('C&lose output',
-        #                                       self)
-        # self.closeOutputAction.setStatusTip('Close the currently open output.')
-        # self.closeOutputAction.setEnabled(False)
-        # self.connect(self.closeOutputAction,
-        #              QtCore.SIGNAL('triggered(bool)'),
-        #              self.closeOutput)
 
         # set up the menu bar
         self.menuBar_ = QtGui.QMenuBar(self)
         self.controlMenu = self.menuBar_.addMenu('&Control')
         self.controlMenu.addAction(self.quitAction)
-        # self.dataMenu = self.menuBar_.addMenu('&Data')
-        # self.dataMenu.addMenu(self.inputMenu)
-        # self.dataMenu.addAction(self.closeInputAction)
-        # self.dataMenu.addSeparator()
-        # self.dataMenu.addMenu(self.outputMenu)
-        # self.dataMenu.addAction(self.closeOutputAction)
-        # self.viewMenu = self.menuBar_.addMenu('&View')
-        # self.viewMenu.addAction(self.viewControlBarAction)
-        # self.viewMenu.addAction(self.viewDisplayBarAction)
-        # self.viewMenu.addSeparator()
-        # for action in self.settingsManager.toggleViewActions():
-        #     self.viewMenu.addAction(action)
         self.setMenuBar(self.menuBar_)
 
         # Load previous window size and position, but set a sensible
         # defaults if those settings aren't available.
         self.move(QtCore.QPoint(40,80))
         self.resize(QtCore.QSize(720,480))
+
+        # load window settings
+        self.resize(self.settings['main_window'].valueWithDefault('size', self.size()))
+        self.move(self.settings['main_window'].valueWithDefault('position', self.pos()))
+
+        # load the previous state of the docks and toolbars
         try:
-            self.resize(self.settings.value('main_window/size',self.size()).toSize())
-        except Exception:
-            pass
-        try:
-            self.move(self.settings.value('main_window/position',self.pos()).toPoint())
-        except Exception:
+            state = QtCore.QByteArray(self.settings['main_window'].state.decode('hex'))
+            self.restoreState(state)
+        except AttributeError:
+            # ignore
             pass
 
-        # connect up display mode changes
-        # self.connect(self,
-        #              QtCore.SIGNAL('displayModeChanged(int)'),
-        #              self.dispWidget.processDisplayModeChanged)
-        # self.connect(self,
-        #              QtCore.SIGNAL('displayModeChanged(int)'),
-        #              self.settingsManager['Optics'].widget().processDisplayModeChanged)
-        # self.connect(self.settingsManager['Optics'].widget(),
-        #              QtCore.SIGNAL('displayModeChanged(int)'),
-        #              self.processDisplayModeChanged)
-        # self.connect(self.dispWidget,
-        #              QtCore.SIGNAL('displayModeChanged(int)'),
-        #              self.processDisplayModeChanged)
-
-    def setStatus(self, streaming=None, recording=None, zoom=None, recordNum=None):
+    def setStatus(self, streaming=None, recording=None, recordNum=None):
         """
         Handle the current status of the program
         """
-
-        if None == zoom:
-            zoom = self.zoom
-        else:
-            self.zoom = zoom
-        if zoom >= 1.0:
-            self.zoomStatus.setText('Zoom: %dX' % int(zoom))
-        else:
-            self.zoomStatus.setText('Zoom: 1/%dX' % int(1.0/zoom))
+        self.statusLabel.setText('')
 
     def resource(self, filename):
         """
         Return the actual location of a resource file
         """
-        return os.path.join(self.settings.value('app/resource_path'),filename)
+        return os.path.join(self.settings['app'].resource_path, filename)
         
-    # def changeZoom(self, newZoom):
-    #     """
-    #     When zoom level is changed
-    #     """
-    #     self.setStatus(zoom=newZoom)
-
     def closeEvent(self, event):
+        print 'window close event'
         """
         When main window is closed
         """
-        #state = self.saveState()
-        #self.settings.setValue('main_window/state', str(state.data()).encode('hex'))
+        state = self.saveState()
+        self.settings['main_window'].state = str(state.data()).encode('hex')
         # save window settings
-        self.settings.setValue('main_window/position', self.pos())
-        self.settings.setValue('main_window/size', self.size())
+        self.settings['main_window'].position = self.pos()
+        self.settings['main_window'].size = self.size()
 
         # close the window
         event.accept()
@@ -357,8 +272,8 @@ class MainWindow(QtGui.QMainWindow):
         if event.key() == QtCore.Qt.Key_Plus:
             print 'plus'
         if event.key() == QtCore.Qt.Key_Plus and event.modifiers() == QtCore.Qt.ControlModifier:
-            self.dispWidget.changeZoom(1.0)
+            pass
         elif event.key() == QtCore.Qt.Key_Equal and event.modifiers() == QtCore.Qt.ControlModifier:
-            self.dispWidget.changeZoom(1.0)
+            pass
         elif event.key() == QtCore.Qt.Key_Minus and event.modifiers() == QtCore.Qt.ControlModifier:
-            self.dispWidget.changeZoom(-1.0)
+            pass
