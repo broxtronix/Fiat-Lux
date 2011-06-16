@@ -85,7 +85,7 @@ OutputSettings::~OutputSettings()
 {
 }
 
-bqreal OutputSettings::getYRatio(int ratio)
+qreal OutputSettings::getYRatio(int ratio)
 {
 	switch(ratio) {
 		case ASPECT_1_1:

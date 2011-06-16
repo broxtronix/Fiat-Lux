@@ -503,9 +503,11 @@ int main (int argc, char *argv[])
 				olBegin(OL_POINTS);
 				OLTracePoint *p = o->points;
 				for (j = 0; j < o->count; j++) {
-					if (j % decimate == 0)
-						olVertex(p->x, p->y, C_WHITE);
-					p++;
+                                  if (j % decimate == 0) {
+                                    olColor3(1.0,1.0,1.0);
+                                    olVertex(p->x, p->y);
+                                  }
+                                  p++;
 				}
 				olEnd();
 			}
