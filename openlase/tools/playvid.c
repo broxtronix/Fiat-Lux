@@ -456,82 +456,83 @@ int main (int argc, char *argv[])
 	olTraceInit(&trace_ctx, &tparams);
 
 	while(GetNextFrame(pFormatCtx, pCodecCtx, videoStream, &frame)) {
-		if (inf == 0)
-			printf("Frame stride: %d\n", frame->linesize[0]);
-		inf+=1;
-		if (vidtime < time) {
-			vidtime += frametime;
-			printf("Frame skip!\n");
-			continue;
-		}
-		vidtime += frametime;
-
-		int thresh;
-		int obj;
-		int bsum = 0;
-		int c;
-		for (c=edge_off; c<(pCodecCtx->width-edge_off); c++) {
-			bsum += frame->data[0][c+edge_off*frame->linesize[0]];
-			bsum += frame->data[0][c+(pCodecCtx->height-edge_off-1)*frame->linesize[0]];
-		}
-		for (c=edge_off; c<(pCodecCtx->height-edge_off); c++) {
-			bsum += frame->data[0][edge_off+c*frame->linesize[0]];
-			bsum += frame->data[0][(c+1)*frame->linesize[0]-1-edge_off];
-		}
-		bsum /= (2*(pCodecCtx->width+pCodecCtx->height));
-		if (bg_white == -1)
-			bg_white = bsum > 128;
-		if (bg_white && bsum < sw_dark)
-			bg_white = 0;
-		if (!bg_white && bsum > sw_light)
-			bg_white = 1;
-
-		if (bg_white)
-			thresh = thresh_light;
-		else
-			thresh = thresh_dark;
-
-		tparams.threshold = thresh;
-		olTraceReInit(trace_ctx, &tparams);
-		olTraceFree(&result);
-		obj = olTrace(trace_ctx, frame->data[0], frame->linesize[0], &result);
-
-		do {
-			int i, j;
-			for (i = 0; i < result.count; i++) {
-				OLTraceObject *o = &result.objects[i];
-				olBegin(OL_POINTS);
-				OLTracePoint *p = o->points;
-				for (j = 0; j < o->count; j++) {
-                                  if (j % decimate == 0) {
-                                    olColor3(1.0,1.0,1.0);
-                                    olVertex(p->x, p->y);
-                                  }
-                                  p++;
-				}
-				olEnd();
-			}
-
-			ftime = olRenderFrame(200);
-			olGetFrameInfo(&info);
-			frames++;
-			time += ftime;
-			printf("Frame time: %.04f, Cur FPS:%6.02f, Avg FPS:%6.02f, Drift: %7.4f, "
-				   "In %4d, Out %4d Thr %3d Bg %3d Pts %4d",
-				   ftime, 1/ftime, frames/time, time-vidtime,
-				   inf, frames, thresh, bsum, info.points);
-			if (info.resampled_points)
-				printf(" Rp %4d Bp %4d", info.resampled_points, info.resampled_blacks);
-			if (info.padding_points)
-				printf(" Pad %4d", info.padding_points);
-			printf("\n");
-		} while ((time+frametime) < vidtime);
+          if (inf == 0)
+            printf("Frame stride: %d\n", frame->linesize[0]);
+          inf+=1;
+          if (vidtime < time) {
+            vidtime += frametime;
+            printf("Frame skip!\n");
+            continue;
+          }
+          vidtime += frametime;
+          
+          int thresh;
+          int obj;
+          int bsum = 0;
+          int c;
+          for (c=edge_off; c<(pCodecCtx->width-edge_off); c++) {
+            bsum += frame->data[0][c+edge_off*frame->linesize[0]];
+            bsum += frame->data[0][c+(pCodecCtx->height-edge_off-1)*frame->linesize[0]];
+          }
+          for (c=edge_off; c<(pCodecCtx->height-edge_off); c++) {
+            bsum += frame->data[0][edge_off+c*frame->linesize[0]];
+            bsum += frame->data[0][(c+1)*frame->linesize[0]-1-edge_off];
+          }
+          bsum /= (2*(pCodecCtx->width+pCodecCtx->height));
+          if (bg_white == -1)
+            bg_white = bsum > 128;
+          if (bg_white && bsum < sw_dark)
+            bg_white = 0;
+          if (!bg_white && bsum > sw_light)
+            bg_white = 1;
+          
+          if (bg_white)
+            thresh = thresh_light;
+          else
+            thresh = thresh_dark;
+          
+          tparams.threshold = thresh;
+          olTraceReInit(trace_ctx, &tparams);
+          olTraceFree(&result);
+          obj = olTrace(trace_ctx, frame->data[0], frame->linesize[0], &result);
+          
+          do {
+            int i, j;
+            for (i = 0; i < result.count; i++) {
+              OLTraceObject *o = &result.objects[i];
+              olBegin(OL_POINTS);
+              olColor3(0.0,1.0,0.0);
+              OLTracePoint *p = o->points;
+              for (j = 0; j < o->count; j++) {
+                if (j % decimate == 0) {
+                  olVertex(p->x / 100.0, p->y / 100.0);
+                  printf("%f %f\n", (p->x*100), (p->y*100));
+                }
+                p++;
+              }
+              olEnd();
+            }
+                  
+            ftime = olRenderFrame(200);
+            olGetFrameInfo(&info);
+            frames++;
+            time += ftime;
+            printf("Frame time: %.04f, Cur FPS:%6.02f, Avg FPS:%6.02f, Drift: %7.4f, "
+                   "In %4d, Out %4d Thr %3d Bg %3d Pts %4d",
+                   ftime, 1/ftime, frames/time, time-vidtime,
+                   inf, frames, thresh, bsum, info.points);
+            if (info.resampled_points)
+              printf(" Rp %4d Bp %4d", info.resampled_points, info.resampled_blacks);
+            if (info.padding_points)
+              printf(" Pad %4d", info.padding_points);
+            printf("\n");
+          } while ((time+frametime) < vidtime);
 	}
 
 	olTraceDeinit(trace_ctx);
 
 	for(i=0;i<FRAMES_BUF;i++)
-		olRenderFrame(200);
+          olRenderFrame(200);
 
 	olShutdown();
 	av_deinit();

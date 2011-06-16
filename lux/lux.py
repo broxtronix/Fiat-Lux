@@ -19,6 +19,9 @@ sys.path = ['.'] + sys.path
 # create the application
 from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
+print 'before', QtGui.QApplication.libraryPaths()
+QtGui.QApplication.setLibraryPaths([QtGui.QApplication.applicationDirPath() + '../PlugIns'])
+print 'after', QtGui.QApplication.libraryPaths()
 
 # set up my application
 QtCore.QCoreApplication.setOrganizationName(organization_name)

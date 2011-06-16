@@ -291,9 +291,16 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.currentAspect = index
         self.resetPoints();
 
+        # Save the data into our settings structure
+        self.settings['output'].affine_matrix = self.affine_matrix
+
+
     def on_resetTransform_clicked(self):
         self.resetPoints();
-        
+
+        # Save the data into our settings structure
+        self.settings['output'].affine_matrix = self.affine_matrix
+
     def on_redIntensitySlider_valueChanged(self, value):
         self.settings['output'].redIntensity = value / 100.0;
 

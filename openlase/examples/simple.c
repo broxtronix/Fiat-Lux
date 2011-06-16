@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
 
 		for(i=0; i<2; i++) {
                   if (i == 1)
-                    olColor3(1.0,0.0,0.0);
+                    olColor3(0.0,1.0,0.0);
                   else
                     olColor3(0.0,1.0,0.0);
 
