@@ -10,6 +10,9 @@ xenon_env = env.Clone()
 # Check for BOOST & JACK libraries
 conf = Configure(xenon_env)
 
+# HACK!  This needs to be done more elegantly
+conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
+conf.env.Append(CPPPATH=["/usr/local/include/eigen3"])
 
 if not conf.CheckLibWithHeader('boost_system-mt', 'boost/shared_ptr.hpp', 'c++'):
     print 'ERROR: Could not locate boost_system library'
@@ -25,6 +28,12 @@ if not conf.CheckLibWithHeader('boost_filesystem-mt', 'boost/shared_ptr.hpp', 'c
     sys.exit(1)
 if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
     print 'ERROR: Could not locate jack library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
+    print 'ERROR: Could not locate jack library'
+    sys.exit(1)
+if not conf.CheckCXXHeader('Eigen/Dense'):
+    print 'ERROR: Could not locate eigen library'
     sys.exit(1)
 
 xenon_env = conf.Finish()
@@ -55,14 +64,15 @@ core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = co
 # ----------
 lux_env = xenon_env.Clone()
 if sys.platform == "darwin":
-    lux_env.Append(LINKFLAGS= " -framework OpenGL")
+    lux_env.Append(LINKFLAGS= " -framework OpenGL -framework AGL")
 elif sys.platform == "linux2":
     lux_env.Append(LINKFLAGS= " -lGL")
 lux_env.Append(LIBPATH = ["."])
 lux_env.Append(LIBS = ["xenon_core"])
 lux_sources = Split("""Lux/AudioClient.cc
-                       Lux/LaserAudioClient.cc
-                       Lux/SimulatorAudioClient.cc""")
+                       Lux/OutputEngine.cc
+                       Lux/SimulatorEngine.cc
+                       Lux/AudioEngine.cc""")
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"
 lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)
@@ -70,7 +80,7 @@ lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_li
 # ----------------
 # PYTHON BINDINGS
 # ----------------
-python_env = env.Clone()
+python_env = xenon_env.Clone()
 python_env.Append(CPPPATH = [".."])
 if sys.platform == "darwin":
     python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")

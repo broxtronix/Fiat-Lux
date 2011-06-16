@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui, QtOpenGL
 # custom importer for ARB functions
 from OpenGL import GL
 
-from xenon_lux import LuxSimulatorAudioClient
+from xenon_lux import LuxSimulatorEngine
 
 import math
 import numpy
@@ -24,7 +24,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Set up to sync with double-buffer, vertical refresh.  Add Alpha and Depth buffers.
         fmt = QtOpenGL.QGLFormat()
-        fmt.setSwapInterval(1)
+        fmt.setSwapInterval(2)
         fmt.setDoubleBuffer(True)
         fmt.setAlpha(True)
         fmt.setDepth(True)
@@ -54,15 +54,16 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
-        self.audio_client = LuxSimulatorAudioClient("lux_simulator");
-        self.audio_client.add_input_port("in_x")
-        self.audio_client.add_input_port("in_y")
-        self.audio_client.add_input_port("in_r")
-        self.audio_client.add_input_port("in_g")
-        self.audio_client.add_input_port("in_b")
-        self.audio_client.add_input_port("in_a")
-        self.audio_client.start()
+        self.makeCurrent()
+        self.simulator_engine = LuxSimulatorEngine("lux_simulator");
+        self.simulator_engine.start()
 
+        self.simulator_engine.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
+        self.simulator_engine.connect_ports("lux_engine:out_x", "lux_simulator:in_x")
+        self.simulator_engine.connect_ports("lux_engine:out_r", "lux_simulator:in_r")
+        self.simulator_engine.connect_ports("lux_engine:out_g", "lux_simulator:in_g")
+        self.simulator_engine.connect_ports("lux_engine:out_b", "lux_simulator:in_b")
+        
     def timerEvent(self, event):
         '''
         Call the OpenGL update function if necessary
@@ -105,30 +106,14 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.makeCurrent()
 
         # Pass the resize_gl call along to the C++ code
-        self.audio_client.resize_gl(width, height)
+        self.simulator_engine.resize_gl(width, height)
 
     def paintGL(self):
         """Paint the screen"""
         self.makeCurrent()
 
         # Call out to the C++ code to do actual, efficient drawing
-        self.audio_client.draw_gl()
+        self.simulator_engine.draw_gl()
         self.dirty = True
-
-class SimulationSettings(QtGui.QWidget):
-    """
-    A window that has the various display-specific settings
-    """
-    def __init__(self, displayWindow, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        
-        self.displayWindow = displayWindow
-        self.displayWindow.displaySettings = self
-
-        self.audioOptionsGroup = QtGui.QGroupBox('Audio Settings', self)
-        self.audioOptionsLayout = QtGui.QGridLayout(self.audioOptionsGroup)
-        self.test1Options = QtGui.QCheckBox('Test1')
-        self.test1Options.setVisible(False)
-        self.audioOptionsLayout.addWidget(self.test1Options, 0, 0)
-        self.audioOptionsGroup.setLayout(self.audioOptionsLayout)
+        # self.swapBuffers();
 

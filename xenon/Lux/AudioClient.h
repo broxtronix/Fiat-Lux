@@ -27,8 +27,13 @@ namespace lux {
     AudioClient(std::string name);
     virtual ~AudioClient();
 
-    void add_input_port(std::string name);
-    void add_output_port(std::string name);
+    void add_input_port(std::string const& name);
+    void add_output_port(std::string const& name);
+
+    // Connect ports using the "<name>:<portname" port naming
+    // convention.  For example, you could connect "lux_engine:out_x"
+    // to "lux_simulator:in_x".
+    void connect_ports(std::string const& src_port, std::string const& dst_port);
 
     virtual void start() const;
 

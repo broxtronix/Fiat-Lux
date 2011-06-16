@@ -22,16 +22,12 @@ link_directories (${CMAKE_BINARY_DIR}/libol)
 add_executable(playilda playilda.c)
 target_link_libraries(playilda ${JACK_LIBRARIES})
 
-add_executable(playvid playvid.c)
-target_link_libraries(playvid openlase ${FFMPEG_LIBRARIES})
-
-
-#if(FFMPEG_FOUND)
-#  add_executable(playvid playvid.c)
-#  target_link_libraries(playvid openlase ${FFMPEG_LIBRARIES})
-#else()
-#  message(STATUS "Will NOT build playvid (FFmpeg missing)")
-#endif()
+if(FFMPEG_FOUND)
+  add_executable(playvid playvid.c)
+  target_link_libraries(playvid openlase ${FFMPEG_LIBRARIES})
+else()
+  message(STATUS "Will NOT build playvid (FFmpeg missing)")
+endif()
 
 if(OPENGL_FOUND AND GLUT_FOUND)
   add_executable(simulator simulator.c)

@@ -1,5 +1,3 @@
-
-
 # PluginMount Class
 #
 class PluginMount(type):
@@ -8,11 +6,13 @@ class PluginMount(type):
             # If the class has no plugins list, then this must be the
             # plugin mount itself, so we add one for plugins to be
             # registered later.
-            cls.plugins = []
+            cls.plugins = {}
+            cls.plugin_keys = []
         else:
             # Since the plugin attribute already exists, this is an
             # individual plugin instance and we register it here.
-            cls.plugins.append(cls)
+            cls.plugin_keys = cls.name
+            cls.plugins[cls.name] = cls
 
 # LuxPlugin Class
 #
@@ -25,9 +25,10 @@ class LuxPlugin(object):
     """
     __metaclass__ = PluginMount
 
-    def draw():
+    name = "(unnamed plugin)"
+    
+    description = "No Description"
+
+    def draw(self):
         pass
 
-
-# Mount your plugins below.
-#from plugins
