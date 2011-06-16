@@ -1,5 +1,5 @@
 from setuptools import setup
-import sys, os
+import sys, os, shutil
 
 APP = ['lux.py']
 DATA_FILES = [('',['splash.png'])]
@@ -11,12 +11,14 @@ PLIST = {'PyResourcePackages':
           os.path.join(python_lib_folder, 'lib-dynload'),
           os.path.join(python_lib_folder, 'site-packages.zip'),
           ],
+         'CFBundleName':"Fiat Lux",
+         'CFBundleDisplayName':"Fiat Lux",
          }
 
 OPTIONS = {'argv_emulation': False,
            'plist' : PLIST,
+           'iconfile': 'lux.icns',
            'includes': ['sip'],
-#           'excludes':['PyQt4.QtDesigner','PyQt4.QtNetwork','PyQt4.QtOpenGl','PyQt4.QtScript','PyQt4.QtSql','PyQt4.QtTest','PyQt4.QtWebKit','PyQt4.QtXml','PyQt4.phonon'],
            'resources' : []
 }
 			
@@ -26,3 +28,4 @@ setup(
 	options={'py2app': OPTIONS},
 	setup_requires=['py2app'],
 )
+
