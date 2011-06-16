@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui, QtOpenGL
 # custom importer for ARB functions
 from OpenGL import GL
 
-from xenon_lux import LuxSimulatorClient
+from xenon_lux import LuxSimulatorEngine
 
 import math
 import numpy
@@ -116,21 +116,4 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.simulator_engine.draw_gl()
         self.dirty = True
         # self.swapBuffers();
-
-class SimulationSettings(QtGui.QWidget):
-    """
-    A window that has the various display-specific settings
-    """
-    def __init__(self, displayWindow, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        
-        self.displayWindow = displayWindow
-        self.displayWindow.displaySettings = self
-
-        self.audioOptionsGroup = QtGui.QGroupBox('Audio Settings', self)
-        self.audioOptionsLayout = QtGui.QGridLayout(self.audioOptionsGroup)
-        self.test1Options = QtGui.QCheckBox('Test1')
-        self.test1Options.setVisible(False)
-        self.audioOptionsLayout.addWidget(self.test1Options, 0, 0)
-        self.audioOptionsGroup.setLayout(self.audioOptionsLayout)
 

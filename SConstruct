@@ -69,6 +69,10 @@ if os.environ.has_key('PATH'):
     env.Append(PATH = os.environ['PATH'])
     print("\t--> Appending custom PATH : " + os.environ['PATH'])
 
+if os.environ.has_key('PYTHONPATH'):
+    env.Append(PYTHONPATH = os.environ['PYTHONPATH'])
+    print("\t--> Appending custom PYTHONPATH : " + os.environ['PYTHONPATH'])
+
 # SET UP BUILD DIRECTORY TARGET
 env['PREFIX'] = GetLaunchDir() + "/build/"
 env.Alias('stage', env['PREFIX'])
@@ -84,6 +88,5 @@ env['INSTALL_BIN_DIR'] = env['PREFIX'] + "/bin"
 
 # Add better depedencies using this techinque: http://www.scons.org/doc/HTML/scons-user/x3255.html#AEN3318
 Export('env')
-#SConscript('micromanager/SConscript')
 SConscript('xenon/SConscript')
-#SConscript('radon/SConscript')
+SConscript('lux/SConscript')

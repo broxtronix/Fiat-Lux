@@ -7,6 +7,7 @@ from settings import LuxSettings
 
 import os.path
 import display
+from panels import OutputSettings
 #from console import IPythonConsole
 
 # ----------------------------------------------------------------------------------
@@ -211,9 +212,9 @@ class MainWindow(QtGui.QMainWindow):
         # set up the settings panels
         self.settingsManager = SettingsPanelManager(self)
         
-        self.settingsManager.add(SettingsPanel(name = "Simulation",
+        self.settingsManager.add(SettingsPanel(name = "Output",
                                                message = "",
-                                               widget = display.SimulationSettings(self.simWidget)
+                                               widget = OutputSettings.OutputSettings(self)
                                                ))
 
         # set up the menu bar

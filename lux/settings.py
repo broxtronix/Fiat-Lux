@@ -101,7 +101,11 @@ class SettingsNamespace(object):
         # is a pain, but it works.
         value_type = self._qt_settings.value(fully_qualified_keytype)
         if (value_type == 'bool'):
-            return bool(self._qt_settings.value(fully_qualified_key))
+            if (self._qt_settings.value(fully_qualified_key) == 'True' or
+                self._qt_settings.value(fully_qualified_key) == 'true'):
+                return True
+            else:
+                return False
         elif (value_type == 'int'):
             return int(self._qt_settings.value(fully_qualified_key))
         elif (value_type == 'float'):

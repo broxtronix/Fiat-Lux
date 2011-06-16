@@ -66,7 +66,7 @@ public slots:
 
 private:
 	QTransform mtx;
-	QGraphicsScene scene;
+  QGraphicsScene scene;
 	ControlPoint *pt[4];
 	QGraphicsPolygonItem pl;
 	int currentAspect;
