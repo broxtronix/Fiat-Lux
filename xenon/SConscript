@@ -12,6 +12,7 @@ conf = Configure(xenon_env)
 
 # HACK!  This needs to be done more elegantly
 conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
+conf.env.Append(CPPPATH=["/usr/local/include/eigen3"])
 
 if not conf.CheckLibWithHeader('boost_system-mt', 'boost/shared_ptr.hpp', 'c++'):
     print 'ERROR: Could not locate boost_system library'
@@ -30,6 +31,9 @@ if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
     sys.exit(1)
 if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
     print 'ERROR: Could not locate jack library'
+    sys.exit(1)
+if not conf.CheckCXXHeader('Eigen/Dense'):
+    print 'ERROR: Could not locate eigen library'
     sys.exit(1)
 
 xenon_env = conf.Finish()
@@ -66,8 +70,8 @@ elif sys.platform == "linux2":
 lux_env.Append(LIBPATH = ["."])
 lux_env.Append(LIBS = ["xenon_core"])
 lux_sources = Split("""Lux/AudioClient.cc
-                       Lux/LaserClient.cc
-                       Lux/SimulatorClient.cc
+                       Lux/OutputEngine.cc
+                       Lux/SimulatorEngine.cc
                        Lux/AudioEngine.cc""")
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"

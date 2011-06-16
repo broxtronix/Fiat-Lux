@@ -55,20 +55,14 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
         self.makeCurrent()
-        self.audio_client = LuxSimulatorClient("lux_simulator");
-        self.audio_client.add_input_port("in_x")
-        self.audio_client.add_input_port("in_y")
-        self.audio_client.add_input_port("in_r")
-        self.audio_client.add_input_port("in_g")
-        self.audio_client.add_input_port("in_b")
-        self.audio_client.add_input_port("in_a")
-        self.audio_client.start()
+        self.simulator_engine = LuxSimulatorEngine("lux_simulator");
+        self.simulator_engine.start()
 
-        self.audio_client.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
-        self.audio_client.connect_ports("lux_engine:out_x", "lux_simulator:in_x")
-        self.audio_client.connect_ports("lux_engine:out_r","lux_simulator:in_r")
-        self.audio_client.connect_ports("lux_engine:out_g","lux_simulator:in_g")
-        self.audio_client.connect_ports("lux_engine:out_b","lux_simulator:in_b")
+        self.simulator_engine.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
+        self.simulator_engine.connect_ports("lux_engine:out_x", "lux_simulator:in_x")
+        self.simulator_engine.connect_ports("lux_engine:out_r", "lux_simulator:in_r")
+        self.simulator_engine.connect_ports("lux_engine:out_g", "lux_simulator:in_g")
+        self.simulator_engine.connect_ports("lux_engine:out_b", "lux_simulator:in_b")
         
     def timerEvent(self, event):
         '''
@@ -112,14 +106,14 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.makeCurrent()
 
         # Pass the resize_gl call along to the C++ code
-        self.audio_client.resize_gl(width, height)
+        self.simulator_engine.resize_gl(width, height)
 
     def paintGL(self):
         """Paint the screen"""
         self.makeCurrent()
 
         # Call out to the C++ code to do actual, efficient drawing
-        self.audio_client.draw_gl()
+        self.simulator_engine.draw_gl()
         self.dirty = True
         # self.swapBuffers();
 

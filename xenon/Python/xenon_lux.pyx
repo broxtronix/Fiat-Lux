@@ -22,8 +22,8 @@ cdef extern from "<string>" namespace "std":
         char * c_str()
      
 cdef extern from "xenon/Lux.h" namespace "lux":
-    cdef cppclass SimulatorClient:
-        SimulatorClient(string) except +RuntimeError
+    cdef cppclass SimulatorEngine:
+        SimulatorEngine(string) except +RuntimeError
         void start() except +RuntimeError
         void add_input_port(string) except +RuntimeError
         void add_output_port(string) except +RuntimeError
@@ -34,10 +34,14 @@ cdef extern from "xenon/Lux.h" namespace "lux":
     cdef cppclass AudioEngine:
         AudioEngine(string) except +RuntimeError
 
-cdef class LuxSimulatorClient:
-    cdef SimulatorClient *thisptr      # hold a C++ instance which we're wrapping
+    cdef cppclass OutputEngine:
+        OutputEngine(string) except +RuntimeError
+        void start() except +RuntimeError
+
+cdef class LuxSimulatorEngine:
+    cdef SimulatorEngine *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, char *name):
-        self.thisptr = new SimulatorClient(string(name))
+        self.thisptr = new SimulatorEngine(string(name))
     def __dealloc__(self):
         del self.thisptr
 
@@ -56,12 +60,20 @@ cdef class LuxSimulatorClient:
     def resize_gl(self, int width, int height):
         self.thisptr.resize_gl(width, height)
 
-
-
 cdef class LuxAudioEngine:
     cdef AudioEngine *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, char *name):
         self.thisptr = new AudioEngine(string(name))
     def __dealloc__(self):
         del self.thisptr
-        
+
+cdef class LuxOutputEngine:
+    cdef OutputEngine *thisptr      # hold a C++ instance which we're wrapping
+    def __cinit__(self, char *name):
+        self.thisptr = new OutputEngine(string(name))
+    def __dealloc__(self):
+        del self.thisptr
+
+    def start(self):
+        self.thisptr.start()
+

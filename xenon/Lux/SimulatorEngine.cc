@@ -1,4 +1,4 @@
-#include <xenon/Lux/SimulatorClient.h>
+#include <xenon/Lux/SimulatorEngine.h>
 #include <jack/jack.h>
 #include <math.h>
 
@@ -11,8 +11,15 @@
 #include <GL/glu.h>
 #endif
 
-lux::SimulatorClient::SimulatorClient(std::string name) : 
+lux::SimulatorEngine::SimulatorEngine(std::string name) : 
       AudioClient(name), m_buf_widx(0), m_psize(2) {
+
+  this->add_input_port("in_x");
+  this->add_input_port("in_y");
+  this->add_input_port("in_r");
+  this->add_input_port("in_g");
+  this->add_input_port("in_b");
+  this->add_input_port("in_a");
   
 // #ifdef __APPLE__
 //   AGLContext aglContext;
@@ -23,7 +30,7 @@ lux::SimulatorClient::SimulatorClient(std::string name) :
   
 }
 
- void lux::SimulatorClient::laser_color(float r, float g, float b, float ascale) {
+ void lux::SimulatorEngine::laser_color(float r, float g, float b, float ascale) {
 
    // This was the original laser_color code.  
    //   float r, b;
@@ -41,7 +48,7 @@ lux::SimulatorClient::SimulatorClient(std::string name) :
   glColor4f(r, g, b, ascale);
 }
 
-void lux::SimulatorClient::draw_gl() {
+void lux::SimulatorEngine::draw_gl() {
   int i, ridx;
 
   static int fno=0;
@@ -114,7 +121,7 @@ void lux::SimulatorClient::draw_gl() {
   glEnd();
 }
 
-void lux::SimulatorClient::resize_gl(int width, int height) {
+void lux::SimulatorEngine::resize_gl(int width, int height) {
   int min = width > height ? height : width;
   glViewport((width-min)/2, (height-min)/2, min, min);
   glMatrixMode(GL_PROJECTION);
@@ -123,12 +130,13 @@ void lux::SimulatorClient::resize_gl(int width, int height) {
   glMatrixMode(GL_MODELVIEW);
 }
 
- int lux::SimulatorClient::process_callback(nframes_t nframes) {
+ int lux::SimulatorEngine::process_callback(nframes_t nframes) {
   sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["in_x"], nframes);
   sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["in_y"], nframes);
   sample_t *i_r = (sample_t *) jack_port_get_buffer (m_ports["in_r"], nframes);
   sample_t *i_g = (sample_t *) jack_port_get_buffer (m_ports["in_g"], nframes);
   sample_t *i_b = (sample_t *) jack_port_get_buffer (m_ports["in_b"], nframes);
+  sample_t *i_a = (sample_t *) jack_port_get_buffer (m_ports["in_a"], nframes);
 
   for (nframes_t frm = 0; frm < nframes; frm++) {
     m_buffer[m_buf_widx].x = *i_x++;
@@ -136,6 +144,7 @@ void lux::SimulatorClient::resize_gl(int width, int height) {
     m_buffer[m_buf_widx].r = *i_r++;
     m_buffer[m_buf_widx].g = *i_g++;
     m_buffer[m_buf_widx].b = *i_b++;
+    m_buffer[m_buf_widx].a = *i_a++;
     
     m_buf_widx++;
     if (m_buf_widx >= LUX_SIMULATOR_BUF_SAMPLES)
