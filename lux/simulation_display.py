@@ -7,6 +7,7 @@ from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 
 from xenon_lux import LuxSimulatorEngine
+from settings import LuxSettings
 
 import math
 import numpy
@@ -20,7 +21,7 @@ class DisplayError(Exception):
 
 class SimulationDisplay(QtOpenGL.QGLWidget):
 
-    def __init__(self, settings, parent=None):
+    def __init__(self, parent=None):
 
         # Set up to sync with double-buffer, vertical refresh.  Add Alpha and Depth buffers.
         fmt = QtOpenGL.QGLFormat()
@@ -34,7 +35,7 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.displaySettings = None
         
         # set application settings
-        self.settings = settings
+        self.settings = LuxSettings()
 
         # create a mutex for the state
         self.lock = QtCore.QMutex()

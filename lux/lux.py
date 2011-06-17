@@ -16,12 +16,12 @@ settings = LuxSettings()
 # overrides, etc.
 sys.path = ['.'] + sys.path
 
-# create the application
+# Create the application.  Note thet we set the plugin path explicitly
+# here so that the app doesn't get confused once we bundle it using
+# py2app.
 from PyQt4 import QtCore, QtGui
 app = QtGui.QApplication(sys.argv)
-print 'before', QtGui.QApplication.libraryPaths()
 QtGui.QApplication.setLibraryPaths([QtGui.QApplication.applicationDirPath() + '../PlugIns'])
-print 'after', QtGui.QApplication.libraryPaths()
 
 # set up my application
 QtCore.QCoreApplication.setOrganizationName(organization_name)

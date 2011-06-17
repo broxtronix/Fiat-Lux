@@ -6,7 +6,8 @@ from PyQt4 import QtCore, QtGui
 from settings import LuxSettings
 
 import os.path
-import display
+from simulation_display import SimulationDisplay
+from video_display import VideoDisplay
 from panels import OutputSettings
 from panels import PluginSettings
 #from console import IPythonConsole
@@ -101,7 +102,6 @@ class SettingsPanelManager:
 # ----------------------------------------------------------------------------------
 #                               MAIN WINDOW CLASS
 # ----------------------------------------------------------------------------------
-
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -111,12 +111,20 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon())
         self.setWindowTitle('Fiat Lux')
 
-        # create the simulation widget
-        self.simWidget = display.SimulationDisplay(self.settings, self)
-        self.setCentralWidget(self.simWidget)
+        # create the display widgets in a QTabView
+        self.displayTabWidget = QtGui.QTabWidget(self)
+        self.simWidget = SimulationDisplay(self)
+        self.displayTabWidget.addTab(self.simWidget, "Laser Output")
+        self.videoWidget = VideoDisplay(self)
+        self.displayTabWidget.addTab(self.videoWidget, "Video Input")
+        self.setCentralWidget(self.displayTabWidget)
 
-#        self.ipythonWidget = IPythonConsole(self)
-#        self.setCentralWidget(self.ipythonWidget)
+        self.displayTabWidget.setCurrentIndex(self.settings['main_window'].valueWithDefault('display_tab', 0))
+        self.connect(self.displayTabWidget, QtCore.SIGNAL('currentChanged(int)'), self.displayTabChanged)
+
+        # This might be fun someday...
+        #        self.ipythonWidget = IPythonConsole(self)
+        #        self.setCentralWidget(self.ipythonWidget)
         
 
         # set up the status bar
@@ -247,6 +255,9 @@ class MainWindow(QtGui.QMainWindow):
             # ignore
             pass
 
+    def displayTabChanged(self, index):
+        self.settings['main_window'].display_tab = index
+
     def setStatus(self, streaming=None, recording=None, recordNum=None):
         """
         Handle the current status of the program
@@ -276,11 +287,8 @@ class MainWindow(QtGui.QMainWindow):
         """
         Handle some shortcut keys
         """
-        if event.key() == QtCore.Qt.Key_Plus:
-            print 'plus'
-        if event.key() == QtCore.Qt.Key_Plus and event.modifiers() == QtCore.Qt.ControlModifier:
-            pass
-        elif event.key() == QtCore.Qt.Key_Equal and event.modifiers() == QtCore.Qt.ControlModifier:
-            pass
-        elif event.key() == QtCore.Qt.Key_Minus and event.modifiers() == QtCore.Qt.ControlModifier:
-            pass
+        if event.key() == QtCore.Qt.Key_1:
+            self.displayTabWidget.setCurrentIndex(0)
+        if event.key() == QtCore.Qt.Key_2:
+            self.displayTabWidget.setCurrentIndex(1)
+

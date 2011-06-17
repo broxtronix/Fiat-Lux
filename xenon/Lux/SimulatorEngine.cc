@@ -122,6 +122,9 @@ void lux::SimulatorEngine::draw_gl() {
 }
 
 void lux::SimulatorEngine::resize_gl(int width, int height) {
+  if (width == 0 || height == 0) {
+    width = 512;  height = 512;
+  }
   int min = width > height ? height : width;
   glViewport((width-min)/2, (height-min)/2, min, min);
   glMatrixMode(GL_PROJECTION);

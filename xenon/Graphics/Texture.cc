@@ -443,13 +443,13 @@ void Texture::draw(float x, float y, float w, float h){
   }
   // -------------------------------------------------
 
+
   GLfloat tx0 = 0+offsetw;
   GLfloat ty0 = 0+offseth;
   GLfloat tx1 = texData.tex_t - offsetw;
   GLfloat ty1 = texData.tex_u - offseth;
 
-  glPushMatrix(); 
-	
+  glPushMatrix(); 	
   glTranslatef(x,y,0.0f);
 		
   GLfloat tex_coords[] = {
