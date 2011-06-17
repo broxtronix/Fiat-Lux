@@ -14,5 +14,6 @@
 #include <xenon/Lux/AudioEngine.h>
 #include <xenon/Lux/SimulatorEngine.h>
 #include <xenon/Lux/OutputEngine.h>
+#include <xenon/Lux/VideoEngine.h>
 
 #endif // __XENON_LUX_H__

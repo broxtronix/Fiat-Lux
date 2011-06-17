@@ -9,8 +9,6 @@ xenon_env = env.Clone()
 
 # Check for BOOST & JACK libraries
 conf = Configure(xenon_env)
-
-# HACK!  This needs to be done more elegantly
 conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
 conf.env.Append(CPPPATH=["/usr/local/include/eigen3"])
 
@@ -35,7 +33,6 @@ if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
 if not conf.CheckCXXHeader('Eigen/Dense'):
     print 'ERROR: Could not locate eigen library'
     sys.exit(1)
-
 xenon_env = conf.Finish()
 xenon_env.Append(CPPPATH = [".."])
 
@@ -59,20 +56,45 @@ core_lib_sources = core_sources
 core_lib_target  = "xenon_core"
 core_lib = BuildSupport.Library(xenon_env, target = core_lib_target, source = core_lib_sources)
 
+# ---------------
+# GRAPHICS MODULE
+# ---------------
+graphics_env = xenon_env.Clone()
+graphics_env.Append(LIBPATH = ["."])
+graphics_env.Append(LIBS = ["xenon_core"])
+
+graphics_sources = Split("""Graphics/Texture.cc
+                            Graphics/BitmapFont.cc""")
+if sys.platform == "darwin":
+    graphics_sources.append("Graphics/SyphonNameboundClient.m")
+    graphics_sources.append("Graphics/SyphonClient.mm")
+    graphics_env.Append(LINKFLAGS = " -framework OpenGL -framework AGL -framework Syphon -framework AppKit")
+else:
+    print "WARNING: There is no syphon support for linux.  The build may fail."
+    
+graphics_lib_sources = graphics_sources
+graphics_lib_target  = "xenon_graphics"
+graphics_lib = BuildSupport.Library(graphics_env, target = graphics_lib_target, source = graphics_lib_sources)
+
 # -----------
 # LUX MODULE
 # ----------
+
+# Configuration: Check for Jack and Aubio libraries
 lux_env = xenon_env.Clone()
+
 if sys.platform == "darwin":
-    lux_env.Append(LINKFLAGS= " -framework OpenGL -framework AGL")
+    lux_env.Append(LINKFLAGS = " -framework OpenGL -framework AGL")
 elif sys.platform == "linux2":
     lux_env.Append(LINKFLAGS= " -lGL")
 lux_env.Append(LIBPATH = ["."])
-lux_env.Append(LIBS = ["xenon_core"])
+lux_env.Append(LIBS = ["xenon_core", "xenon_graphics"])
 lux_sources = Split("""Lux/AudioClient.cc
                        Lux/OutputEngine.cc
                        Lux/SimulatorEngine.cc
-                       Lux/AudioEngine.cc""")
+                       Lux/AudioEngine.cc
+                       Lux/VideoEngine.cc
+                       """)
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"
 lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)
@@ -84,7 +106,7 @@ python_env = xenon_env.Clone()
 python_env.Append(CPPPATH = [".."])
 if sys.platform == "darwin":
     python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
-    python_env.Append(LINKFLAGS= " -framework Python")
+    python_env.Append(LINKFLAGS = " -framework Python")
 elif sys.platform == "linux2":
     python_env.Append(CXXFLAGS = " -I/usr/include/python2.6/")
     python_env.Append(LINKFLAGS= " -lpython2.6")
@@ -116,4 +138,8 @@ Depends(py_xenon_core_lib, py_xenon_core_sources)
 Depends(py_xenon_core_lib, core_lib)
 Depends(py_xenon_lux_lib, py_xenon_lux_sources)
 Depends(py_xenon_lux_lib, lux_lib)
+Depends(py_xenon_lux_lib, graphics_lib)
+
+Depends(graphics_lib, core_lib)
 Depends(lux_lib, core_lib)
+Depends(lux_lib, graphics_lib)

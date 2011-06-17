@@ -76,6 +76,9 @@ class LuxSettings(object):
     def contains(self, key):
         raise NotImplementedError("You cannot use the contains() method with the settings object.  Specify a namespace first.")
 
+    def sync(self):
+        self._qt_settings.sync()
+        
 # --------------- SettingsNamespace ------------------
 #
 # You only use this class indirectly by calling
@@ -102,7 +105,8 @@ class SettingsNamespace(object):
         value_type = self._qt_settings.value(fully_qualified_keytype)
         if (value_type == 'bool'):
             if (self._qt_settings.value(fully_qualified_key) == 'True' or
-                self._qt_settings.value(fully_qualified_key) == 'true'):
+                self._qt_settings.value(fully_qualified_key) == 'true' or
+                self._qt_settings.value(fully_qualified_key) == True):
                 return True
             else:
                 return False
@@ -149,3 +153,4 @@ class SettingsNamespace(object):
 
     def value(self, key):
         raise NotImplementedError("You cannot use the value() method with the settings object.")
+

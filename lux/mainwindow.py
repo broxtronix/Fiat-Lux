@@ -8,6 +8,7 @@ from settings import LuxSettings
 import os.path
 import display
 from panels import OutputSettings
+from panels import PluginSettings
 #from console import IPythonConsole
 
 # ----------------------------------------------------------------------------------
@@ -189,25 +190,24 @@ class MainWindow(QtGui.QMainWindow):
         #              self.emitDisplayModeChanged)
 
         # set up the toolbars
-        self.controlBar = QtGui.QToolBar(self)
-        self.controlBar.setObjectName('Control Bar')
-        self.controlBar.addAction(self.streamAction)
-        self.controlBar.addAction(self.pauseAction)
-        self.controlBar.addAction(self.recordAction)
-        self.displayBar = QtGui.QToolBar(self)
-        self.displayBar.setObjectName('Display Mode Bar')
-        self.displayBar.addWidget(self.displayPrefix)
-        self.displayBar.addWidget(self.displayRawButton)
-        self.displayBar.addWidget(self.displayPinholeButton)
-        self.displayBar.addWidget(self.displayApertureButton)
-        self.addToolBar(self.controlBar)
-        self.addToolBar(self.displayBar)
+        # self.controlBar = QtGui.QToolBar(self)
+        # self.controlBar.setObjectName('Control Bar')
+        # self.controlBar.addAction(self.streamAction)
+        # self.controlBar.addAction(self.pauseAction)
+        # self.displayBar = QtGui.QToolBar(self)
+        # self.displayBar.setObjectName('Display Mode Bar')
+        # self.displayBar.addWidget(self.displayPrefix)
+        # self.displayBar.addWidget(self.displayRawButton)
+        # self.displayBar.addWidget(self.displayPinholeButton)
+        # self.displayBar.addWidget(self.displayApertureButton)
+        # self.addToolBar(self.controlBar)
+        # self.addToolBar(self.displayBar)
 
         # toolbar view control
-        self.viewControlBarAction = self.controlBar.toggleViewAction()
-        self.viewControlBarAction.setText('&Controls')
-        self.viewDisplayBarAction = self.displayBar.toggleViewAction()
-        self.viewDisplayBarAction.setText('&Display mode')
+        # self.viewControlBarAction = self.controlBar.toggleViewAction()
+        # self.viewControlBarAction.setText('&Controls')
+        # self.viewDisplayBarAction = self.displayBar.toggleViewAction()
+        # self.viewDisplayBarAction.setText('&Display mode')
 
         # set up the settings panels
         self.settingsManager = SettingsPanelManager(self)
@@ -217,10 +217,16 @@ class MainWindow(QtGui.QMainWindow):
                                                widget = OutputSettings.OutputSettings(self)
                                                ))
 
+#        self.settingsManager.add(SettingsPanel(name = "Plugins",
+#                                               message = "",
+#                                               widget = PluginSettings.PluginSettings(self)
+#                                               ))
+
         # set up the menu bar
         self.menuBar_ = QtGui.QMenuBar(self)
-        self.controlMenu = self.menuBar_.addMenu('&Control')
-        self.controlMenu.addAction(self.quitAction)
+        self.viewMenu = self.menuBar_.addMenu('&View')
+        for action in self.settingsManager.toggleViewActions():
+            self.viewMenu.addAction(action)
         self.setMenuBar(self.menuBar_)
 
         # Load previous window size and position, but set a sensible
@@ -237,6 +243,7 @@ class MainWindow(QtGui.QMainWindow):
             state = QtCore.QByteArray(self.settings['main_window'].state.decode('hex'))
             self.restoreState(state)
         except AttributeError:
+            print "Warning: Could not restore window state."
             # ignore
             pass
 
@@ -253,7 +260,6 @@ class MainWindow(QtGui.QMainWindow):
         return os.path.join(self.settings['app'].resource_path, filename)
         
     def closeEvent(self, event):
-        print 'window close event'
         """
         When main window is closed
         """
@@ -262,9 +268,9 @@ class MainWindow(QtGui.QMainWindow):
         # save window settings
         self.settings['main_window'].position = self.pos()
         self.settings['main_window'].size = self.size()
-
+        self.settings.sync() # Make sure settings sync to disk
         # close the window
-        event.accept()
+        QtGui.QMainWindow.closeEvent(self, event);
 
     def keyPressEvent(self, event):
         """

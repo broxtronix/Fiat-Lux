@@ -273,268 +273,268 @@ void usage(const char *argv0)
 
 int main (int argc, char *argv[])
 {
-	OLRenderParams params;
-	AVFrame *frame;
-	int i;
+  OLRenderParams params;
+  AVFrame *frame;
+  int i;
 
-	// Register all formats and codecs
-	av_register_all();
+  // Register all formats and codecs
+  av_register_all();
 
-	memset(&params, 0, sizeof params);
-	params.rate = 48000;
-	params.on_speed = 2.0/100.0;
-	params.off_speed = 2.0/15.0;
-	params.start_wait = 8;
-	params.end_wait = 3;
-	params.snap = 1/120.0;
-	params.render_flags = RENDER_GRAYSCALE;
-	params.min_length = 4;
-	params.start_dwell = 2;
-	params.end_dwell = 2;
+  memset(&params, 0, sizeof params);
+  params.rate = 48000;
+  params.on_speed = 2.0/100.0;
+  params.off_speed = 2.0/15.0;
+  params.start_wait = 8;
+  params.end_wait = 3;
+  params.snap = 1/120.0;
+  params.render_flags = RENDER_GRAYSCALE;
+  params.min_length = 4;
+  params.start_dwell = 2;
+  params.end_dwell = 2;
 
-	float snap_pix = 3;
-	float aspect = 0;
-	float framerate = 0;
-	float overscan = 0;
-	int thresh_dark = 60;
-	int thresh_light = 160;
-	int sw_dark = 100;
-	int sw_light = 256;
-	int decimate = 2;
-	int edge_off = 0;
+  float snap_pix = 3;
+  float aspect = 0;
+  float framerate = 0;
+  float overscan = 0;
+  int thresh_dark = 60;
+  int thresh_light = 160;
+  int sw_dark = 100;
+  int sw_light = 256;
+  int decimate = 2;
+  int edge_off = 0;
 
-	int optchar;
+  int optchar;
 
-	OLTraceParams tparams = {
-		.mode = OL_TRACE_THRESHOLD,
-		.sigma = 0,
-		.threshold2 = 50
-	};
+  OLTraceParams tparams = {
+    .mode = OL_TRACE_THRESHOLD,
+    .sigma = 0,
+    .threshold2 = 50
+  };
 
-	while ((optchar = getopt(argc, argv, "hct:T:b:w:B:W:O:d:m:S:E:D:g:s:p:a:r:R:o:v:")) != -1) {
-		switch (optchar) {
-			case 'h':
-			case '?':
-				usage(argv[0]);
-				return 0;
-			case 'c':
-				tparams.mode = OL_TRACE_CANNY;
-				tparams.sigma = 1;
-				break;
-			case 't':
-				thresh_dark = thresh_light = atoi(optarg);
-				break;
-			case 'T':
-				tparams.threshold2 = atoi(optarg);
-				break;
-			case 'b':
-				thresh_dark = atoi(optarg);
-				break;
-			case 'w':
-				thresh_light = atoi(optarg);
-				break;
-			case 'B':
-				sw_dark = atoi(optarg);
-				break;
-			case 'W':
-				sw_light = atoi(optarg);
-				break;
-			case 'O':
-				edge_off = atoi(optarg);
-				break;
-			case 'd':
-				decimate = atoi(optarg);
-				break;
-			case 'm':
-				params.min_length = atoi(optarg);
-				break;
-			case 'S':
-				params.start_wait = atoi(optarg);
-				break;
-			case 'E':
-				params.end_wait = atoi(optarg);
-				break;
-			case 'D':
-				params.start_dwell = atoi(optarg);
-				params.end_dwell = atoi(optarg);
-				break;
-			case 'g':
-				tparams.sigma = atof(optarg);
-				break;
-			case 's':
-				params.off_speed = 2.0f/atof(optarg);
-				break;
-			case 'p':
-				snap_pix = atof(optarg);
-				break;
-			case 'a':
-				aspect = atof(optarg);
-				break;
-			case 'r':
-				framerate = atof(optarg);
-				break;
-			case 'R':
-				params.max_framelen = params.rate/atof(optarg);
-				break;
-			case 'o':
-				overscan = atof(optarg);
-				break;
-			case 'v':
-				volume = atof(optarg);
-				break;
-		}
-	}
+  while ((optchar = getopt(argc, argv, "hct:T:b:w:B:W:O:d:m:S:E:D:g:s:p:a:r:R:o:v:")) != -1) {
+    switch (optchar) {
+    case 'h':
+    case '?':
+      usage(argv[0]);
+      return 0;
+    case 'c':
+      tparams.mode = OL_TRACE_CANNY;
+      tparams.sigma = 1;
+      break;
+    case 't':
+      thresh_dark = thresh_light = atoi(optarg);
+      break;
+    case 'T':
+      tparams.threshold2 = atoi(optarg);
+      break;
+    case 'b':
+      thresh_dark = atoi(optarg);
+      break;
+    case 'w':
+      thresh_light = atoi(optarg);
+      break;
+    case 'B':
+      sw_dark = atoi(optarg);
+      break;
+    case 'W':
+      sw_light = atoi(optarg);
+      break;
+    case 'O':
+      edge_off = atoi(optarg);
+      break;
+    case 'd':
+      decimate = atoi(optarg);
+      break;
+    case 'm':
+      params.min_length = atoi(optarg);
+      break;
+    case 'S':
+      params.start_wait = atoi(optarg);
+      break;
+    case 'E':
+      params.end_wait = atoi(optarg);
+      break;
+    case 'D':
+      params.start_dwell = atoi(optarg);
+      params.end_dwell = atoi(optarg);
+      break;
+    case 'g':
+      tparams.sigma = atof(optarg);
+      break;
+    case 's':
+      params.off_speed = 2.0f/atof(optarg);
+      break;
+    case 'p':
+      snap_pix = atof(optarg);
+      break;
+    case 'a':
+      aspect = atof(optarg);
+      break;
+    case 'r':
+      framerate = atof(optarg);
+      break;
+    case 'R':
+      params.max_framelen = params.rate/atof(optarg);
+      break;
+    case 'o':
+      overscan = atof(optarg);
+      break;
+    case 'v':
+      volume = atof(optarg);
+      break;
+    }
+  }
 
-	if (optind == argc) {
-		usage(argv[0]);
-		return 1;
-	}
+  if (optind == argc) {
+    usage(argv[0]);
+    return 1;
+  }
 
-	if (av_vid_init(argv[optind]) != 0) {
-		printf("Video open/init failed\n");
-		return 1;
-	}
-	if (av_aud_init(argv[optind]) != 0) {
-		printf("Audio open/init failed\n");
-		return 1;
-	}
+  if (av_vid_init(argv[optind]) != 0) {
+    printf("Video open/init failed\n");
+    return 1;
+  }
+  if (av_aud_init(argv[optind]) != 0) {
+    printf("Audio open/init failed\n");
+    return 1;
+  }
 
-	if(olInit(FRAMES_BUF, 300000) < 0) {
-		printf("OpenLase init failed\n");
-		return 1;
-	}
+  if(olInit(FRAMES_BUF, 300000) < 0) {
+    printf("OpenLase init failed\n");
+    return 1;
+  }
 
-	if (aspect == 0)
-		aspect = pCodecCtx->width / (float)pCodecCtx->height;
+  if (aspect == 0)
+    aspect = pCodecCtx->width / (float)pCodecCtx->height;
 
-	if (framerate == 0)
-		framerate = (float)pFormatCtx->streams[videoStream]->r_frame_rate.num / (float)pFormatCtx->streams[videoStream]->r_frame_rate.den;
+  if (framerate == 0)
+    framerate = (float)pFormatCtx->streams[videoStream]->r_frame_rate.num / (float)pFormatCtx->streams[videoStream]->r_frame_rate.den;
 
-	float iaspect = 1/aspect;
+  float iaspect = 1/aspect;
 
-	if (aspect > 1) {
-		olSetScissor(-1, -iaspect, 1, iaspect);
-		olScale(1, iaspect);
-	} else {
-		olSetScissor(-aspect, -1, aspect, 1);
-		olScale(aspect, 1);
-	}
+  if (aspect > 1) {
+    olSetScissor(-1, -iaspect, 1, iaspect);
+    olScale(1, iaspect);
+  } else {
+    olSetScissor(-aspect, -1, aspect, 1);
+    olScale(aspect, 1);
+  }
 
-	printf("Aspect is %f %f\n", aspect, iaspect);
-	printf("Overscan is %f\n", overscan);
+  printf("Aspect is %f %f\n", aspect, iaspect);
+  printf("Overscan is %f\n", overscan);
 
-	olScale(1+overscan, 1+overscan);
-	olTranslate(-1.0f, 1.0f);
-	olScale(2.0f/pCodecCtx->width, -2.0f/pCodecCtx->height);
+  olScale(1+overscan, 1+overscan);
+  olTranslate(-1.0f, 1.0f);
+  olScale(2.0f/pCodecCtx->width, -2.0f/pCodecCtx->height);
 
-	int maxd = pCodecCtx->width > pCodecCtx->height ? pCodecCtx->width : pCodecCtx->height;
-	params.snap = (snap_pix*2.0)/(float)maxd;
+  int maxd = pCodecCtx->width > pCodecCtx->height ? pCodecCtx->width : pCodecCtx->height;
+  params.snap = (snap_pix*2.0)/(float)maxd;
 
-	float frametime = 1.0f/framerate;
-	printf("Framerate: %f (%fs per frame)\n", framerate, frametime);
+  float frametime = 1.0f/framerate;
+  printf("Framerate: %f (%fs per frame)\n", framerate, frametime);
 
-	olSetAudioCallback(moreaudio);
-	olSetRenderParams(&params);
+  olSetAudioCallback(moreaudio);
+  olSetRenderParams(&params);
 
-	float vidtime = 0;
-	int inf=0;
-	int bg_white = -1;
-	float time = 0;
-	float ftime;
-	int frames = 0;
+  float vidtime = 0;
+  int inf=0;
+  int bg_white = -1;
+  float time = 0;
+  float ftime;
+  int frames = 0;
 
-	OLFrameInfo info;
+  OLFrameInfo info;
 
-	OLTraceCtx *trace_ctx;
+  OLTraceCtx *trace_ctx;
 
-	OLTraceResult result;
+  OLTraceResult result;
 
-	memset(&result, 0, sizeof(result));
+  memset(&result, 0, sizeof(result));
 
-	tparams.width = pCodecCtx->width,
-	tparams.height = pCodecCtx->height,
-	olTraceInit(&trace_ctx, &tparams);
+  tparams.width = pCodecCtx->width,
+    tparams.height = pCodecCtx->height,
+    olTraceInit(&trace_ctx, &tparams);
 
-	while(GetNextFrame(pFormatCtx, pCodecCtx, videoStream, &frame)) {
-          if (inf == 0)
-            printf("Frame stride: %d\n", frame->linesize[0]);
-          inf+=1;
-          if (vidtime < time) {
-            vidtime += frametime;
-            printf("Frame skip!\n");
-            continue;
+  while(GetNextFrame(pFormatCtx, pCodecCtx, videoStream, &frame)) {
+    if (inf == 0)
+      printf("Frame stride: %d\n", frame->linesize[0]);
+    inf+=1;
+    if (vidtime < time) {
+      vidtime += frametime;
+      printf("Frame skip!\n");
+      continue;
+    }
+    vidtime += frametime;
+          
+    int thresh;
+    int obj;
+    int bsum = 0;
+    int c;
+    for (c=edge_off; c<(pCodecCtx->width-edge_off); c++) {
+      bsum += frame->data[0][c+edge_off*frame->linesize[0]];
+      bsum += frame->data[0][c+(pCodecCtx->height-edge_off-1)*frame->linesize[0]];
+    }
+    for (c=edge_off; c<(pCodecCtx->height-edge_off); c++) {
+      bsum += frame->data[0][edge_off+c*frame->linesize[0]];
+      bsum += frame->data[0][(c+1)*frame->linesize[0]-1-edge_off];
+    }
+    bsum /= (2*(pCodecCtx->width+pCodecCtx->height));
+    if (bg_white == -1)
+      bg_white = bsum > 128;
+    if (bg_white && bsum < sw_dark)
+      bg_white = 0;
+    if (!bg_white && bsum > sw_light)
+      bg_white = 1;
+          
+    if (bg_white)
+      thresh = thresh_light;
+    else
+      thresh = thresh_dark;
+          
+    tparams.threshold = thresh;
+    olTraceReInit(trace_ctx, &tparams);
+    olTraceFree(&result);
+    obj = olTrace(trace_ctx, frame->data[0], frame->linesize[0], &result);
+          
+    do {
+      int i, j;
+      for (i = 0; i < result.count; i++) {
+        OLTraceObject *o = &result.objects[i];
+        olBegin(OL_POINTS);
+        olColor3(0.0,1.0,0.0);
+        OLTracePoint *p = o->points;
+        for (j = 0; j < o->count; j++) {
+          if (j % decimate == 0) {
+            olVertex(p->x / 100.0, p->y / 100.0);
+            printf("%f %f\n", (p->x*100), (p->y*100));
           }
-          vidtime += frametime;
-          
-          int thresh;
-          int obj;
-          int bsum = 0;
-          int c;
-          for (c=edge_off; c<(pCodecCtx->width-edge_off); c++) {
-            bsum += frame->data[0][c+edge_off*frame->linesize[0]];
-            bsum += frame->data[0][c+(pCodecCtx->height-edge_off-1)*frame->linesize[0]];
-          }
-          for (c=edge_off; c<(pCodecCtx->height-edge_off); c++) {
-            bsum += frame->data[0][edge_off+c*frame->linesize[0]];
-            bsum += frame->data[0][(c+1)*frame->linesize[0]-1-edge_off];
-          }
-          bsum /= (2*(pCodecCtx->width+pCodecCtx->height));
-          if (bg_white == -1)
-            bg_white = bsum > 128;
-          if (bg_white && bsum < sw_dark)
-            bg_white = 0;
-          if (!bg_white && bsum > sw_light)
-            bg_white = 1;
-          
-          if (bg_white)
-            thresh = thresh_light;
-          else
-            thresh = thresh_dark;
-          
-          tparams.threshold = thresh;
-          olTraceReInit(trace_ctx, &tparams);
-          olTraceFree(&result);
-          obj = olTrace(trace_ctx, frame->data[0], frame->linesize[0], &result);
-          
-          do {
-            int i, j;
-            for (i = 0; i < result.count; i++) {
-              OLTraceObject *o = &result.objects[i];
-              olBegin(OL_POINTS);
-              olColor3(0.0,1.0,0.0);
-              OLTracePoint *p = o->points;
-              for (j = 0; j < o->count; j++) {
-                if (j % decimate == 0) {
-                  olVertex(p->x / 100.0, p->y / 100.0);
-                  printf("%f %f\n", (p->x*100), (p->y*100));
-                }
-                p++;
-              }
-              olEnd();
-            }
+          p++;
+        }
+        olEnd();
+      }
                   
-            ftime = olRenderFrame(200);
-            olGetFrameInfo(&info);
-            frames++;
-            time += ftime;
-            printf("Frame time: %.04f, Cur FPS:%6.02f, Avg FPS:%6.02f, Drift: %7.4f, "
-                   "In %4d, Out %4d Thr %3d Bg %3d Pts %4d",
-                   ftime, 1/ftime, frames/time, time-vidtime,
-                   inf, frames, thresh, bsum, info.points);
-            if (info.resampled_points)
-              printf(" Rp %4d Bp %4d", info.resampled_points, info.resampled_blacks);
-            if (info.padding_points)
-              printf(" Pad %4d", info.padding_points);
-            printf("\n");
-          } while ((time+frametime) < vidtime);
-	}
+      ftime = olRenderFrame(200);
+      olGetFrameInfo(&info);
+      frames++;
+      time += ftime;
+      printf("Frame time: %.04f, Cur FPS:%6.02f, Avg FPS:%6.02f, Drift: %7.4f, "
+             "In %4d, Out %4d Thr %3d Bg %3d Pts %4d",
+             ftime, 1/ftime, frames/time, time-vidtime,
+             inf, frames, thresh, bsum, info.points);
+      if (info.resampled_points)
+        printf(" Rp %4d Bp %4d", info.resampled_points, info.resampled_blacks);
+      if (info.padding_points)
+        printf(" Pad %4d", info.padding_points);
+      printf("\n");
+    } while ((time+frametime) < vidtime);
+  }
 
-	olTraceDeinit(trace_ctx);
+  olTraceDeinit(trace_ctx);
 
-	for(i=0;i<FRAMES_BUF;i++)
-          olRenderFrame(200);
+  for(i=0;i<FRAMES_BUF;i++)
+    olRenderFrame(200);
 
-	olShutdown();
-	av_deinit();
-	exit (0);
+  olShutdown();
+  av_deinit();
+  exit (0);
 }

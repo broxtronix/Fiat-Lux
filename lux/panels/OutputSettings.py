@@ -67,12 +67,13 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 	self.calibrationView.setRenderHints(QtGui.QPainter.Antialiasing);
         self.affine_matrix = QtGui.QTransform()
 
+        self.currentAspect = -1
+
         self.resetPoints()
         self.resetDefaults()
         self.update()
 
     def resetDefaults(self):
-
         # Laser Power
 	self.redIntensitySlider.setValue(self.settings['output'].valueWithDefault('redIntensity', 1.0) * 100);
 	self.redOffsetSlider.setValue(self.settings['output'].valueWithDefault('redOffset', 0.0) * 100 + 50);
@@ -92,9 +93,8 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 	self.xySwap.setChecked(self.settings['output'].valueWithDefault('xySwap', False))
 	self.aspectScale.setChecked(self.settings['output'].valueWithDefault('aspectScale', False))
         self.fitSquare.setChecked(self.settings['output'].valueWithDefault('fitSquare', False))
-	self.aspectRatio.setCurrentIndex(self.settings['output'].valueWithDefault('aspectRatio',
-                                                                                  OutputSettings.ASPECT_1_1))
-
+	self.aspectRatio.setCurrentIndex(self.settings['output'].valueWithDefault('aspectRatio',0))
+        
         # Set up safe environment every time
         self.settings['output'].xEnable = True
         self.settings['output'].yEnable = True
@@ -111,12 +111,12 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         # Extract the affine matrix
         if self.settings['output'].contains('affine_matrix'):
             self.affine_matrix = self.settings['output'].affine_matrix
-            
+        else: 
+            self.affine_matrix.reset()
         self.loadPoints();
 	self.updateMatrix();
 
         # Set the state of the momentaryTestButton
-	self.currentAspect = self.aspectRatio.currentIndex();
         self.momentaryTestButton.setEnabled(not self.outputEnable.isChecked())
 
     def resetPoints(self):
@@ -278,6 +278,12 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.updateMatrix();
 
     def on_aspectRatio_currentIndexChanged(self, index):
+
+        # Ignore signals with string arguments
+        if (type(index) is not int):
+            return
+
+        # Ignore if this is just the same argument
         if (index == self.currentAspect):
             return
 
@@ -292,8 +298,8 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.resetPoints();
 
         # Save the data into our settings structure
+        self.settings['output'].aspectRatio = self.currentAspect
         self.settings['output'].affine_matrix = self.affine_matrix
-
 
     def on_resetTransform_clicked(self):
         self.resetPoints();

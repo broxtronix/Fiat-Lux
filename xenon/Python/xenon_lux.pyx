@@ -38,6 +38,12 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         OutputEngine(string) except +RuntimeError
         void start() except +RuntimeError
 
+    cdef cppclass VideoEngine:
+        VideoEngine(string, string) except +RuntimeError
+        void draw_gl() except +RuntimeError
+        void resize_gl(int, int) except +RuntimeError
+
+
 cdef class LuxSimulatorEngine:
     cdef SimulatorEngine *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, char *name):
@@ -77,3 +83,14 @@ cdef class LuxOutputEngine:
     def start(self):
         self.thisptr.start()
 
+cdef class LuxVideoEngine:
+    cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping
+    def __cinit__(self, char *app_name, char *server_name):
+        self.thisptr = new VideoEngine(string(app_name), string(server_name))
+    def __dealloc__(self):
+        del self.thisptr
+
+    def draw_gl(self):
+        self.thisptr.draw_gl()
+    def resize_gl(self, int width, int height):
+        self.thisptr.resize_gl(width, height)

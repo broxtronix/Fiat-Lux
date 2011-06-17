@@ -23,7 +23,7 @@ namespace lux {
   public:
 
     SimulatorEngine(std::string name);
-    virtual ~SimulatorEngine() { std::cout << "Cleaning up!\n"; } 
+    virtual ~SimulatorEngine() {} 
 
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);
