@@ -103,10 +103,11 @@ class SettingsPanelManager:
 #                               MAIN WINDOW CLASS
 # ----------------------------------------------------------------------------------
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, lux_engine, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.settings = LuxSettings()
-
+        self.lux_engine = lux_engine
+        
         # set our title
         self.setWindowIcon(QtGui.QIcon())
         self.setWindowTitle('Fiat Lux')
@@ -224,11 +225,11 @@ class MainWindow(QtGui.QMainWindow):
                                                message = "",
                                                widget = OutputSettings.OutputSettings(self)
                                                ))
-
-#        self.settingsManager.add(SettingsPanel(name = "Plugins",
-#                                               message = "",
-#                                               widget = PluginSettings.PluginSettings(self)
-#                                               ))
+        self.settingsManager.add(SettingsPanel(name = "Plugins",
+                                               message = "",
+                                               widget = PluginSettings.PluginSettings(self,
+                                                                                      self.lux_engine)
+                                               ))
 
         # set up the menu bar
         self.menuBar_ = QtGui.QMenuBar(self)

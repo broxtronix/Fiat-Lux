@@ -36,6 +36,7 @@ namespace lux {
     void connect_ports(std::string const& src_port, std::string const& dst_port);
 
     virtual void start() const;
+    virtual void stop();
 
     // ------------------------- Static Callbacks -------------------
 

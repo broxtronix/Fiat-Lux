@@ -26,7 +26,7 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
     ASPECT_4_3 = 1
     ASPECT_16_9 = 2
 
-    def __init__(self, displayWindow, parent=None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
         

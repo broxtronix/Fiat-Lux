@@ -4,9 +4,10 @@ import random
 
 import pylase as ol
 from parameters import lux, Parameter
+
 import plugins
 from plugins.lux_plugin import LuxPlugin
-
+    
 class LuxEngine(QtCore.QThread):
 
     def __init__(self, audio_engine, parent = None):
@@ -18,11 +19,9 @@ class LuxEngine(QtCore.QThread):
 
         self.audio_engine = audio_engine
 
-        print "\t-->Loaded these plugins:"
-        print self.list_plugins()
+        self.current_plugin_key = None
         self.current_plugin = None
         self.random_plugin()
-        print self.current_plugin
 
     def __del__(self):
         self.exiting = True
@@ -63,17 +62,6 @@ class LuxEngine(QtCore.QThread):
         self.exiting = True
         self.wait()
 
-    def next_plugin(self):
-         self.lock.lock()
-
-         self.lock.unlock()
-
-    # Choose a random plugin from the list of those that have been loaded.
-    def prev_plugin(self):
-         self.lock.lock()
-         
-         self.lock.unlock()
-
     # Choose a random plugin from the list of those that have been loaded.
     def random_plugin(self):
          self.lock.lock()
@@ -85,6 +73,14 @@ class LuxEngine(QtCore.QThread):
              self.current_plugin = LuxPlugin.plugins[self.current_plugin_key]()
          self.lock.unlock()
 
+    def select_plugin(self, key):
+        self.current_plugin_key = key
+        self.current_plugin = LuxPlugin.plugins[self.current_plugin_key]()
+
     def list_plugins(self):
+        self.lock.lock()
         keys = LuxPlugin.plugins.keys()
-        return [(lambda k: LuxPlugin.plugins[k].name)(key) for key in keys]
+        full_names = [(lambda k: LuxPlugin.plugins[k].name)(key) for key in keys]
+        descriptions = [(lambda k: LuxPlugin.plugins[k].description)(key) for key in keys]
+        self.lock.unlock()
+        return (keys, full_names, descriptions)

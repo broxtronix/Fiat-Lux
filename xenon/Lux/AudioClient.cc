@@ -24,7 +24,7 @@ lux::AudioClient::AudioClient(std::string name) : m_sample_rate(0), m_buffer_siz
 }
 
 lux::AudioClient::~AudioClient() {
-  jack_client_close (m_client);
+  this->stop();
 }
 
 void lux::AudioClient::add_input_port(std::string const& name) {
@@ -46,4 +46,11 @@ void lux::AudioClient::start() const {
   if (jack_activate (m_client)) {
     xenon_throw( LogicErr() << "Cannot activate AudioClient" );
   }
+}
+
+void lux::AudioClient::stop() {
+  if (m_client) {
+    jack_client_close (m_client);
+  }
+  m_client = NULL;
 }

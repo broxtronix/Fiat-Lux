@@ -18,5 +18,9 @@ uic_builder_py = Builder( action = action_cmd,
 lux_env.Append( BUILDERS = { 'PyQtUic': uic_builder_py } )
 
 # Sources
-sources = Split("""panels/OutputPanel.ui""")
+sources = Split("""panels/OutputPanel.ui
+                   panels/PluginPanel.ui""")
 lux_env.PyQtUic(sources)
+
+
+

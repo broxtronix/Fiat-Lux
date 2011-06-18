@@ -4,6 +4,10 @@ Main application for Fiat Lux
 import sys
 import os, time
 import os.path
+import traceback
+
+# Set this to 1 to enable console exceptions.
+DEV_MODE = 0
 
 # It's important that we import the settings before anything else Qt
 # related, because the settings sets the SIP API to version 2.
@@ -44,26 +48,38 @@ splash_path = os.path.join(settings['app'].resource_path, 'splash.png')
 splash = QtGui.QSplashScreen(QtGui.QPixmap(splash_path))
 splash.show()
 
-# Start up the LUX audio engine.  This starts a thread that processes audio features.
-import xenon_lux
-audio_engine = xenon_lux.LuxAudioEngine("lux_audio_engine")
+# Start the main lux engine.  There is a very good chance that there
+# will sometimes be buggy code coming in via the plugins here, so we
+# must be proactive about catching errors.
+try:
+    # Initialize the audio engine
+    from audio import audio_engine
+    
+    # Start up the LUX main engine.  This starts a thread that runs lux plugins.
+    import lux_engine
+    lux_engine = lux_engine.LuxEngine(audio_engine)
+    lux_engine.start()
 
-# Start up the LUX main engine.  This starts a thread that runs lux plugins.
-import lux_engine
-lux_engine = lux_engine.LuxEngine(audio_engine)
-lux_engine.start()
+    # Start up the rest of the GUI
+    import mainwindow
+    mainWindow = mainwindow.MainWindow(lux_engine)
+    mainWindow.show()
 
-# Start up the rest of the GUI
-import mainwindow
-mainWindow = mainwindow.MainWindow()
-mainWindow.show()
+    splash.finish(mainWindow)
 
-#time.sleep(1)
-splash.finish(mainWindow)
+    # run the application
+    result=app.exec_()
+    lux_engine.exit()
 
-# run the application
-result=app.exec_()
+except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    error_string = '-'*60 + '\n'
+    error_string += "An exception occurred:\n\n"
+    error_string += traceback.format_exc()
+    error_string +=  '-'*60
+    if (DEV_MODE):
+        print error_string
+    else:
+        QtGui.QMessageBox.critical(None, 'Plugin Error',  error_string)
 
-# exit
-lux_engine.exit()
-sys.exit(result)
+
