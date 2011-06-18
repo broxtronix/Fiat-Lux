@@ -9,7 +9,7 @@ python_lib_folder = 'lib/python%d.%d' % (sys.version_info[0:2])
 PLIST = {'PyResourcePackages':
          [python_lib_folder,
           os.path.join(python_lib_folder, 'lib-dynload'),
-          os.path.join(python_lib_folder, 'site-packages.zip'),
+          os.path.join(python_lib_folder, 'site-packages'),
           ],
          'CFBundleName':"Fiat Lux",
          'CFBundleDisplayName':"Fiat Lux",

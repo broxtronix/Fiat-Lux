@@ -94,7 +94,7 @@ cdef class LuxAudioEngine:
 
     def right_buffer(self, clear = True):
         cdef int size
-        cdef float* arrsource = self.thisptr.get_left_buffer(size, clear)
+        cdef float* arrsource = self.thisptr.get_right_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
         return newarr.copy()

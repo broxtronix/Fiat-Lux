@@ -28,63 +28,34 @@ class Scope(LuxPlugin):
         ol.loadIdentity3()
         ol.loadIdentity()
 
-        left = audio_engine.right_buffer()
-        right = audio_engine.left_buffer()
-
+        # Grab the raw audio buffers
+        left = audio_engine.left_buffer()
+        right = audio_engine.right_buffer()
         mono = audio_engine.mono_buffer()
-        avg_power = mono.mean()
-        print mono.max()
-        
-        ol.color3(1.0 * avg_power, 0.0, 1.0 * avg_power);
-        font = ol.getDefaultFont()
-        s = "Lux!"
-        w = ol.getStringWidth(font, 0.2, s)
-        ol.drawString(font, (-w/2,0.1), 0.2, s)
 
-        for i in range(2):
-            ol.loadIdentity3()
-            ol.perspective(60, 1, 1, 100)
-            ol.translate3((0, 0, -5))
+        # Make sure they aren't empty!!
+        if (mono.shape[0] == 0 or left.shape[0] == 0 or right.shape[0] == 0):
+            return
 
-            if (i == 1):
-                ol.color3(1.0,1.0,0.0);
-                ol.translate3((cos(lux.time/2.0)/2.0, cos(lux.time/3.0)/2.0, cos(lux.time/7.0)/2.0))
-                ol.rotate3Z(lux.time * pi * 0.1 * lux.simple_rate)
-                ol.rotate3X(lux.time * pi * 0.8 * lux.simple_rate)
-                ol.rotate3Y(lux.time * pi * 0.73 * lux.simple_rate)
-            else:
-                ol.color3(0.0,1.0,1.0);
-                ol.scale3((0.6, 0.6, 0.6))
-                ol.translate3((cos(lux.time/3.2)/2.0, cos(lux.time/2.6)/2.0, cos(lux.time/5.4)/2.0))
-                ol.rotate3Z(lux.time * pi * 0.14 * lux.simple_rate)
-                ol.rotate3X(lux.time * pi * 0.53 * lux.simple_rate)
-                ol.rotate3Y(lux.time * pi * 0.22 * lux.simple_rate)
-                    
-            
-            ol.begin(ol.LINESTRIP)
-            ol.vertex3((-1, -1, -1))
-            ol.vertex3(( 1, -1, -1))
-            ol.vertex3(( 1,  1, -1))
-            ol.vertex3((-1,  1, -1))
-            ol.vertex3((-1, -1, -1))
-            ol.vertex3((-1, -1,  1))
-            ol.end()
+        # Openlase can only draw 30000 points in one cycle (less that
+        # that, actually!).  Clear the audio buffer and try again!
+        if left.shape[0] > 10000:
+            audio_engine.clear_all()
+            return
 
-            ol.begin(ol.LINESTRIP);
-            ol.vertex3(( 1,  1,  1))
-            ol.vertex3((-1,  1,  1))
-            ol.vertex3((-1, -1,  1))
-            ol.vertex3(( 1, -1,  1))
-            ol.vertex3(( 1,  1,  1))
-            ol.vertex3(( 1,  1, -1))
-            ol.end()
+        if left.shape[0] != right.shape[0]:
+            audio_engine.clear_all()
+            return
 
-            ol.begin(ol.LINESTRIP)
-            ol.vertex3(( 1, -1, -1))
-            ol.vertex3(( 1, -1,  1))
-            ol.end()
+        ol.loadIdentity3()
+        ol.perspective(60, 1, 1, 100)
+        ol.translate3((0, 0, -5))
 
-            ol.begin(ol.LINESTRIP)
-            ol.vertex3((-1,  1,  1))
-            ol.vertex3((-1,  1, -1))
-            ol.end()
+        ol.color3(1.0,0.0,1.0);
+
+        ol.begin(ol.LINESTRIP)
+        for i in range(left.shape[0]):
+            pass
+#            if (i % 10 == 0):
+ #               ol.vertex3((left[i]*100, right[i]*100, -1))
+        ol.end()
