@@ -28,9 +28,14 @@ class Scope(LuxPlugin):
         ol.loadIdentity3()
         ol.loadIdentity()
 
+        left = audio_engine.right_buffer()
+        right = audio_engine.left_buffer()
+
         mono = audio_engine.mono_buffer()
+        avg_power = mono.mean()
+        print mono.max()
         
-        ol.color3(1.0, 0.0, 1.0);
+        ol.color3(1.0 * avg_power, 0.0, 1.0 * avg_power);
         font = ol.getDefaultFont()
         s = "Lux!"
         w = ol.getStringWidth(font, 0.2, s)
