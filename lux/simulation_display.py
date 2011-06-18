@@ -44,15 +44,10 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.width = 512
         self.height = 512
 
-        # set dirty state
-        self.dirty = False
-
-        # start up an update timer
-        self.timerId = self.startTimer(30)
+        # start up an update timer with an interval of 1ms.  This will
+        # effectively draw frames as fast as the screen is updated.
+        self.timerId = self.startTimer(1)
         
-        # whether GL is initialized
-        self.initialized = False
-
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
         self.makeCurrent()
@@ -69,23 +64,8 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         '''
         Call the OpenGL update function if necessary
         '''
-        self.lock.lock()
-        dirty = self.dirty
-        self.dirty = False
-        self.lock.unlock()
-        if dirty:
-            self.updateGL()
+        self.updateGL()
 
-    def setTimerInterval(self, rate):
-        '''
-        A slot to set a new timer interval corresponding to rate Hz
-        '''
-        newInterval = int(1000.0/rate+0.5)
-        self.lock.lock()
-        self.timerInterval = newInterval
-        self.killTimer(self.timerId)
-        self.timerId = self.startTimer()
-        self.lock.unlock()
 
     def initializeGL(self):
         """Initialize the GL environment we want"""
@@ -115,6 +95,4 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
 
         # Call out to the C++ code to do actual, efficient drawing
         self.simulator_engine.draw_gl()
-        self.dirty = True
-        # self.swapBuffers();
 

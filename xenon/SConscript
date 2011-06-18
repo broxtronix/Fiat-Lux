@@ -106,6 +106,7 @@ python_env = xenon_env.Clone()
 python_env.Append(CPPPATH = [".."])
 if sys.platform == "darwin":
     python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
+    python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/Extras/lib/python/numpy/core/include/")
     python_env.Append(LINKFLAGS = " -framework Python")
 elif sys.platform == "linux2":
     python_env.Append(CXXFLAGS = " -I/usr/include/python2.6/")

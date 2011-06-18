@@ -13,6 +13,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+import numpy as np
+cimport numpy as np
+np.import_array()
+
 from libc.stdint cimport *
 
 cdef extern from "<string>" namespace "std":
@@ -20,7 +24,7 @@ cdef extern from "<string>" namespace "std":
         string()
         string(char *)
         char * c_str()
-     
+
 cdef extern from "xenon/Lux.h" namespace "lux":
     cdef cppclass SimulatorEngine:
         SimulatorEngine(string) except +RuntimeError
@@ -33,6 +37,14 @@ cdef extern from "xenon/Lux.h" namespace "lux":
 
     cdef cppclass AudioEngine:
         AudioEngine(string) except +RuntimeError
+        float* get_left_buffer(int&, bool) except +RuntimeError
+        float* get_right_buffer(int&, bool) except +RuntimeError
+        float* get_avg_buffer(int&, bool) except +RuntimeError
+        int* get_onset_buffer(int&, bool) except +RuntimeError
+        float* get_pitch_buffer(int&, bool) except +RuntimeError
+        int* get_tempo_tactus_buffer(int&, bool) except +RuntimeError
+        int* get_tempo_onset_buffer(int&, bool) except +RuntimeError
+        void clear_all() except +RuntimeError
 
     cdef cppclass OutputEngine:
         OutputEngine(string) except +RuntimeError
@@ -72,6 +84,59 @@ cdef class LuxAudioEngine:
         self.thisptr = new AudioEngine(string(name))
     def __dealloc__(self):
         del self.thisptr
+
+    def left_buffer(self, clear = True):
+        cdef int size
+        cdef float* arrsource = self.thisptr.get_left_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
+        return newarr.copy()
+
+    def right_buffer(self, clear = True):
+        cdef int size
+        cdef float* arrsource = self.thisptr.get_left_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
+        return newarr.copy()
+
+    def mono_buffer(self, clear = True):
+        cdef int size
+        cdef float* arrsource = self.thisptr.get_avg_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
+        return newarr.copy()
+
+        
+    def onset_buffer(self, clear = True):
+        cdef int size
+        cdef int* arrsource = self.thisptr.get_onset_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
+        return newarr.copy()
+
+    def pitch_buffer(self, clear = True):
+        cdef int size
+        cdef float* arrsource = self.thisptr.get_pitch_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
+        return newarr.copy()
+
+    def tempo_tactus_buffer(self, clear = True):
+        cdef int size
+        cdef int* arrsource = self.thisptr.get_tempo_tactus_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
+        return newarr.copy()
+
+    def tempo_onset_buffer(self, clear = True):
+        cdef int size
+        cdef int* arrsource = self.thisptr.get_tempo_onset_buffer(size, clear)
+        cdef np.npy_intp intp_size = size
+        cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
+        return newarr.copy()
+
+    def clear_all(self):
+        self.thisptr.clear_all()
 
 cdef class LuxOutputEngine:
     cdef OutputEngine *thisptr      # hold a C++ instance which we're wrapping

@@ -9,12 +9,14 @@ from plugins.lux_plugin import LuxPlugin
 
 class LuxEngine(QtCore.QThread):
 
-    def __init__(self, parent = None):
+    def __init__(self, audio_engine, parent = None):
         QtCore.QThread.__init__(self, parent)
 
         # create a mutex and semaphore for managing this thread.
         self.lock = QtCore.QMutex()
         self.exiting = False
+
+        self.audio_engine = audio_engine
 
         print "\t-->Loaded these plugins:"
         print self.list_plugins()
