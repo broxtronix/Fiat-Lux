@@ -50,12 +50,10 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         OutputEngine(string) except +RuntimeError
         void start() except +RuntimeError
 
-    # MacOS X supports video capture using syphon.  Other platforms don't (yet!)
-    if sys.platform == "darwin":
-        cdef cppclass VideoEngine:
-            VideoEngine(string, string) except +RuntimeError
-            void draw_gl() except +RuntimeError
-            void resize_gl(int, int) except +RuntimeError
+    cdef cppclass VideoEngine:
+        VideoEngine(string, string) except +RuntimeError
+        void draw_gl() except +RuntimeError
+        void resize_gl(int, int) except +RuntimeError
 
 
 cdef class LuxSimulatorEngine:
@@ -151,16 +149,14 @@ cdef class LuxOutputEngine:
         self.thisptr.start()
 
 
-# MacOS X supports video capture using syphon.  Other platforms don't (yet!)
-if sys.platform == "darwin":
-    cdef class LuxVideoEngine:
-        cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping
-        def __cinit__(self, char *app_name, char *server_name):
-            self.thisptr = new VideoEngine(string(app_name), string(server_name))
-        def __dealloc__(self):
-            del self.thisptr
+cdef class LuxVideoEngine:
+    cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping
+    def __cinit__(self, char *app_name, char *server_name):
+        self.thisptr = new VideoEngine(string(app_name), string(server_name))
+    def __dealloc__(self):
+        del self.thisptr
 
-        def draw_gl(self):
-            self.thisptr.draw_gl()
-        def resize_gl(self, int width, int height):
-            self.thisptr.resize_gl(width, height)
+    def draw_gl(self):
+        self.thisptr.draw_gl()
+    def resize_gl(self, int width, int height):
+        self.thisptr.resize_gl(width, height)

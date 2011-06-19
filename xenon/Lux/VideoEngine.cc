@@ -34,16 +34,20 @@ void makeCheckImage(void)
 }
 
 lux::VideoEngine::VideoEngine(std::string application_name, std::string server_name) {
+#ifdef __APPLE__
   m_syphon_client.setup();
   m_syphon_client.setApplicationName(application_name);
   m_syphon_client.setServerName(server_name);
+#endif
 }
 
 void lux::VideoEngine::draw_gl() {
 
   glClearColor(0.0,0.0,0.1,1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#ifdef __APPLE__
   m_syphon_client.draw(-0.5,-0.5,1.0,1.0);
+#endif
 }
 
 void lux::VideoEngine::resize_gl(int width, int height) {
