@@ -9,7 +9,7 @@ lux_env = env.Clone()
 
 # UIC Builder for compiling PyQt *.ui files.  Not sure why we
 # explicitly need to pass in the PYTHONPATH here, but we do!
-action_cmd = 'export PYTHONPATH=\'%s\' && pyuic4 $SOURCE -o $TARGET' % lux_env['PYTHONPATH']
+action_cmd = 'export PYTHONPATH=\'%s\' && export PATH=\'%s\' && pyuic4 $SOURCE -o $TARGET' % (lux_env['PYTHONPATH'], lux_env['PATH'])
 uic_builder_py = Builder( action = action_cmd,
                           suffix = '.py',
                           src_suffix = '.ui',
