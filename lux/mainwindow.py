@@ -4,7 +4,7 @@ Main window for Fiat Lux
 
 from PyQt4 import QtCore, QtGui
 from settings import LuxSettings
-
+import sys
 import os.path
 from simulation_display import SimulationDisplay
 
