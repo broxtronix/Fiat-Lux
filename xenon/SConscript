@@ -93,8 +93,9 @@ lux_sources = Split("""Lux/AudioClient.cc
                        Lux/OutputEngine.cc
                        Lux/SimulatorEngine.cc
                        Lux/AudioEngine.cc
-                       Lux/VideoEngine.cc
                        """)
+if sys.platform == "darwin":
+    lux_sources.append("Lux/VideoEngine.cc")
 lux_lib_sources = lux_sources
 lux_lib_target  = "xenon_lux"
 lux_lib = BuildSupport.Library(lux_env, target = lux_lib_target, source = lux_lib_sources)
