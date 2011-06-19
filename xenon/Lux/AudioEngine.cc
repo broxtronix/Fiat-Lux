@@ -53,7 +53,7 @@ lux::AudioEngine::AudioEngine(std::string const& jack_endpoint_name) :
   m_mfft = new_aubio_mfft(m_overlap_size, m_channels);
 
   // Tempo
-  m_tempo = new_aubio_tempo(type_onset_complex, m_overlap_size, m_overlap_size / 4, m_channels);
+  //  m_tempo = new_aubio_tempo(type_onset_complex, m_overlap_size, m_overlap_size / 4, m_channels);
 
   // Now that everything is set up, it's safe to start the jack callbacks.
   m_initialized = 1;
@@ -70,7 +70,7 @@ lux::AudioEngine::~AudioEngine() {
   del_aubio_pitchdetection(m_pitch_detection);
   del_aubio_pvoc(m_phase_vocoder);
   del_aubio_mfft(m_mfft);
-  del_aubio_tempo(m_tempo);
+  //  del_aubio_tempo(m_tempo);
   del_fvec(m_tempobuf);
   del_fvec(m_ibuf);
   del_cvec(m_fftgrain);
@@ -133,14 +133,14 @@ int lux::AudioEngine::process_callback(nframes_t nframes) {
   aubio_mfft_do (m_mfft, m_ibuf, m_fftgrain);
    
   // TEMPO (ALSO SEEMS USEFUL FOR ONSET DETECTION)
-  aubio_tempo (m_tempo, m_ibuf, m_tempobuf);
-  int tempo_tactus = m_tempobuf->data[0][0]; /* ** */
-  int tempo_onset = m_tempobuf->data[0][1];  /* ** */
-  {
-    xenon::Mutex::Lock lock(m_mutex);
-    m_tempo_tactus_buffer.push_back(tempo_tactus);
-    m_tempo_onset_buffer.push_back(tempo_onset);
-  }
+  // aubio_tempo (m_tempo, m_ibuf, m_tempobuf);
+  // int tempo_tactus = m_tempobuf->data[0][0]; /* ** */
+  // int tempo_onset = m_tempobuf->data[0][1];  /* ** */
+  // {
+  //   xenon::Mutex::Lock lock(m_mutex);
+  //   m_tempo_tactus_buffer.push_back(tempo_tactus);
+  //   m_tempo_onset_buffer.push_back(tempo_onset);
+  // }
 
   return 0;
 }
