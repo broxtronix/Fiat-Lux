@@ -3,7 +3,7 @@ compiling on ubuntu
 you will need at least the following packages to compile fiat lux:
 scons libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-filesystem-dev \
 libjack-dev libjack-jackd2-dev python-qt4 python-qt4-gl python-cython libglu1-mesa-dev \
-jackd cmake libncurses5 yasm \
+jackd cmake libncurses5 yasm pyqt4-dev-tools \
 libavcodec-dev libavformat-dev ffmpeg
 libglu1-mesa-dev libxmu-dev libxi-dev libqt4-dev libavformat-dev
 
