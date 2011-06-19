@@ -28,7 +28,7 @@ if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'c++'):
     print 'ERROR: Could not locate jack library'
     sys.exit(1)
 if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
-    print 'ERROR: Could not locate jack library'
+    print 'ERROR: Could not locate aubio library'
     sys.exit(1)
 if not conf.CheckCXXHeader('Eigen/Dense'):
     print 'ERROR: Could not locate eigen library'
