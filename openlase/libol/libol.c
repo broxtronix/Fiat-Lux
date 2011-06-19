@@ -297,18 +297,18 @@ int olInit(int buffer_count, int max_points)
   //   olLog ("cannot connect to simulator:in_y");
   //   return(-1);
   // }
-//  if (jack_connect(client, "engine:out_r","simulator:in_r")) {
-//    olLog ("cannot connect to simulator:in_r");
-//    return(-1);
-//  }
+  //  if (jack_connect(client, "engine:out_r","simulator:in_r")) {
+  //    olLog ("cannot connect to simulator:in_r");
+  //    return(-1);
+  //  }
   // if (jack_connect(client, "engine:out_g","simulator:in_g")) {
   //   olLog ("cannot connect to simulator:in_g");
   //   return(-1);
   // }
-//  if (jack_connect(client, "engine:out_b","simulator:in_b")) {
-//    olLog ("cannot connect to simulator:in_b");
-//    return(-1);
-//  }
+  //  if (jack_connect(client, "engine:out_b","simulator:in_b")) {
+  //    olLog ("cannot connect to simulator:in_b");
+  //    return(-1);
+  //  }
 
   olLoadIdentity();
   for(i=0; i<MTX_STACK_DEPTH; i++)
