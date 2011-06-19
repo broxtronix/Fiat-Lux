@@ -18,12 +18,11 @@ class BouncyBall(LuxPlugin):
 
     # Working vars
     interval = .100
-    nextRecord = 0
+    nextSnapshot = 0
     samples = 512
-    skip = 10
+    skip = 1
     renderPointCount = ceil(samples/skip)
-    minDiameter = .5
-    maxDiameter = 1.0
+    restRadius = .6
     currentWave = zeros(shape=(renderPointCount))
     nextWave = zeros(shape=(renderPointCount))
 
@@ -63,20 +62,22 @@ class BouncyBall(LuxPlugin):
         ol.perspective(60, 1, 1, 100)
         ol.translate3((0, 0, -3))
         
-        if (lux.time > self.nextRecord):
-            print "snapshot"
-            self.nextRecord = lux.time + self.interval
+        if (lux.time > self.nextSnapshot):
+            #print "snapshot"
+            self.nextSnapshot = lux.time + self.interval
             self.currentWave = self.nextWave
+            self.nextWave = zeros(shape=(self.renderPointCount))
             # load in new values
             for i in range(self.renderPointCount-1):
-                self.nextWave[i] = left[i*self.skip]
+                self.nextWave[i] = (left[i*self.skip] + right[i*self.skip]) / 2
                     
         # draw shape
-        fracIntervalComplete = (lux.time - (self.nextRecord - self.interval)) / self.interval
-        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextRecord)
+        fracIntervalComplete = (lux.time - (self.nextSnapshot - self.interval)) / self.interval
+#        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextSnapshot)
         coordsToRender = zeros(shape=(self.renderPointCount,2))
         for i in range(self.renderPointCount-1):
             val = ((self.nextWave[i] - self.currentWave[i]) * fracIntervalComplete) + self.currentWave[i]
+            #print "next: %f  curr:  %f   frac: %f" % (self.nextWave[i], self.currentWave[i], fracIntervalComplete)
             (x,y) = self.doTheTrigStuff(val, (float(i)/float(self.renderPointCount)))
             coordsToRender[i][0] = x;
             coordsToRender[i][1] = y
@@ -86,13 +87,20 @@ class BouncyBall(LuxPlugin):
         ol.begin(ol.LINESTRIP)
         for i in range(self.renderPointCount):
 #            print '%f: %f,%f' % (i,coordsToRender[i][0], coordsToRender[i][1])
-#            ol.vertex((1,1))
             ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
         ol.end()
         
     def doTheTrigStuff(self, val, fracCircleComplete=1):
-        hLen = (val * (self.maxDiameter - self.minDiameter)) + self.minDiameter
+        multipler = 1.0
+        if (val > 0):
+            # we are expanding
+            multiplier = self.restRadius * 1.5
+        else:
+            # we are contracting
+            multiplier = self.restRadius - .5
+        
+        hLen = (val * multipler) + self.restRadius
         x = cos(2 * pi * fracCircleComplete) * hLen
         y = sin(2 * pi * fracCircleComplete) * hLen
-#        print "%f, %f, %f: %f,%f" % (val, fracComplete, hLen, x, y)
+        #print "%f, %f, %f, %d: %f,%f" % (val, fracCircleComplete, hLen, multipler, x, y)
         return (x,y)
