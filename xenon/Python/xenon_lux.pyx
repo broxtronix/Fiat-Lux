@@ -148,6 +148,7 @@ cdef class LuxOutputEngine:
     def start(self):
         self.thisptr.start()
 
+
 cdef class LuxVideoEngine:
     cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, char *app_name, char *server_name):

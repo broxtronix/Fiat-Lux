@@ -40,7 +40,6 @@ env.Append(CXXFLAGS = ' -I. -I/usr/X11/include -O3')
 env.Append(LINKFLAGS = ' -L/usr/X11/lib -O3')
 
 # IMPORT ENVIRONMENT VARIABLES
-
 if os.environ.has_key('HOME'):
     env['HOME'] = os.environ['HOME']
     print("\t--> Setting HOME : " + os.environ['HOME'])

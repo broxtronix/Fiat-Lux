@@ -4,13 +4,18 @@ Main window for Fiat Lux
 
 from PyQt4 import QtCore, QtGui
 from settings import LuxSettings
-
+import sys
 import os.path
 from simulation_display import SimulationDisplay
-from video_display import VideoDisplay
+
+    
 from panels import OutputSettings
 from panels import PluginSettings
 #from console import IPythonConsole
+
+# MacOS X supports video capture using syphon.  Other platforms don't (yet!)
+if sys.platform == "darwin":
+    from video_display import VideoDisplay
 
 # ----------------------------------------------------------------------------------
 #                           SETTINGS PANEL MANAGEMENT
@@ -116,8 +121,10 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTabWidget = QtGui.QTabWidget(self)
         self.simWidget = SimulationDisplay(self)
         self.displayTabWidget.addTab(self.simWidget, "Laser Output")
-        self.videoWidget = VideoDisplay(self)
-        self.displayTabWidget.addTab(self.videoWidget, "Video Input")
+        # MacOS X supports video capture using syphon.  Other platforms don't (yet!)
+        if sys.platform == "darwin":
+            self.videoWidget = VideoDisplay(self)
+            self.displayTabWidget.addTab(self.videoWidget, "Video Input")
         self.setCentralWidget(self.displayTabWidget)
 
         self.displayTabWidget.setCurrentIndex(self.settings['main_window'].valueWithDefault('display_tab', 0))

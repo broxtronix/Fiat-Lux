@@ -2,15 +2,21 @@
 #define __LUX_VIDEO_ENGINE_H__
 
 #include <xenon/Lux/AudioClient.h>
-#include <xenon/Graphics/SyphonClient.h>
 #include <string>
 #include <iostream>
+
+#ifdef __APPLE__
+#include <xenon/Graphics/SyphonClient.h>
+#endif 
 
 namespace lux {
 
   class VideoEngine {
+
     
+#ifdef __APPLE__
     xenon::graphics::XenonSyphonClient m_syphon_client;
+#endif 
 
   public:
 
