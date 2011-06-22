@@ -627,7 +627,7 @@ void olEnd(void)
 static void chkpts(int count)
 {
   if (frames[cwbuf].pnext + count > frames[cwbuf].pmax) {
-    olLog("Point buffer overflow (final): need %d points, have %d\n",
+    olLog("WARNING: Point buffer overflow (final): need %d points, have %d\n",
           count + frames[cwbuf].pnext, frames[cwbuf].pmax);
     exit(1);
   }

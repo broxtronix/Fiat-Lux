@@ -4,6 +4,7 @@
 import simple
 import scope
 import two_cubes
+import bouncyball
 
 # -----------------------------------------
 
