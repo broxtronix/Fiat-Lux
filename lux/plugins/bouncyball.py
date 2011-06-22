@@ -17,7 +17,7 @@ class BouncyBall(LuxPlugin):
     """
 
     # Working vars
-    interval = .100
+    interval = .120
     nextSnapshot = 0
     samples = 512
     skip = 1
@@ -75,10 +75,12 @@ class BouncyBall(LuxPlugin):
         fracIntervalComplete = (lux.time - (self.nextSnapshot - self.interval)) / self.interval
 #        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextSnapshot)
         coordsToRender = zeros(shape=(self.renderPointCount,2))
+        firstVal = None
         for i in range(self.renderPointCount-1):
             val = ((self.nextWave[i] - self.currentWave[i]) * fracIntervalComplete) + self.currentWave[i]
+            if (firstVal is None): firstVal = val
             #print "next: %f  curr:  %f   frac: %f" % (self.nextWave[i], self.currentWave[i], fracIntervalComplete)
-            (x,y) = self.doTheTrigStuff(val, (float(i)/float(self.renderPointCount)))
+            (x,y) = self.doTheTrigStuff(val, (float(i)/float(self.renderPointCount)), firstVal)
             coordsToRender[i][0] = x;
             coordsToRender[i][1] = y
         coordsToRender[self.renderPointCount-1] = coordsToRender[0]
@@ -90,7 +92,7 @@ class BouncyBall(LuxPlugin):
             ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
         ol.end()
         
-    def doTheTrigStuff(self, val, fracCircleComplete=1):
+    def doTheTrigStuff(self, val, fracCircleComplete=1.0, smudgeVal=None):
         multipler = 1.0
         if (val > 0):
             # we are expanding
@@ -99,7 +101,15 @@ class BouncyBall(LuxPlugin):
             # we are contracting
             multiplier = self.restRadius - .5
         
+        # bias
+        smudge = .2 # modify this to change how much room the smudge has
+        if ((fracCircleComplete > (1.0 - smudge)) and (smudgeVal is not None)):
+            fracSmudge = (fracCircleComplete - (1.0 - smudge)) / smudge
+            oldval = val
+            val = val + ((smudgeVal - val) * fracSmudge)
+        
         hLen = (val * multipler) + self.restRadius
+                
         x = cos(2 * pi * fracCircleComplete) * hLen
         y = sin(2 * pi * fracCircleComplete) * hLen
         #print "%f, %f, %f, %d: %f,%f" % (val, fracCircleComplete, hLen, multipler, x, y)
