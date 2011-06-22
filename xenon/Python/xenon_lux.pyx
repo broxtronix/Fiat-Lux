@@ -48,7 +48,11 @@ cdef extern from "xenon/Lux.h" namespace "lux":
 
     cdef cppclass OutputEngine:
         OutputEngine(string) except +RuntimeError
-        void start() except +RuntimeError
+        void connect_ports(string, string) except +RuntimeError
+        void setPreampCalibration(int) except +RuntimeError
+        void setPreampCalibrationFrequency(float) except +RuntimeError
+        void setPreampCalibrationGain(float) except +RuntimeError
+        void setPreampCalibrationOffset(float) except +RuntimeError
 
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
@@ -145,9 +149,20 @@ cdef class LuxOutputEngine:
     def __dealloc__(self):
         del self.thisptr
 
-    def start(self):
-        self.thisptr.start()
+    def connect_ports(self, char *srcportname, char *dstportname):
+        self.thisptr.connect_ports(string(srcportname), string(dstportname))
 
+    def setPreampCalibration(self, state):
+        self.thisptr.setPreampCalibration(int(state))
+
+    def setPreampCalibrationFrequency(self, frequency):
+        self.thisptr.setPreampCalibrationFrequency(frequency)
+
+    def setPreampCalibrationGain(self, gain):
+        self.thisptr.setPreampCalibrationGain(gain)
+
+    def setPreampCalibrationOffset(self, offset):
+        self.thisptr.setPreampCalibrationOffset(offset)
 
 cdef class LuxVideoEngine:
     cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping

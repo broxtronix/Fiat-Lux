@@ -21,5 +21,6 @@ lux_env.Append( BUILDERS = { 'PyQtUic': uic_builder_py } )
 
 # Sources
 sources = Split("""panels/OutputPanel.ui
-                   panels/PluginPanel.ui""")
+                   panels/PluginPanel.ui
+                   panels/CalibrationPanel.ui""")
 lux_env.PyQtUic(sources)

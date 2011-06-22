@@ -26,6 +26,12 @@ namespace lux {
 
     bool m_safety_first;
 
+    bool m_preamp_calibration;
+    float m_preamp_calibration_frequency;
+    float m_preamp_calibration_gain;
+    float m_preamp_calibration_offset;
+    float m_preamp_calibration_time;
+
     bool m_swap_xy;
     bool m_invert_x;
     bool m_invert_y;
@@ -52,7 +58,13 @@ namespace lux {
     OutputEngine(std::string const& jack_endpoint_name);
     virtual ~OutputEngine();
 
-    
+    // Turn on pre-amp calibration mode
+    void setPreampCalibration(int state) { m_preamp_calibration = state; }
+
+    void setPreampCalibrationFrequency(float frequency) { m_preamp_calibration_frequency = frequency; }
+
+    void setPreampCalibrationGain(float gain) { m_preamp_calibration_gain = gain; }
+    void setPreampCalibrationOffset(float offset) { m_preamp_calibration_offset = offset; }
 
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);

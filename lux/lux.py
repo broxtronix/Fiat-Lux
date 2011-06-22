@@ -54,15 +54,24 @@ splash.show()
 try:
     # Initialize the audio engine
     from audio import audio_engine
-    
+
     # Start up the LUX main engine.  This starts a thread that runs lux plugins.
     import lux_engine
     lux_engine = lux_engine.LuxEngine(audio_engine)
     lux_engine.start()
 
+    # Create the output engine
+    import xenon_lux
+    output_engine = xenon_lux.LuxOutputEngine("lux_output")
+    output_engine.connect_ports("lux_engine:out_x", "lux_output:in_x")
+    output_engine.connect_ports("lux_engine:out_y", "lux_output:in_y")
+    output_engine.connect_ports("lux_engine:out_r", "lux_output:in_r")
+    output_engine.connect_ports("lux_engine:out_g", "lux_output:in_g")
+    output_engine.connect_ports("lux_engine:out_b", "lux_output:in_b")
+
     # Start up the rest of the GUI
     import mainwindow
-    mainWindow = mainwindow.MainWindow(lux_engine)
+    mainWindow = mainwindow.MainWindow(lux_engine, output_engine)
     mainWindow.show()
 
     splash.finish(mainWindow)

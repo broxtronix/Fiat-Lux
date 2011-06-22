@@ -54,8 +54,8 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.simulator_engine = LuxSimulatorEngine("lux_simulator");
         self.simulator_engine.start()
 
-        self.simulator_engine.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
         self.simulator_engine.connect_ports("lux_engine:out_x", "lux_simulator:in_x")
+        self.simulator_engine.connect_ports("lux_engine:out_y", "lux_simulator:in_y")
         self.simulator_engine.connect_ports("lux_engine:out_r", "lux_simulator:in_r")
         self.simulator_engine.connect_ports("lux_engine:out_g", "lux_simulator:in_g")
         self.simulator_engine.connect_ports("lux_engine:out_b", "lux_simulator:in_b")

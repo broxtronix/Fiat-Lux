@@ -13,6 +13,10 @@ class LuxEngine(QtCore.QThread):
     def __init__(self, audio_engine, parent = None):
         QtCore.QThread.__init__(self, parent)
 
+        # Initialize OpenLase
+        if (ol.init() != 0):
+            raise Exception("Could not initialize openlase")
+
         # create a mutex and semaphore for managing this thread.
         self.lock = QtCore.QMutex()
         self.exiting = False
@@ -27,13 +31,12 @@ class LuxEngine(QtCore.QThread):
         self.exiting = True
         self.wait()
 
+        # Shut down OpenLase
+        ol.shutdown()
+
     # Note: This is never called directly. It is called by Qt once the
     # thread environment has been set up.
     def run(self):
-
-        # Initialize OpenLase
-        if (ol.init() != 0):
-            raise Exception("Could not initialize openlase")
 
         # Run the render loop.  This will repeatedly render frames of the current plugin.
         print '\t--> Starting up LUX Engine.'
@@ -52,9 +55,6 @@ class LuxEngine(QtCore.QThread):
                 time.sleep(0.1)
             self.lock.unlock()
             
-        # Shut down OpenLase
-        ol.shutdown()
-
     # ---------------  METHODS CALLED BY OTHER THREADS ----------------
 
     def exit(self):

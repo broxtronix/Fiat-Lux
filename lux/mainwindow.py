@@ -10,6 +10,7 @@ from simulation_display import SimulationDisplay
 
     
 from panels import OutputSettings
+from panels import CalibrationSettings
 from panels import PluginSettings
 #from console import IPythonConsole
 
@@ -108,10 +109,11 @@ class SettingsPanelManager:
 #                               MAIN WINDOW CLASS
 # ----------------------------------------------------------------------------------
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, lux_engine, parent=None):
+    def __init__(self, lux_engine, output_engine, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.settings = LuxSettings()
         self.lux_engine = lux_engine
+        self.output_engine = output_engine
         
         # set our title
         self.setWindowIcon(QtGui.QIcon())
@@ -228,14 +230,20 @@ class MainWindow(QtGui.QMainWindow):
         # set up the settings panels
         self.settingsManager = SettingsPanelManager(self)
         
-        self.settingsManager.add(SettingsPanel(name = "Output",
-                                               message = "",
-                                               widget = OutputSettings.OutputSettings(self)
-                                               ))
         self.settingsManager.add(SettingsPanel(name = "Plugins",
                                                message = "",
                                                widget = PluginSettings.PluginSettings(self,
                                                                                       self.lux_engine)
+                                               ))
+        self.settingsManager.add(SettingsPanel(name = "Output",
+                                               message = "",
+                                               widget = OutputSettings.OutputSettings(self,
+                                                                                      self.output_engine)
+                                               ))
+        self.settingsManager.add(SettingsPanel(name = "Calibration",
+                                               message = "",
+                                               widget = CalibrationSettings.CalibrationSettings(self,
+                                                                                   self.output_engine)
                                                ))
 
         # set up the menu bar

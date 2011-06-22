@@ -1,4 +1,5 @@
 #include <xenon/Lux/OutputEngine.h>
+#include <xenon/Core/Time.h>
 
 lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   AudioClient(jack_endpoint_name) {
@@ -26,6 +27,10 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   m_transform_matrix.setIdentity();
 
   m_safety_first = true;
+  m_preamp_calibration = false;
+  m_preamp_calibration_gain = 1.0;
+  m_preamp_calibration_frequency = 10000;
+  m_preamp_calibration_time = 0;
 
   m_swap_xy = false;
   m_invert_x = false;
@@ -44,6 +49,25 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   m_green_intensity_offset = 0.0;
   m_blue_intensity_multiplier = 1.0;
   m_blue_intensity_offset = 0.0;
+
+  // Start the output engine
+  this->start();
+
+  std::ostringstream x_ostr,y_ostr,r_ostr,g_ostr,b_ostr,a_ostr,s_ostr;
+  x_ostr << jack_endpoint_name << ":out_x";
+  y_ostr << jack_endpoint_name << ":out_y";
+  r_ostr << jack_endpoint_name << ":out_r";
+  g_ostr << jack_endpoint_name << ":out_g";
+  b_ostr << jack_endpoint_name << ":out_b";
+  a_ostr << jack_endpoint_name << ":out_a";
+  s_ostr << jack_endpoint_name << ":out_s";
+  this->connect_ports(x_ostr.str(), "system:playback_1");
+  this->connect_ports(y_ostr.str(), "system:playback_2");
+  this->connect_ports(r_ostr.str(), "system:playback_3");
+  this->connect_ports(g_ostr.str(), "system:playback_4");
+  this->connect_ports(b_ostr.str(), "system:playback_5");
+  this->connect_ports(a_ostr.str(), "system:playback_6");
+  this->connect_ports(s_ostr.str(), "system:playback_7");
 }
 
 lux::OutputEngine::~OutputEngine() {}
@@ -131,101 +155,118 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
 
   sample_t *o_s = (sample_t *) jack_port_get_buffer (m_ports["out_s"], nframes);  // Safety
 
-
-  for (nframes_t frm = 0; frm < nframes; frm++) {
-    sample_t x,y,r,g,b,a,orig_r,orig_g,orig_b,orig_a;
-    x = *i_x++;
-    y = *i_y++;
-    r = orig_r = *i_r++;
-    g = orig_g = *i_g++;
-    b = orig_b = *i_b++;
-    a = orig_a = *i_a++;
-
-    // ---------------------
-    // Adjustments to X & Y
-    // ---------------------
-    
-    // Apply affine transformation
-    y = -y;
-    this->transform(&x, &y);
-    y = -y;
-    
-    // Swap, or invert X & Y
-    if (m_swap_xy) {
-      sample_t tmp = x;
-      x = y;
-      y = tmp;
+  if (m_preamp_calibration) {
+    float time_per_sample = 1.0/m_sample_rate;
+    if (m_preamp_calibration_time > 10.0)
+      m_preamp_calibration_time = 0;
+    for (nframes_t frm = 0; frm < nframes; frm++) {
+      m_preamp_calibration_time += time_per_sample;
+      *o_x++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
+      *o_y++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
+      // *o_x++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency);
+      // *o_y++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency);
+      *o_r++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
+      *o_g++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
+      *o_b++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5  + m_preamp_calibration_offset;
     }
-    if (m_invert_x)
-      x = -x;
-    if (m_invert_y)
+
+  } else {
+
+    for (nframes_t frm = 0; frm < nframes; frm++) {
+      sample_t x,y,r,g,b,a,orig_r,orig_g,orig_b,orig_a;
+      x = *i_x++;
+      y = *i_y++;
+      r = orig_r = *i_r++;
+      g = orig_g = *i_g++;
+      b = orig_b = *i_b++;
+      a = orig_a = *i_a++;
+
+      // ---------------------
+      // Adjustments to X & Y
+      // ---------------------
+    
+      // Apply affine transformation
       y = -y;
-    if (!(m_enable_x) && !m_safety_first)
-      x = 0.0f;
-    if (!(m_enable_y) && !m_safety_first)
-      y = 0.0f;
-    if (m_safety_first && m_size_multiplier < 0.10f) {
-      x *= 0.10f;
-      y *= 0.10f;
-    } else {
-      x *= m_size_multiplier;
-      y *= m_size_multiplier;
-    }
-
-    // Run the openlase filters 
-    //
-    // **** TODO: What does this do??
-    //filter(&x, &y);
+      this->transform(&x, &y);
+      y = -y;
     
-    *o_x++ = x;
-    *o_y++ = y;
+      // Swap, or invert X & Y
+      if (m_swap_xy) {
+        sample_t tmp = x;
+        x = y;
+        y = tmp;
+      }
+      if (m_invert_x)
+        x = -x;
+      if (m_invert_y)
+        y = -y;
+      if (!(m_enable_x) && !m_safety_first)
+        x = 0.0f;
+      if (!(m_enable_y) && !m_safety_first)
+        y = 0.0f;
+      if (m_safety_first && m_size_multiplier < 0.10f) {
+        x *= 0.10f;
+        y *= 0.10f;
+      } else {
+        x *= m_size_multiplier;
+        y *= m_size_multiplier;
+      }
 
-    // ------------------------
-    // Adjustments to r,g, & b
-    // ------------------------
+      // Run the openlase filters 
+      //
+      // **** TODO: What does this do??
+      //filter(&x, &y);
+    
+      *o_x++ = x;
+      *o_y++ = y;
 
-    // Adjust blanking and global laser intensity values.
-    if (m_blank_invert) {
-      r = 1.0f - r;
-      g = 1.0f - g;
-      b = 1.0f - b;
+      // ------------------------
+      // Adjustments to r,g, & b
+      // ------------------------
+
+      // Adjust blanking and global laser intensity values.
+      if (m_blank_invert) {
+        r = 1.0f - r;
+        g = 1.0f - g;
+        b = 1.0f - b;
+      }
+      if (!(m_blank_enable)) {
+        r = 1.0f;
+        g = 1.0f;
+        b = 1.0f;
+      }
+      if (!(m_output_enable)) {
+        r = 0.0f;
+        g = 0.0f;
+        b = 0.0f;
+      }
+      r *= m_red_intensity_multiplier * (1.0f-m_red_intensity_offset);
+      r += m_red_intensity_offset;
+      g *= m_green_intensity_multiplier * (1.0f-m_green_intensity_offset);
+      g += m_green_intensity_offset;
+      b *= m_blue_intensity_multiplier * (1.0f-m_blue_intensity_offset);
+      b += m_blue_intensity_offset;
+
+      // Limit the max output, just in case!
+      if (r > 1.0) r = 1.0;
+      if (g > 1.0) g = 1.0;
+      if (b > 1.0) b = 1.0;
+
+      if(orig_r != 0.0f || orig_g != 0 || orig_b != 0) {
+        m_frames_dead = 0;
+      } else if (m_frames_dead < m_dead_time) {
+        m_frames_dead++;
+      } else {
+        r = 0.0f;
+        g = 0.0f;
+        b = 0.0f;
+      }
+
+      *o_r++ = r;
+      *o_g++ = g;
+      *o_b++ = b;
+      *o_a++ = a;
     }
-    if (!(m_blank_enable)) {
-      r = 1.0f;
-      g = 1.0f;
-      b = 1.0f;
-    }
-    if (!(m_output_enable)) {
-      r = 0.0f;
-      g = 0.0f;
-      b = 0.0f;
-    }
-    r *= m_red_intensity_multiplier * (1.0f-m_red_intensity_offset);
-    r += m_red_intensity_offset;
-    g *= m_green_intensity_multiplier * (1.0f-m_green_intensity_offset);
-    g += m_green_intensity_offset;
-    b *= m_blue_intensity_multiplier * (1.0f-m_blue_intensity_offset);
-    b += m_blue_intensity_offset;
-
-    // Limit the max output, just in case!
-    if (r > 1.0) r = 1.0;
-    if (g > 1.0) g = 1.0;
-    if (b > 1.0) b = 1.0;
-
-    if(orig_r != 0.0f || orig_g != 0 || orig_b != 0) {
-      m_frames_dead = 0;
-    } else if (m_frames_dead < m_dead_time) {
-      m_frames_dead++;
-    } else {
-      r = 0.0f;
-      g = 0.0f;
-      b = 0.0f;
-    }
-
-    *o_r++ = r;
-    *o_g++ = g;
-    *o_b++ = b;
-    *o_a++ = a;
   }
   this->generate_enable(o_s, nframes);
   return 0;
