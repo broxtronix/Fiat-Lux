@@ -148,6 +148,13 @@ class SettingsNamespace(object):
         else:
             return self.__getattr__(key)
 
+    def refreshWithDefault(self, key, default_value):
+        fully_qualified_key = self.namespace + '/' + key
+        if (not self._qt_settings.contains(fully_qualified_key)):
+            self.__setattr__(key, default_value)
+        else:
+            pass
+
     def setValue(self, key, value):
         raise NotImplementedError("You cannot use the setValue() method with the settings object.")
 

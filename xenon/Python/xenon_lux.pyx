@@ -54,6 +54,13 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void setPreampCalibrationGain(float) except +RuntimeError
         void setPreampCalibrationOffset(float) except +RuntimeError
 
+        void setLaserCalibration(int) except +RuntimeError
+        void setLaserCalibrationRedIntensity(float) except +RuntimeError
+        void setLaserCalibrationGreenIntensity(float) except +RuntimeError
+        void setLaserCalibrationBlueIntensity(float) except +RuntimeError
+        void setLaserCalibrationXFrequency(float) except +RuntimeError
+        void setLaserCalibrationYFrequency(float) except +RuntimeError
+
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
         void draw_gl() except +RuntimeError
@@ -163,6 +170,24 @@ cdef class LuxOutputEngine:
 
     def setPreampCalibrationOffset(self, offset):
         self.thisptr.setPreampCalibrationOffset(offset)
+
+    def setLaserCalibration(self, state):
+        self.thisptr.setLaserCalibration(int(state))
+
+    def setLaserCalibrationRedIntensity(self, value):
+        self.thisptr.setLaserCalibrationRedIntensity(value)
+
+    def setLaserCalibrationGreenIntensity(self, value):
+        self.thisptr.setLaserCalibrationGreenIntensity(value)
+
+    def setLaserCalibrationBlueIntensity(self, value):
+        self.thisptr.setLaserCalibrationBlueIntensity(value)
+
+    def setLaserCalibrationXFrequency(self, value):
+        self.thisptr.setLaserCalibrationXFrequency(value)
+
+    def setLaserCalibrationYFrequency(self, value):
+        self.thisptr.setLaserCalibrationYFrequency(value)
 
 cdef class LuxVideoEngine:
     cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping

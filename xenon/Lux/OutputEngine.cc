@@ -31,7 +31,7 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   m_preamp_calibration = false;
   m_preamp_calibration_gain = 1.0;
   m_preamp_calibration_frequency = 10000;
-  m_preamp_calibration_time = 0;
+  m_calibration_time = 0;
 
   m_swap_xy = false;
   m_invert_x = false;
@@ -165,17 +165,30 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
 
   if (m_preamp_calibration) {
     float time_per_sample = 1.0/m_sample_rate;
-    if (m_preamp_calibration_time > 10.0)
-      m_preamp_calibration_time = 0;
+    if (m_calibration_time > 10.0)
+      m_calibration_time = 0;
     for (nframes_t frm = 0; frm < nframes; frm++) {
-      m_preamp_calibration_time += time_per_sample;
-      *o_x++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
-      *o_y++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
-      // *o_x++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency);
-      // *o_y++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency);
-      *o_r++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
-      *o_g++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
-      *o_b++ = m_preamp_calibration_gain * cos(2 * M_PI * m_preamp_calibration_time * m_preamp_calibration_frequency) * 0.5  + m_preamp_calibration_offset;
+      m_calibration_time += time_per_sample;
+      *o_x++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
+      *o_y++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_preamp_calibration_frequency) + m_preamp_calibration_offset);
+      *o_r++ = m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
+      *o_g++ = m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_preamp_calibration_frequency) * 0.5 + m_preamp_calibration_offset;
+      *o_b++ = m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_preamp_calibration_frequency) * 0.5  + m_preamp_calibration_offset;
+    }
+
+
+  } else if (m_laser_calibration) {
+    float time_per_sample = 1.0/m_sample_rate;
+    if (m_calibration_time > 10.0)
+      m_calibration_time = 0;
+
+    for (nframes_t frm = 0; frm < nframes; frm++) {
+      m_calibration_time += time_per_sample;
+      *o_x++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_laser_calibration_x_frequency) + m_preamp_calibration_offset);
+      *o_y++ = (m_preamp_calibration_gain * cos(2 * M_PI * m_calibration_time * m_laser_calibration_y_frequency) + m_preamp_calibration_offset);
+      *o_r++ = m_laser_calibration_red_intensity;
+      *o_g++ = m_laser_calibration_green_intensity;
+      *o_b++ = m_laser_calibration_blue_intensity;
     }
 
   } else {

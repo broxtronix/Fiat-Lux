@@ -37,7 +37,7 @@
      <x>10</x>
      <y>10</y>
      <width>350</width>
-     <height>241</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -67,7 +67,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Enable Calibration</string>
+         <string>Enable Preamp Calibration</string>
         </property>
        </widget>
       </item>
@@ -89,24 +89,16 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <widget class="QLabel" name="label_16">
+       <widget class="QLabel" name="preampCalibrationGainLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>0.0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>1.0</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -134,34 +126,23 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLabel" name="label_18">
+       <widget class="QLabel" name="preampCalibrationGainLabel_3">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>-0.5</string>
+         <string>0.0</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QPushButton" name="preampCalibrationOffsetReset">
         <property name="text">
-         <string>0</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>1.0</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <string>Reset</string>
         </property>
        </widget>
       </item>
@@ -183,24 +164,236 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="preampCalibrationFrequencyLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="blankingBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>220</y>
+     <width>350</width>
+     <height>251</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>350</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="title">
+    <string>Laser Calibration</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_7">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_17">
+      <item>
+       <widget class="QCheckBox" name="laserCalibration">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Enable Laser Calibration</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_18">
       <item>
-       <widget class="QLabel" name="label_6">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>0 Hz</string>
+         <string>Red:   </string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>30 KHz</string>
+       <widget class="QSlider" name="laserCalibrationRedIntensity">
+        <property name="minimum">
+         <number>-99</number>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="laserCalibrationRedLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_20">
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Green:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="laserCalibrationGreenIntensity">
+        <property name="minimum">
+         <number>-99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="laserCalibrationGreenLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_21">
+      <item>
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Blue:   </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="laserCalibrationBlueIntensity">
+        <property name="minimum">
+         <number>-99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="laserCalibrationBlueLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_23">
+      <item>
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>X Frequency:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="laserCalibrationXFreq">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="laserCalibrationXFreqLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_19">
+      <item>
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Y Frequency:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="laserCalibrationYFreq">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="laserCalibrationYFreqLabel">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0.0</string>
         </property>
        </widget>
       </item>

@@ -30,7 +30,14 @@ namespace lux {
     float m_preamp_calibration_frequency;
     float m_preamp_calibration_gain;
     float m_preamp_calibration_offset;
-    float m_preamp_calibration_time;
+    float m_calibration_time;
+
+    bool m_laser_calibration;
+    float m_laser_calibration_red_intensity;
+    float m_laser_calibration_green_intensity;
+    float m_laser_calibration_blue_intensity;
+    float m_laser_calibration_x_frequency;
+    float m_laser_calibration_y_frequency;
 
     bool m_swap_xy;
     bool m_invert_x;
@@ -60,11 +67,17 @@ namespace lux {
 
     // Turn on pre-amp calibration mode
     void setPreampCalibration(int state) { m_preamp_calibration = state; }
-
     void setPreampCalibrationFrequency(float frequency) { m_preamp_calibration_frequency = frequency; }
-
     void setPreampCalibrationGain(float gain) { m_preamp_calibration_gain = gain; }
     void setPreampCalibrationOffset(float offset) { m_preamp_calibration_offset = offset; }
+
+    // Turn on laser calibration mode
+    void setLaserCalibration(int state) { m_laser_calibration = state; }
+    void setLaserCalibrationRedIntensity(float gain) { m_laser_calibration_red_intensity = gain; }
+    void setLaserCalibrationGreenIntensity(float gain) { m_laser_calibration_green_intensity = gain; }
+    void setLaserCalibrationBlueIntensity(float gain) { m_laser_calibration_blue_intensity = gain; }
+    void setLaserCalibrationXFrequency(float frequency) { m_laser_calibration_x_frequency = frequency; }
+    void setLaserCalibrationYFrequency(float frequency) { m_laser_calibration_y_frequency = frequency; }
 
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);
