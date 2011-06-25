@@ -28,11 +28,7 @@ class BouncyBall(LuxPlugin):
 
     # Constructor
     def __init__(self):
-        # This is how you register a parameter with the lux engine.
-        # Parameters can be controlled using OSC or in the GUI.
-        lux.register(Parameter( name = "simple_rate",
-                                description = "0..1   controls the rate of spinning cubes",
-                                default_value = 1.0 ))
+        pass
         
     # The draw method gets called roughly 30 times a second.  
     def draw(self):

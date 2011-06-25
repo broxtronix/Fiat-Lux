@@ -16,7 +16,7 @@ class TestPatternPlugin(LuxPlugin):
     """
 
     def __init__(self):
-        foo = "bar"
+        pass
 
     def draw(self):
         ol.loadIdentity()
