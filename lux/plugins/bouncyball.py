@@ -36,7 +36,6 @@ class BouncyBall(LuxPlugin):
         
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
-        ol.loadIdentity3()
         ol.loadIdentity()
 
         # Grab the raw audio buffers
@@ -112,5 +111,12 @@ class BouncyBall(LuxPlugin):
                 
         x = cos(2 * pi * fracCircleComplete) * hLen
         y = sin(2 * pi * fracCircleComplete) * hLen
+        
+        # ensure we dont give out-of-bounds values
+        if (x>1):x=1
+        if (x<-1):x=-1
+        if (y>1):y=1
+        if (y<-1):y=-1
+        
         #print "%f, %f, %f, %d: %f,%f" % (val, fracCircleComplete, hLen, multipler, x, y)
         return (x,y)
