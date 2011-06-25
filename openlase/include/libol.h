@@ -43,21 +43,29 @@ enum {
 };
 
 typedef struct {
-	int rate;
-	float on_speed;
-	float off_speed;
-	int start_wait;
-	int start_dwell;
-	int curve_dwell;
-	int corner_dwell;
-	int end_dwell;
-	int end_wait;
-	float curve_angle;
-	float flatness;
-	float snap;
-	int render_flags;
-	int min_length;
-	int max_framelen;
+  int rate;         // Sets the max sampling rate for the system.
+                    // Does nothing except determine how many points
+                    // will be inserted as necessary to meet this
+                    // framerate.
+  float on_speed;   // Speed at which the laser moves when it is on.
+                    // Measured in screen distance per point. For
+                    // example, on_speed = 1/100 would draw 200 points
+                    // as the laser crosses the screen.  Ensures
+                    // constant brightness.
+  float off_speed;  // Speed the laser moves when it is off, mesaure
+                    // in screen distance per point.
+  int start_wait;
+  int start_dwell;  // Number of samples to dwell at the beginning of each point or path.  
+  int curve_dwell;  // Number of samples to dwell if dot > curve_angle
+  int corner_dwell; // Number of samples to dwell in the corner of an object
+  int end_dwell;    // Number of samples to dwell at the end of each point or bath by olEnd()
+  int end_wait;
+  float curve_angle;
+  float flatness;   // Determines when to subdivide bezier curves
+  float snap;       
+  int render_flags;
+  int min_length;   // Minimum length (in points) for a path to be drawn. 
+  int max_framelen;
 } OLRenderParams;
 
 typedef struct {

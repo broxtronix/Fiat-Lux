@@ -17,6 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// 
+// start_dwell - The number of points that are added at the beginning
+//               of each point or path.  These are added by
+//               point_to(), line_to(), and bezier_to().
+//
+// end_dwell - The number of points that are added at the end by
+//               olEnd().  This means that *each* call to olEnd()
+//               incurs a steep penalty.
+
+
 #include "libol.h"
 #include <jack/jack.h>
 #include <stdio.h>
@@ -49,14 +59,17 @@ typedef struct {
   Point *points;
 } Object;
 
+// Frame Structure
+//
 typedef struct {
-  int objcnt;
-  int objmax;
-  Object *objects;
-  int psmax;
-  int psnext;
-  Point *points;
+  int objcnt;            // Number of objects in this frame
+  int objmax;            // Starts out at 16.  Doubles as needed (with memory reallocation)
+  Object *objects;       // List of objects (reallocated as necessary when objmax is reached)
+  int psmax;             // Number of allocated points.  Fixed, based on max_points argument to olInit().
+  int psnext;            // Pointer into the points array.  Keeps track of next unallocated point.
+  Point *points;         // Array of points in this frame.
 } Frame;
+static Frame wframe;     // Current frame
 
 typedef struct {
   int pmax;
@@ -71,14 +84,12 @@ static nframes_t jack_rate;
 
 static OLFrameInfo last_info;
 
-static Frame wframe;
-
 typedef struct {
-  Object *curobj;
+  Object *curobj;     // Object has .pointcnt and .points fields
   Point last_point;
   Point last_slope;
   Point c1, c2;
-  int prim;
+  int prim;           // OL_LINESTRIP, OL_BEZIERSTRIP, OL_POINTS
   int state;
   int points;
 } DrawState;
@@ -91,8 +102,7 @@ static Point last_render_point;
 
 static volatile int crbuf;
 static volatile int cwbuf;
-static int fbufs;
-static int buflag;
+static int fbufs;                // Number of rendered frames allocateod. Equal to olInit() buffer_count+1
 static int out_point;
 static int first_time_full;
 static int first_output_frame;
@@ -124,7 +134,7 @@ AudioCallbackFunc audiocb;
 
 LogCallbackFunc log_cb;
 
-static uint32_t colmul(uint32_t a, uint32_t b)
+static uint32_t color_multiply(uint32_t a, uint32_t b)
 {
   uint32_t out = 0;
   out |= ((a&0xff)*(b&0xff)) / 255;
@@ -235,7 +245,6 @@ int olInit(int buffer_count, int max_points)
   memset(&dstate, 0, sizeof(dstate));
   memset(&last_render_point, 0, sizeof(last_render_point));
 
-  buflag = buffer_count;
   fbufs = buffer_count+1;
 
   cwbuf = 0;
@@ -243,11 +252,15 @@ int olInit(int buffer_count, int max_points)
   out_point = -1;
   first_time_full = 0;
   first_output_frame = 0;
+ 
+  // Set up current frame for drawing
   memset(&wframe, 0, sizeof(Frame));
   wframe.objmax = 16;
   wframe.objects = malloc(wframe.objmax * sizeof(Object));
   wframe.psmax = max_points;
   wframe.points = malloc(wframe.psmax * sizeof(Point));
+
+  // Set up rendered frames
   frames = malloc(fbufs * sizeof(RenderedFrame));
   for (i=0; i<fbufs; i++) {
     memset(&frames[i], 0, sizeof(RenderedFrame));
@@ -279,36 +292,6 @@ int olInit(int buffer_count, int max_points)
     olLog ("cannot activate client");
     return -1;
   }
-
-  // HACK: This connects jack directly to the Lux Simulator!!
-  //
-  // const char **ports = jack_get_ports(client,NULL,NULL,JackPortIsInput);
-  // if (ports == NULL){
-  //   printf("cannot capture input ports");
-  // } else {
-  //   olLog("%s\n", ports[2]);
-  // }
-
-  // if (jack_connect(client, "engine:out_x", "simulator:in_x")) {
-  //   olLog ("cannot connect to simulator:in_x");
-  //   return(-1);
-  // }
-  // if (jack_connect(client, "engine:out_y","simulator:in_y")) {
-  //   olLog ("cannot connect to simulator:in_y");
-  //   return(-1);
-  // }
-  //  if (jack_connect(client, "engine:out_r","simulator:in_r")) {
-  //    olLog ("cannot connect to simulator:in_r");
-  //    return(-1);
-  //  }
-  // if (jack_connect(client, "engine:out_g","simulator:in_g")) {
-  //   olLog ("cannot connect to simulator:in_g");
-  //   return(-1);
-  // }
-  //  if (jack_connect(client, "engine:out_b","simulator:in_b")) {
-  //    olLog ("cannot connect to simulator:in_b");
-  //    return(-1);
-  //  }
 
   olLoadIdentity();
   for(i=0; i<MTX_STACK_DEPTH; i++)
@@ -399,9 +382,9 @@ static int get_dwell(float x, float y)
     float sy = ey;
     float scx = x;
     float scy = y;
-    float dex = ecx-ex;
+    float dex = ecx-ex;  // End
     float dey = ecy-ey;
-    float dsx = sx-scx;
+    float dsx = sx-scx;  // Start
     float dsy = sy-scy;
     float dot = dex*dsx + dey*dsy;
     float lens = sqrtf(dex*dex+dey*dey) * sqrtf(dsx*dsx+dsy*dsy);
@@ -593,16 +576,22 @@ void olEnd(void)
     dstate.curobj = NULL;
     return;
   }
+
+  // Dwell at the end of the path to allow lasers modulation to shut off.
   Point *last = dstate.curobj->points + dstate.curobj->pointcnt - 1;
   for (i=0; i<params.end_dwell; i++)
     addpoint(last->x,last->y,last->color);
-
+  
+  // Run the pixel shader, if any.
   if(pshader) {
     for (i=0; i<dstate.curobj->pointcnt; i++) {
       pshader(&dstate.curobj->points[i].x, &dstate.curobj->points[i].y, &dstate.curobj->points[i].color);
     }
   }
 
+  // Check to see if any of the points are contained in the x,y : [-1, 1]
+  // bounding box.  If they are, then we add them to the current frame's 
+  // object count.  
   int nl=0,nr=0,nu=0,nd=0;
   for (i=0; i<dstate.curobj->pointcnt; i++) {
     if (!dstate.curobj->points[i].color)
@@ -619,12 +608,17 @@ void olEnd(void)
     if (nl && nr && nu && nd)
       break;
   }
+
+  // If all is well, then we go ahead and add this object to the frame by incrementing the objcnt.
   if (nl && nr && nu && nd)
     wframe.objcnt++;
+
+  // Regardless, we clear the drawstate current object to prepare for
+  // the next frame.
   dstate.curobj = NULL;
 }
 
-static void chkpts(int count)
+static void check_points(int count)
 {
   if (frames[cwbuf].pnext + count > frames[cwbuf].pmax) {
     olLog("WARNING: Point buffer overflow (final): need %d points, have %d\n",
@@ -633,7 +627,7 @@ static void chkpts(int count)
   }
 }
 
-static void addrndpoint(float x, float y, uint32_t color)
+static void add_rendered_point(float x, float y, uint32_t color)
 {
   frames[cwbuf].points[frames[cwbuf].pnext].x = x;
   frames[cwbuf].points[frames[cwbuf].pnext].y = y;
@@ -650,7 +644,7 @@ static void render_object(Object *obj)
   float dy = start->y - last_render_point.y;
   float distance = fmaxf(fabsf(dx),fabsf(dy));
   int points = ceilf(distance/params.off_speed);
-  chkpts(2 * (obj->pointcnt + params.start_wait + params.end_wait + points));
+  check_points(2 * (obj->pointcnt + params.start_wait + params.end_wait + points));
   Point *out_start = NULL;
   int skip_out_start_wait = 0;
 
@@ -671,12 +665,12 @@ static void render_object(Object *obj)
     skip_out_start_wait = 1;
   } else if (distance > params.snap) {
     for (i=0; i<points; i++) {
-      addrndpoint(last_render_point.x + (dx/(float)points) * i,
-                  last_render_point.y + (dy/(float)points) * i,
-                  C_BLACK);
+      add_rendered_point(last_render_point.x + (dx/(float)points) * i,
+                         last_render_point.y + (dy/(float)points) * i,
+                         C_BLACK);
     }
     for (i=0; i<params.start_wait; i++) {
-      addrndpoint(start->x, start->y, C_BLACK);
+      add_rendered_point(start->x, start->y, C_BLACK);
     }
   }
   Point *op = &frames[cwbuf].points[frames[cwbuf].pnext];
@@ -730,12 +724,12 @@ static void render_object(Object *obj)
   }
   if(!out_start) {
     for (i=0; i<params.end_wait; i++) {
-      addrndpoint(end->x, end->y, C_BLACK);
+      add_rendered_point(end->x, end->y, C_BLACK);
     }
     last_render_point = *end;
   } else {
     for (i=0; i<params.end_wait; i++) {
-      addrndpoint(out_start->x, out_start->y, C_BLACK);
+      add_rendered_point(out_start->x, out_start->y, C_BLACK);
     }
     last_render_point = *out_start;
   }
@@ -746,6 +740,7 @@ float olRenderFrame(int max_fps)
   int i;
   int count = 0;
 
+  // Each frame needs at least this many points
   int min_points = params.rate / max_fps;
 
   memset(&last_info, 0, sizeof(last_info));
@@ -827,7 +822,7 @@ float olRenderFrame(int max_fps)
     {
       int in_count = count;
       int out_count = params.max_framelen;
-      chkpts(count);
+      check_points(count);
 
       Point *pin = frames[cwbuf].points;
       Point *pout = &pin[in_count];
@@ -858,7 +853,7 @@ float olRenderFrame(int max_fps)
 
       memcpy(pin, &pin[in_count], count * sizeof(*pin));
       frames[cwbuf].pnext = count;
-      chkpts(0);
+      check_points(0);
       last_info.resampled_points = count;
     }
 
@@ -869,6 +864,8 @@ float olRenderFrame(int max_fps)
   } else {
     last_x = last_y = 0;
   }
+
+  // Fill up remaining samples with black points.
   while(count < min_points) {
     frames[cwbuf].points[count].x = last_x;
     frames[cwbuf].points[count].y = last_y;
@@ -877,7 +874,8 @@ float olRenderFrame(int max_fps)
     last_info.padding_points++;
   }
   frames[cwbuf].pnext = count;
-
+  
+  // Render he data using the audio callback (or using the built-in jack process.
   if (audiocb) {
     audiocb(frames[cwbuf].audio_l, frames[cwbuf].audio_r, count);
   } else {
@@ -1131,7 +1129,7 @@ void olResetColor(void)
 
 void olMultColor(uint32_t color)
 {
-  curcol = colmul(curcol, color);
+  curcol = color_multiply(curcol, color);
 }
 
 void olColor3(float red, float green, float blue)

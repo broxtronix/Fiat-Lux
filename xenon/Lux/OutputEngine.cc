@@ -65,13 +65,13 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   a_ostr << jack_endpoint_name << ":out_a";
   s_ostr << jack_endpoint_name << ":out_s";
   try {
-    this->connect_ports(x_ostr.str(), "system:playback_1");
-    this->connect_ports(y_ostr.str(), "system:playback_2");
-    this->connect_ports(r_ostr.str(), "system:playback_3");
-    this->connect_ports(g_ostr.str(), "system:playback_4");
-    this->connect_ports(b_ostr.str(), "system:playback_5");
-    this->connect_ports(a_ostr.str(), "system:playback_6");
     this->connect_ports(s_ostr.str(), "system:playback_7");
+    this->connect_ports(a_ostr.str(), "system:playback_6");
+    this->connect_ports(b_ostr.str(), "system:playback_5");
+    this->connect_ports(g_ostr.str(), "system:playback_4");
+    this->connect_ports(r_ostr.str(), "system:playback_3");
+    this->connect_ports(y_ostr.str(), "system:playback_2");
+    this->connect_ports(x_ostr.str(), "system:playback_1");
   } catch (xenon::LogicErr &e) {
     std::cout << "***************************************************\n"
               << "WARNING: Could not connect output engine to system\n"
