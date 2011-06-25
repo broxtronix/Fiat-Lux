@@ -79,6 +79,25 @@ namespace lux {
     void setLaserCalibrationXFrequency(float frequency) { m_laser_calibration_x_frequency = frequency; }
     void setLaserCalibrationYFrequency(float frequency) { m_laser_calibration_y_frequency = frequency; }
 
+    // Output Settings
+    void setSafetyFirst(int state) { m_safety_first = state; }
+    void setSwapXY(int state) { m_swap_xy = state; }
+    void setInvertX(int state) { m_invert_x = state; }
+    void setInvertY(int state) { m_invert_y = state; }
+    void setEnableX(int state) { m_enable_x = state; }
+    void setEnableY(int state) { m_enable_y = state; }
+    void setBlankInvert(int state) { m_blank_invert = state; }
+    void setBlankEnable(int state) { m_blank_enable = state; }
+    void setOutputEnable(int state) { m_output_enable = state; }
+
+    void setSizeMultiplier(float value);
+    void redIntensityMultiplier(float value);
+    void greenIntensityMultiplier(float value);
+    void blueIntensityMultiplier(float value);
+    void redIntensityOffset(float value);
+    void greenIntensityOffset(float value);
+    void blueIntensityOffset(float value);
+
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);
 

@@ -55,9 +55,13 @@ try:
     # Initialize the audio engine
     from audio import audio_engine
 
+    # Create the video engine
+    print '\t--> Starting Video Engine'
+    from video import video_engine
+
     # Start up the LUX main engine.  This starts a thread that runs lux plugins.
     import lux_engine
-    lux_engine = lux_engine.LuxEngine(audio_engine)
+    lux_engine = lux_engine.LuxEngine(audio_engine, video_engine)
     lux_engine.start()
 
     # Create the output engine
@@ -82,10 +86,10 @@ try:
 
 except:
     exc_type, exc_value, exc_traceback = sys.exc_info()
-    error_string = '-'*60 + '\n'
+    error_string = '-' * 60 + '\n'
     error_string += "An exception occurred:\n\n"
     error_string += traceback.format_exc()
-    error_string +=  '-'*60
+    error_string +=  '-' * 60
     if (DEV_MODE):
         print error_string
     else:

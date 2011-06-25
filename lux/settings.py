@@ -152,8 +152,9 @@ class SettingsNamespace(object):
         fully_qualified_key = self.namespace + '/' + key
         if (not self._qt_settings.contains(fully_qualified_key)):
             self.__setattr__(key, default_value)
+            return default_value
         else:
-            pass
+            return self.__getattr__(key)
 
     def setValue(self, key, value):
         raise NotImplementedError("You cannot use the setValue() method with the settings object.")

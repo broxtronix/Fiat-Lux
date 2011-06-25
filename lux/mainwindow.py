@@ -7,7 +7,6 @@ from settings import LuxSettings
 import sys
 import os.path
 from simulation_display import SimulationDisplay
-
     
 from panels import OutputSettings
 from panels import CalibrationSettings
@@ -125,7 +124,7 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTabWidget.addTab(self.simWidget, "Laser Output")
         # MacOS X supports video capture using syphon.  Other platforms don't (yet!)
         if sys.platform == "darwin":
-            self.videoWidget = VideoDisplay(self)
+            self.videoWidget = VideoDisplay(lux_engine.video_engine, self)
             self.displayTabWidget.addTab(self.videoWidget, "Video Input")
         self.setCentralWidget(self.displayTabWidget)
 

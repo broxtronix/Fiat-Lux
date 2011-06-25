@@ -64,8 +64,16 @@ cdef extern from "xenon/Lux.h" namespace "lux":
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
         void draw_gl() except +RuntimeError
+        void draw_lasers() except +RuntimeError
         void resize_gl(int, int) except +RuntimeError
 
+        void setContourThreshold(float) except +RuntimeError
+        void setContourBlurSigma(float) except +RuntimeError
+        void setContourMinArea(float) except +RuntimeError
+        void setContourMaxArea(float) except +RuntimeError
+        void setContourNumConsidered(int) except +RuntimeError
+        void setContourMode(int) except +RuntimeError
+        void setContourMethod(int) except +RuntimeError
 
 cdef class LuxSimulatorEngine:
     cdef SimulatorEngine *thisptr      # hold a C++ instance which we're wrapping
@@ -198,5 +206,28 @@ cdef class LuxVideoEngine:
 
     def draw_gl(self):
         self.thisptr.draw_gl()
+    def draw_lasers(self):
+        self.thisptr.draw_lasers()
     def resize_gl(self, int width, int height):
         self.thisptr.resize_gl(width, height)
+
+    def setContourThreshold(self, value):
+        self.thisptr.setContourThreshold(value)
+
+    def setContourBlurSigma(self, value):
+        self.thisptr.setContourBlurSigma(value)
+
+    def setContourMinArea(self, value):
+        self.thisptr.setContourMinArea(value)
+
+    def setContourMaxArea(self, value):
+        self.thisptr.setContourMaxArea(value)
+
+    def setContourNumConsidered(self, value):
+        self.thisptr.setContourNumConsidered(value)
+
+    def setContourMode(self, value):
+        self.thisptr.setContourMode(value)
+
+    def setContourMethod(self, value):
+        self.thisptr.setContourMethod(value)

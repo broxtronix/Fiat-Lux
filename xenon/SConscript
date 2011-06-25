@@ -12,6 +12,10 @@ conf = Configure(xenon_env)
 conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
 conf.env.Append(CPPPATH=["/usr/local/include/eigen3"])
 
+# UGLY HACK!
+conf.env.Append(LIBPATH=["/Users/broxton/projects/fiat_lux/openlase/libol"])
+conf.env.Append(CPPPATH=["/Users/broxton/projects/fiat_lux/openlase/include"])
+
 if not conf.CheckLibWithHeader('boost_system-mt', 'boost/shared_ptr.hpp', 'c++'):
     print 'ERROR: Could not locate boost_system library'
     sys.exit(1)
@@ -32,6 +36,18 @@ if not conf.CheckLibWithHeader('aubio', 'aubio.h', 'c++'):
     sys.exit(1)
 if not conf.CheckCXXHeader('Eigen/Dense'):
     print 'ERROR: Could not locate eigen library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('opencv_core', 'opencv/cv.h', 'c++'):
+    print 'ERROR: Could not locate opencv_core library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('opencv_imgproc', 'opencv/cv.h', 'c++'):
+    print 'ERROR: Could not locate opencv_imgproc library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('opencv_highgui', 'opencv/cv.h', 'c++'):
+    print 'ERROR: Could not locate opencv_highgui library'
+    sys.exit(1)
+if not conf.CheckLibWithHeader('openlase', 'libol.h', 'c++'):
+    print 'ERROR: Could not locate openlase library'
     sys.exit(1)
 xenon_env = conf.Finish()
 xenon_env.Append(CPPPATH = [".."])

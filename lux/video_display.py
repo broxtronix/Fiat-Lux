@@ -6,7 +6,6 @@ from PyQt4 import QtCore, QtGui, QtOpenGL
 # custom importer for ARB functions
 from OpenGL import GL
 
-from xenon_lux import LuxVideoEngine
 from settings import LuxSettings
 
 import math
@@ -21,7 +20,7 @@ class DisplayError(Exception):
 
 class VideoDisplay(QtOpenGL.QGLWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, video_engine, parent=None):
 
         # Set up to sync with double-buffer, vertical refresh.  Add Alpha and Depth buffers.
         fmt = QtOpenGL.QGLFormat()
@@ -42,7 +41,7 @@ class VideoDisplay(QtOpenGL.QGLWidget):
         self.height = 512
 
         # set dirty state
-        self.dirty = False
+        self.dirty = True
 
         # start up an update timer
         self.timerId = self.startTimer(30)
@@ -53,7 +52,7 @@ class VideoDisplay(QtOpenGL.QGLWidget):
         # Start the simulator audio client.  Connects to JACK server,
         # which must be running.
         self.makeCurrent()
-        self.video_engine = LuxVideoEngine("Simple Server", "");
+        self.video_engine = video_engine
         
     def timerEvent(self, event):
         '''

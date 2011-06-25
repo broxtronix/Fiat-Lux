@@ -2,10 +2,11 @@
 
 # List plugins to be imported here
 import bouncyball
-import scope
+#import scope
 import simple
 import testpattern
 import two_cubes
+#import mesh
 
 # -----------------------------------------
 
