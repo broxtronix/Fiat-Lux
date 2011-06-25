@@ -1,10 +1,11 @@
 # -----------------------------------------
 
 # List plugins to be imported here
-import simple
-import scope
-import two_cubes
 import bouncyball
+import scope
+import simple
+import testpattern
+import two_cubes
 
 # -----------------------------------------
 
