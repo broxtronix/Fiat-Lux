@@ -43,7 +43,6 @@ class TestPatternPlugin(LuxPlugin):
         # inner box, for fun
         ol.color3(0.0, 1.0, 0.0);
         size = (sin(lux.time) * .2)+.5
-        print "%f" % size
         ol.begin(ol.LINESTRIP)
         self.square(size,size,-size,-size)
         ol.end()
