@@ -264,12 +264,15 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 
     def on_xInvert_toggled(self, state):
         self.settings['output'].xInvert = state
+        self.output_engine.setInvertX(state)
 
     def on_yInvert_toggled(self, state):
         self.settings['output'].yInvert = state
-
+        self.output_engine.setInvertY(state)
+        
     def on_xySwap_toggled(self, state):
         self.settings['output'].xySwap = state
+        self.output_engine.setSwapXY(state)
 
     def on_aspectScale_toggled(self, state):
         self.fitSquare.setEnabled(not state)
@@ -309,24 +312,37 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.settings['output'].affine_matrix = self.affine_matrix
 
     def on_redIntensitySlider_valueChanged(self, value):
-        self.settings['output'].redIntensity = value / 100.0;
+        v = value / 100.0
+        self.settings['output'].redIntensity = v;
+        self.output_engine.redIntensityMultiplier(v)
 
     def on_redOffsetSlider_valueChanged(self, value):
-        self.settings['output'].redOffset = (value-50.0) / 100.0;
+        v = (value-50.0) / 100.0
+        self.settings['output'].redOffset = v
+        self.output_engine.redIntensityOffset(v)
 
     def on_greenIntensitySlider_valueChanged(self, value):
-        self.settings['output'].greenIntensity = value / 100.0;
+        v = value / 100.0
+        self.settings['output'].greenIntensity = v
+        self.output_engine.greenIntensityMultiplier(v)
 
     def on_greenOffsetSlider_valueChanged(self, value):
-        self.settings['output'].greenOffset = (value-50.0) / 100.0;
+        v = (value-50.0) / 100.0
+        self.settings['output'].greenOffset = v
+        self.output_engine.greenIntensityOffset(v)
 
     def on_blueIntensitySlider_valueChanged(self, value):
-        self.settings['output'].blueIntensity = value / 100.0;
+        v = value / 100.0
+        self.settings['output'].blueIntensity = v
+        self.output_engine.blueIntensityMultiplier(v)
 
     def on_blueOffsetSlider_valueChanged(self, value):
-        self.settings['output'].blueOffset = (value-50.0) / 100.0;
+        v = (value-50.0) / 100.0
+        self.settings['output'].blueOffset = v
+        self.output_engine.blueIntensityOffset(v)
 
     def on_lockCalibration_toggled(self, state):
+        v = value / 100.0
         self.settings['output'].lockCalibration = state
         self.calibrationView.setInteractive(not state);
         self.resetTransform.setEnabled(not state)

@@ -61,6 +61,24 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void setLaserCalibrationXFrequency(float) except +RuntimeError
         void setLaserCalibrationYFrequency(float) except +RuntimeError
 
+        void setSafetyFirst(int) except +RuntimeError
+        void setSwapXY(int) except +RuntimeError
+        void setInvertX(int) except +RuntimeError
+        void setInvertY(int) except +RuntimeError
+        void setEnableX(int) except +RuntimeError
+        void setEnableY(int) except +RuntimeError
+        void setBlankInvert(int) except +RuntimeError
+        void setBlankEnable(int) except +RuntimeError
+        void setOutputEnable(int) except +RuntimeError
+
+        void setSizeMultiplier(float) except +RuntimeError
+        void redIntensityMultiplier(float) except +RuntimeError
+        void greenIntensityMultiplier(float) except +RuntimeError
+        void blueIntensityMultiplier(float) except +RuntimeError
+        void redIntensityOffset(float) except +RuntimeError
+        void greenIntensityOffset(float) except +RuntimeError
+        void blueIntensityOffset(float) except +RuntimeError
+
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
         void draw_gl() except +RuntimeError
@@ -196,6 +214,41 @@ cdef class LuxOutputEngine:
 
     def setLaserCalibrationYFrequency(self, value):
         self.thisptr.setLaserCalibrationYFrequency(value)
+
+
+    def setSafetyFirst(self, val):
+        self.thisptr.setSafetyFirst(int(val))
+    def setSwapXY(self, val):
+        self.thisptr.setSwapXY(int(val))
+    def setInvertX(self, val):
+        self.thisptr.setInvertX(int(val))
+    def setInvertY(self, val):
+        self.thisptr.setInvertY(int(val))
+    def setEnableX(self, val):
+        self.thisptr.setEnableX(int(val))
+    def setEnableY(self, val):
+        self.thisptr.setEnableY(int(val))
+    def setBlankInvert(self, val):
+        self.thisptr.setBlankInvert(int(val))
+    def setBlankEnable(self, val):
+        self.thisptr.setBlankEnable(int(val))
+    def setOutputEnable(self, val):
+        self.thisptr.setOutputEnable(int(val))
+
+    def setSizeMultiplier(self, val):
+        self.thisptr.setSizeMultiplier(val)
+    def redIntensityMultiplier(self, val):
+        self.thisptr.redIntensityMultiplier(val)
+    def greenIntensityMultiplier(self, val):
+        self.thisptr.greenIntensityMultiplier(val)
+    def blueIntensityMultiplier(self, val):
+        self.thisptr.blueIntensityMultiplier(val)
+    def redIntensityOffset(self, val):
+        self.thisptr.redIntensityOffset(val)
+    def greenIntensityOffset(self, val):
+        self.thisptr.greenIntensityOffset(val)
+    def blueIntensityOffset(self, val):
+        self.thisptr.blueIntensityOffset(val)
 
 cdef class LuxVideoEngine:
     cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping

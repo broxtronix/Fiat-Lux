@@ -81,7 +81,7 @@ namespace lux {
 
     // Output Settings
     void setSafetyFirst(int state) { m_safety_first = state; }
-    void setSwapXY(int state) { m_swap_xy = state; }
+    void setSwapXY(int state) { std::cout << "setting swap to " << state << "\n"; m_swap_xy = state; }
     void setInvertX(int state) { m_invert_x = state; }
     void setInvertY(int state) { m_invert_y = state; }
     void setEnableX(int state) { m_enable_x = state; }

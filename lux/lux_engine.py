@@ -29,35 +29,35 @@ class LuxEngine(QtCore.QThread):
             raise Exception("Could not initialize openlase")
 
         # Set up rendering parameters
-        params = ol.getRenderParams()
-        params.rate = 48000;
-	params.on_speed = 1.0/100.0;
-	params.off_speed = 2.0/20.0;
-	params.start_wait = 8;
-	params.start_dwell = 3;
-	params.curve_dwell = 0;
-	params.corner_dwell = 4;
-	params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
-	params.end_dwell = 3;
-	params.end_wait = 7;
-	params.snap = 1/100000.0;
-        #	params.render_flags = ol.RENDER_NOREORDER;
-        ol.setRenderParams(params)
-
         # params = ol.getRenderParams()
-        # params.rate = 30000;
+        # params.rate = 48000;
 	# params.on_speed = 1.0/100.0;
 	# params.off_speed = 2.0/20.0;
-	# params.start_wait = 15;
-	# params.start_dwell = 15;
-	# params.curve_dwell = 15;
-	# params.corner_dwell = 10;
+	# params.start_wait = 8;
+	# params.start_dwell = 3;
+	# params.curve_dwell = 0;
+	# params.corner_dwell = 4;
 	# params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
-	# params.end_dwell = 15;
-	# params.end_wait = 15;
+	# params.end_dwell = 3;
+	# params.end_wait = 7;
 	# params.snap = 1/100000.0;
         # #	params.render_flags = ol.RENDER_NOREORDER;
         # ol.setRenderParams(params)
+
+        params = ol.getRenderParams()
+        params.rate = 30000;
+	params.on_speed = 1.0/100.0;
+	params.off_speed = 2.0/20.0;
+	params.start_wait = 15;
+	params.start_dwell = 15;
+	params.curve_dwell = 15;
+	params.corner_dwell = 10;
+	params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
+	params.end_dwell = 15;
+	params.end_wait = 15;
+	params.snap = 1/100000.0;
+        #	params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
         # create a mutex and semaphore for managing this thread.
         self.lock = QtCore.QMutex()

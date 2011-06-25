@@ -317,7 +317,7 @@ int lux::OutputEngine::sample_rate_callback(nframes_t nframes) {
 
 
 void lux::OutputEngine::setSizeMultiplier(float value) { 
-  if (value > 0.1 && value < 2.0) {  // A little safety check
+  if (value >= 0.0 && value < 2.0) {  // A little safety check
     m_size_multiplier = value; 
   } else {
     xenon_out() << "WARNING: Tried to set size multiplier to invalid value.  Value was " << value << "\n";
@@ -325,7 +325,7 @@ void lux::OutputEngine::setSizeMultiplier(float value) {
 }
 
 void lux::OutputEngine::redIntensityMultiplier(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= 0.0 && value <= 1.0) {  // A little safety check
     m_red_intensity_multiplier = value; 
   } else {
     xenon_out() << "WARNING: Tried to set red intensity multiplier to invalid value.  Value was " 
@@ -334,7 +334,7 @@ void lux::OutputEngine::redIntensityMultiplier(float value) {
 }
 
 void lux::OutputEngine::greenIntensityMultiplier(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= 0.0 && value <= 1.0) {  // A little safety check
     m_green_intensity_multiplier = value; 
   } else {
     xenon_out() << "WARNING: Tried to set green intensity multiplier to invalid value.  Value was " 
@@ -343,7 +343,7 @@ void lux::OutputEngine::greenIntensityMultiplier(float value) {
 }
 
 void lux::OutputEngine::blueIntensityMultiplier(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= 0.0 && value <= 1.0) {  // A little safety check
     m_blue_intensity_multiplier = value; 
   } else {
     xenon_out() << "WARNING: Tried to set blue intensity multiplier to invalid value.  Value was " 
@@ -352,7 +352,7 @@ void lux::OutputEngine::blueIntensityMultiplier(float value) {
 }
 
 void lux::OutputEngine::redIntensityOffset(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= -1.0 && value <= 1.0) {  // A little safety check
     m_red_intensity_offset = value; 
   } else {
     xenon_out() << "WARNING: Tried to set red intensity offset to invalid value.  Value was " 
@@ -361,7 +361,7 @@ void lux::OutputEngine::redIntensityOffset(float value) {
 }
 
 void lux::OutputEngine::greenIntensityOffset(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= -1.0 && value <= 1.0) {  // A little safety check
     m_green_intensity_offset = value; 
   } else {
     xenon_out() << "WARNING: Tried to set green intensity offset to invalid value.  Value was " 
@@ -370,7 +370,7 @@ void lux::OutputEngine::greenIntensityOffset(float value) {
 }
 
 void lux::OutputEngine::blueIntensityOffset(float value) { 
-  if (value >= 0.1 && value <= 1.0) {  // A little safety check
+  if (value >= -1.0 && value <= 1.0) {  // A little safety check
     m_blue_intensity_offset = value; 
   } else {
     xenon_out() << "WARNING: Tried to set blue intensity offset to invalid value.  Value was " 
