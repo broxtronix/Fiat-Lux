@@ -6,3 +6,4 @@
 CMakeFiles*
 CMakeCache*
 *.cmake
+lux/panels/*
