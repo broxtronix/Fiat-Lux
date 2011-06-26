@@ -16,6 +16,7 @@ class LuxEngine(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
 
         self.settings = LuxSettings()
+        self.ol_update_params = True
 
         self.settings['video'].refreshWithDefault('videoMode', False)
         self.settings['video'].refreshWithDefault('threshold', 0.2 * 99.0)
@@ -46,14 +47,14 @@ class LuxEngine(QtCore.QThread):
 
         params = ol.getRenderParams()
         params.rate = 30000;
-	params.on_speed = 1.0/100.0;
-	params.off_speed = 2.0/20.0;
-	params.start_wait = 15;
-	params.start_dwell = 15;
-	params.curve_dwell = 15;
-	params.corner_dwell = 10;
+	params.on_speed = 1.0/20.0;
+	params.off_speed = 1.0/5.0;
+	params.start_wait = 5;
+	params.start_dwell = 5;
+	params.curve_dwell = 0;
+	params.corner_dwell = 2;
 	params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
-	params.end_dwell = 15;
+	params.end_dwell = 5;
 	params.end_wait = 15;
 	params.snap = 1/100000.0;
         #	params.render_flags = ol.RENDER_NOREORDER;
@@ -87,6 +88,28 @@ class LuxEngine(QtCore.QThread):
         frames = 0
         while not self.exiting:
             self.lock.lock()
+
+            # Check to see if we need to update OL parameters
+            if (self.ol_update_params):
+                params = ol.getRenderParams()
+                params.rate = self.settings['calibration'].olRate
+                params.on_speed = 1.0/self.settings['calibration'].olOnSpeed
+                params.off_speed = 1.0/self.settings['calibration'].olOffSpeed
+                params.start_wait = self.settings['calibration'].olStartWait
+                params.start_dwell = self.settings['calibration'].olStartDwell
+                params.curve_dwell = self.settings['calibration'].olCurveDwell
+                params.corner_dwell = self.settings['calibration'].olCornerDwell
+                params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
+                params.end_dwell = self.settings['calibration'].olEndDwell
+                params.end_wait = self.settings['calibration'].olEndWait
+                params.snap = 1/100000.0;
+                #	params.render_flags = ol.RENDER_NOREORDER;
+                ol.setRenderParams(params)
+                self.ol_update_params = False
+                
+
+
+            
             if (self.current_plugin):
 
                 if (self.settings['video'].videoMode):
@@ -131,3 +154,6 @@ class LuxEngine(QtCore.QThread):
         descriptions = [(lambda k: LuxPlugin.plugins[k].description)(key) for key in keys]
         self.lock.unlock()
         return (keys, full_names, descriptions)
+
+    def updateOlParams(self):
+        self.ol_update_params = True

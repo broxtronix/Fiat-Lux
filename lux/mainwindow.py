@@ -124,8 +124,10 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTabWidget.addTab(self.simWidget, "Laser Output")
         # MacOS X supports video capture using syphon.  Other platforms don't (yet!)
         if sys.platform == "darwin":
-            self.videoWidget = VideoDisplay(lux_engine.video_engine, self)
+            self.videoWidget = VideoDisplay(lux_engine.video_engine, self.displayTabWidget)
             self.displayTabWidget.addTab(self.videoWidget, "Video Input")
+
+        self.displayTabWidget.setVisible(True)
         self.setCentralWidget(self.displayTabWidget)
 
         self.displayTabWidget.setCurrentIndex(self.settings['main_window'].valueWithDefault('display_tab', 0))
@@ -239,11 +241,13 @@ class MainWindow(QtGui.QMainWindow):
                                                widget = OutputSettings.OutputSettings(self,
                                                                                       self.output_engine)
                                                ))
+        self. calibrationSettings = CalibrationSettings.CalibrationSettings(self, self.output_engine)
         self.settingsManager.add(SettingsPanel(name = "Calibration",
                                                message = "",
-                                               widget = CalibrationSettings.CalibrationSettings(self,
-                                                                                   self.output_engine)
-                                               ))
+                                               widget = self.calibrationSettings))
+        self.connect(self.calibrationSettings,
+                     QtCore.SIGNAL('olParamsChanged()'),
+                     self.lux_engine.updateOlParams)
 
         # set up the menu bar
         self.menuBar_ = QtGui.QMenuBar(self)
@@ -257,10 +261,6 @@ class MainWindow(QtGui.QMainWindow):
         self.move(QtCore.QPoint(40,80))
         self.resize(QtCore.QSize(720,480))
 
-        # load window settings
-        self.resize(self.settings['main_window'].valueWithDefault('size', self.size()))
-        self.move(self.settings['main_window'].valueWithDefault('position', self.pos()))
-
         # load the previous state of the docks and toolbars
         try:
             state = QtCore.QByteArray(self.settings['main_window'].state.decode('hex'))
@@ -269,6 +269,10 @@ class MainWindow(QtGui.QMainWindow):
             print "Warning: Could not restore window state."
             # ignore
             pass
+
+        # load window settings
+        self.resize(self.settings['main_window'].valueWithDefault('size', self.size()))
+        self.move(self.settings['main_window'].valueWithDefault('position', self.pos()))
 
     def displayTabChanged(self, index):
         self.settings['main_window'].display_tab = index

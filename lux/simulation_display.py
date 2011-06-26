@@ -87,7 +87,12 @@ class SimulationDisplay(QtOpenGL.QGLWidget):
         self.makeCurrent()
 
         # Pass the resize_gl call along to the C++ code
+        self.width = width
+        self.height = height
         self.simulator_engine.resize_gl(width, height)
+
+    def resizeEvent(self, event):
+        self.resizeGL(event.size().width(), event.size().height())
 
     def paintGL(self):
         """Paint the screen"""
