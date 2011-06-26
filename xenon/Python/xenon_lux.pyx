@@ -79,6 +79,10 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void greenIntensityOffset(float) except +RuntimeError
         void blueIntensityOffset(float) except +RuntimeError
 
+        void setTransformMatrix(float, float, float,
+                                float, float, float,
+                                float, float, float) except +RuntimeError
+
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
         void draw_gl() except +RuntimeError
@@ -249,6 +253,12 @@ cdef class LuxOutputEngine:
         self.thisptr.greenIntensityOffset(val)
     def blueIntensityOffset(self, val):
         self.thisptr.blueIntensityOffset(val)
+
+    def setTransformMatrix(self, transform_matrix):
+        self.thisptr.setTransformMatrix(transform_matrix.m11(), transform_matrix.m12(), transform_matrix.m13(),
+                                        transform_matrix.m21(), transform_matrix.m22(), transform_matrix.m23(),
+                                        transform_matrix.m31(), transform_matrix.m32(), transform_matrix.m33())
+                                        
 
 cdef class LuxVideoEngine:
     cdef VideoEngine *thisptr      # hold a C++ instance which we're wrapping

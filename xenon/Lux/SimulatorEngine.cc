@@ -64,7 +64,9 @@ void lux::SimulatorEngine::draw_gl() {
   float lx, ly, lr, lg, lb;
   lx = ly = lr = lg = lb = 0;
 
+  float rdelay[2] = {0,0};
   float gdelay[2] = {0,0};
+  float bdelay[2] = {0,0};
   
   for (i = 0; i<LUX_SIMULATOR_HIST_SAMPLES; i++) {
     float r, g, b;
@@ -74,8 +76,12 @@ void lux::SimulatorEngine::draw_gl() {
     s.x = lx * 0.65 + s.x * 0.35;
     s.y = ly * 0.65 + s.y * 0.35;
     // delay brightness
+    rdelay[i%2] = s.r;
     gdelay[i%2] = s.g;
+    bdelay[i%2] = s.b;
+    s.r = rdelay[(i+1)%2];
     s.g = gdelay[(i+1)%2];
+    s.b = bdelay[(i+1)%2];
     
     float d = sqrtf((s.x-lx)*(s.x-lx) + (s.y-ly)*(s.y-ly));
     if (d == 0)
@@ -99,7 +105,9 @@ void lux::SimulatorEngine::draw_gl() {
       glVertex3f(s.x, s.y, 0);
       glEnd();
     } else {
+      r = (s.r-0.2) * factor * dfactor * 1.8;
       g = (s.g-0.2) * factor * dfactor * 1.8;
+      b = (s.b-0.2) * factor * dfactor * 1.8;
       glBegin(GL_LINES);
       laser_color(lr, lg, lb, 0.8);
       glVertex3f(lx, ly, 0);

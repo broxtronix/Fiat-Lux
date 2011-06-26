@@ -271,6 +271,7 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
         g = 0.0f;
         b = 0.0f;
       }
+
       r *= m_red_intensity_multiplier * (1.0f-m_red_intensity_offset);
       r += m_red_intensity_offset;
       g *= m_green_intensity_multiplier * (1.0f-m_green_intensity_offset);
@@ -377,3 +378,19 @@ void lux::OutputEngine::blueIntensityOffset(float value) {
                 << value << "\n";
   }
 }
+
+void lux::OutputEngine::setTransformMatrix(float a11, float a12, float a13,
+                                           float a21, float a22, float a23,
+                                           float a31, float a32, float a33) {
+  m_transform_matrix.setIdentity();
+  m_transform_matrix(0,0) = a11;
+  m_transform_matrix(0,1) = a12;
+  m_transform_matrix(0,2) = a13;
+  m_transform_matrix(1,0) = a21;
+  m_transform_matrix(1,1) = a22;
+  m_transform_matrix(1,2) = a23;
+  m_transform_matrix(2,0) = a31;
+  m_transform_matrix(2,1) = a32;
+  m_transform_matrix(2,2) = a33;
+}
+
