@@ -24,6 +24,8 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
 
         # Check boxes are a little tricky, and it is safest to
         # explicitly set the state of the output engine here.
+        self.settings['calibration'].preampCalibration = False
+        self.settings['calibration'].laserCalibration = False
 	self.preampCalibration.setChecked(False)
         self.output_engine.setPreampCalibration(False)
 	self.laserCalibration.setChecked(False)

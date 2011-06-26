@@ -76,25 +76,32 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 
     def resetDefaults(self):
         # Laser Power
-	self.redIntensitySlider.setValue(self.settings['output'].valueWithDefault('redIntensity', 1.0) * 100);
-	self.redOffsetSlider.setValue(self.settings['output'].valueWithDefault('redOffset', 0.0) * 100 + 50);
-	self.greenIntensitySlider.setValue(self.settings['output'].valueWithDefault('greenIntensity', 1.0) * 100);
-	self.greenOffsetSlider.setValue(self.settings['output'].valueWithDefault('greenOffset', 0.0) * 100 + 50);
-	self.blueIntensitySlider.setValue(self.settings['output'].valueWithDefault('blueIntensity', 1.0) * 100);
-	self.blueOffsetSlider.setValue(self.settings['output'].valueWithDefault('blueOffset', 0.0) * 100 + 50);
+	self.redIntensitySlider.setValue(self.settings['output'].refreshWithDefault('redIntensity', 1.0) * 100);
+	self.redOffsetSlider.setValue(self.settings['output'].refreshWithDefault('redOffset', 0.0) * 100 + 50);
+	self.greenIntensitySlider.setValue(self.settings['output'].refreshWithDefault('greenIntensity', 1.0) * 100);
+	self.greenOffsetSlider.setValue(self.settings['output'].refreshWithDefault('greenOffset', 0.0) * 100 + 50);
+	self.blueIntensitySlider.setValue(self.settings['output'].refreshWithDefault('blueIntensity', 1.0) * 100);
+	self.blueOffsetSlider.setValue(self.settings['output'].refreshWithDefault('blueOffset', 0.0) * 100 + 50);
 
 	# Blanking
-	self.outputEnable.setChecked(self.settings['output'].valueWithDefault('outputEnable', True));
-	self.blankingDisable.setChecked(self.settings['output'].valueWithDefault('blankingDisable', False));
-	self.blankingInvert.setChecked(self.settings['output'].valueWithDefault('blankingInvert', False));
+	self.outputEnable.setChecked(self.settings['output'].refreshWithDefault('outputEnable', True));
+	self.blankingDisable.setChecked(self.settings['output'].refreshWithDefault('blankingDisable', False));
+	self.blankingInvert.setChecked(self.settings['output'].refreshWithDefault('blankingInvert', False));
+        self.output_engine.setOutputEnable(self.settings['output'].outputEnable)
+        self.output_engine.setBlankEnable(not self.settings['output'].blankingDisable)
+        self.output_engine.setBlankInvert(self.settings['output'].blankingInvert)
+
 
         # Scanning
-	self.xInvert.setChecked(self.settings['output'].valueWithDefault('xInvert', False))
-	self.yInvert.setChecked(self.settings['output'].valueWithDefault('yInvert', False))
-	self.xySwap.setChecked(self.settings['output'].valueWithDefault('xySwap', False))
-	self.aspectScale.setChecked(self.settings['output'].valueWithDefault('aspectScale', False))
-        self.fitSquare.setChecked(self.settings['output'].valueWithDefault('fitSquare', False))
-	self.aspectRatio.setCurrentIndex(self.settings['output'].valueWithDefault('aspectRatio',0))
+	self.xInvert.setChecked(self.settings['output'].refreshWithDefault('xInvert', False))
+	self.yInvert.setChecked(self.settings['output'].refreshWithDefault('yInvert', False))
+	self.xySwap.setChecked(self.settings['output'].refreshWithDefault('xySwap', False))
+	self.aspectScale.setChecked(self.settings['output'].refreshWithDefault('aspectScale', False))
+        self.fitSquare.setChecked(self.settings['output'].refreshWithDefault('fitSquare', False))
+	self.aspectRatio.setCurrentIndex(self.settings['output'].refreshWithDefault('aspectRatio',0))
+        self.output_engine.setInvertX(self.settings['output'].xInvert)
+        self.output_engine.setInvertY(self.settings['output'].yInvert)
+        self.output_engine.setSwapXY(self.settings['output'].xySwap)
         
         # Set up safe environment every time
         self.settings['output'].xEnable = True
@@ -107,7 +114,7 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 	self.yEnable.setEnabled(False)
 
         # Calibration
-        self.lockCalibration.setChecked(self.settings['output'].valueWithDefault('lockCalibration', False))
+        self.lockCalibration.setChecked(self.settings['output'].refreshWithDefault('lockCalibration', False))
 
         # Extract the affine matrix
         if self.settings['output'].contains('affine_matrix'):
@@ -163,6 +170,8 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
 
         # Save the data into our settings structure
         self.settings['output'].affine_matrix = self.affine_matrix
+        self.output_engine.setTransformMatrix(self.affine_matrix)
+
 
     def updateMatrix(self):
 	smtx = QtGui.QTransform()
@@ -223,11 +232,13 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
             if ret == QtGui.QMessageBox.Yes:
                 self.xEnable.setEnabled(True)
                 self.yEnable.setEnabled(True)
+                self.output_engine.setSafetyFirst(False)
                 return
             else:
                 self.enforceSafety.setChecked(True)
                 self.xEnable.setEnabled(False)
                 self.yEnable.setEnabled(False)
+                self.output_engine.setSafetyFirst(True)
                 return
 	
 	if state:
@@ -239,28 +250,35 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
     def on_outputEnable_toggled(self, state):
         self.settings['output'].outputEnable = state
         self.momentaryTestButton.setEnabled(not state)
-
+        self.output_engine.setOutputEnable(state)
 
     def on_blankingDisable_toggled(self, state):
         self.settings['output'].blankingDisable = state
+        self.output_engine.setBlankEnable(not state)
 
     def on_blankingInvert_toggled(self, state):
         self.settings['output'].blankingInvert = state
+        self.output_engine.setBlankInvert(state)
 
     def on_stopButton_pressed(self):
         self.outputEnable.setChecked(False)
+        self.output_engine.setOutputEnable(False)
 
     def on_momentaryTestButton_pressed(self):
         self.settings['output'].outputEnable = True
+        self.output_engine.setOutputEnable(True)
 
     def on_momentaryTestButton_released(self):
         self.settings['output'].outputEnable = False
+        self.output_engine.setOutputEnable(False)
 
     def on_xEnable_toggled(self, state):
         self.settings['output'].xEnable = state
+        self.output_engine.setEnableX(state)
 
     def on_yEnable_toggled(self, state):
         self.settings['output'].yEnable = state
+        self.output_engine.setEnableY(state)
 
     def on_xInvert_toggled(self, state):
         self.settings['output'].xInvert = state
@@ -304,12 +322,14 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         # Save the data into our settings structure
         self.settings['output'].aspectRatio = self.currentAspect
         self.settings['output'].affine_matrix = self.affine_matrix
+        self.output_engine.setTransformMatrix(self.affine_matrix)
 
     def on_resetTransform_clicked(self):
         self.resetPoints();
 
         # Save the data into our settings structure
         self.settings['output'].affine_matrix = self.affine_matrix
+        self.output_engine.setTransformMatrix(self.affine_matrix)
 
     def on_redIntensitySlider_valueChanged(self, value):
         v = value / 100.0

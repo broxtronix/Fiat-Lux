@@ -29,7 +29,6 @@ class LuxEngine(QtCore.QThread):
         if (ol.init(3,30000) != 0):
             raise Exception("Could not initialize openlase")
 
-
         self.settings['calibration'].refreshWithDefault('olRate', 30000 / 30000.0 * 99.0)
         self.settings['calibration'].refreshWithDefault('olOnSpeed', 100)
         self.settings['calibration'].refreshWithDefault('olOffSpeed', 20)

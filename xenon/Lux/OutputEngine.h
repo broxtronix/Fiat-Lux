@@ -98,6 +98,10 @@ namespace lux {
     void greenIntensityOffset(float value);
     void blueIntensityOffset(float value);
 
+    void setTransformMatrix(float a11, float a12, float a13,
+                            float a21, float a22, float a23,
+                            float a31, float a32, float a33);
+
     // Called by Jack as new audio frames arrive
     virtual int process_callback(nframes_t nframes);
 
