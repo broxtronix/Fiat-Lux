@@ -1,0 +1,8 @@
+*~
+*.pyc
+*.os
+*.so
+.scon*
+CMakeFiles*
+CMakeCache*
+*.cmake
