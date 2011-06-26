@@ -13,7 +13,7 @@ class SimplePlugin(LuxPlugin):
     name = "Guilloche"
     description = """
     A spirograph-like pattern.
-    Set crn_dwell and crv_dwell to 0!
+    Set corner dwell and curve dwell to 0!
     """
     def __init__(self):
         lux.register(Parameter( name = "simple_rate",
@@ -35,6 +35,10 @@ class SimplePlugin(LuxPlugin):
         self.color_time_frequency = 1/4
         self.color_length_frequency = 1/240 #set to 0 to calibrate color
         self.color_angle_frequency = 1
+        self.spatial_resonance = 4 #ok why is this 5 and not 4?
+        self.spatial_resonance_amplitude = 0.1 
+        self.spatial_resonance_offset = 0.25
+        
         self.r_prime = 1 #37
         self.g_prime = 2 #23
         self.b_prime = 3 #128
@@ -43,6 +47,7 @@ class SimplePlugin(LuxPlugin):
         self.width = self.scale
         self.height = self.scale
         self.bass = 1 # plz hack this to do fft power binning kthx
+        #note to self, could modulate radius with average of n_samples/n_segments
 
     def draw(self):
         time = lux.time
@@ -50,7 +55,7 @@ class SimplePlugin(LuxPlugin):
         ctf = self.color_time_frequency
         clf = self.color_length_frequency
         caf = self.color_angle_frequency
-        theta = math.sin(time*self.time_scale)
+        theta = abs(math.sin(time*self.time_scale))
         R = self.R * math.sin(2*pi*time*self.time_scale*self.R_frequency)
         r = self.r * math.sin(2*pi*time*self.time_scale*self.r_frequency)
         p = self.p * math.sin(2*pi*time*self.time_scale*self.p_frequency) * self.bass
@@ -63,13 +68,13 @@ class SimplePlugin(LuxPlugin):
         
         first = True
         n = 0
-        while theta < 2 * math.pi * self.max_cycles and n < self.max_segments:
+        while theta < 2*pi*self.max_cycles and n < self.max_segments:
             theta += self.theta_step
+            #x = (R + r) * math.cos(theta)
+            #y = (R + r) * math.sin(theta)
             x = (R + r) * math.cos(theta) + (r + p) * math.cos((R+r)/r * theta)
             y = (R + r) * math.sin(theta) + (r + p) * math.sin((R+r)/r * theta)
             
-            x *= self.width
-            y *= self.height
             if first:
                 ol.begin(ol.LINESTRIP)
                 first = False
@@ -81,8 +86,17 @@ class SimplePlugin(LuxPlugin):
             red   = math.sin(2*pi*(self.r_prime/3+ctf*time+clf*n+caf*angle))
             green = math.sin(2*pi*(self.g_prime/3+ctf*time+clf*n+caf*angle))
             blue =  math.sin(2*pi*(self.b_prime/3+ctf*time+clf*n+caf*angle))
-
             ol.color3(red, green, blue)
+            
+            #this makes it square-ish
+            #x += math.cos(2*pi*angle*self.spatial_resonance)*self.spatial_resonance_amplitude
+            #y += math.sin(2*pi*angle*self.spatial_resonance)*self.spatial_resonance_amplitude
+            x += math.cos(2*pi*angle*(self.spatial_resonance+1)+2*pi*self.spatial_resonance_offset)*self.spatial_resonance_amplitude
+            y += math.sin(2*pi*angle*(self.spatial_resonance+1)+2*pi*self.spatial_resonance_offset)*self.spatial_resonance_amplitude
+
+
+            x *= self.width
+            y *= self.height
             ol.vertex3((x,y,0))
             n += 1
         ol.end()
@@ -90,6 +104,6 @@ class SimplePlugin(LuxPlugin):
         target = self.max_segments * 0.8
         error = (target - n)/target
         self.theta_step = min(max(1e-100, self.theta_step * (1-error)), 1)
-        print n, time
+        #print n,  angle
         self.time += 1/30
 
