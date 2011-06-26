@@ -200,8 +200,8 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
       *o_g++ = m_laser_calibration_green_intensity;
       *o_b++ = m_laser_calibration_blue_intensity;
     }
-
-  } else {
+    
+  }  else {
 
     for (nframes_t frm = 0; frm < nframes; frm++) {
       sample_t x,y,r,g,b,a,orig_r,orig_g,orig_b,orig_a;

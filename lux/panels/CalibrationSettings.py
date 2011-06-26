@@ -55,9 +55,6 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
         self.laserCalibrationXFreq.setValue(self.settings['calibration'].refreshWithDefault('laserCalibrationXFrequency', 0.0))
         self.laserCalibrationYFreq.setValue(self.settings['calibration'].refreshWithDefault('laserCalibrationYFrequency', 0.0))
 
-
-
-
     # --------------------------------------------------------------------
     #                               ACTIONS 
     # --------------------------------------------------------------------

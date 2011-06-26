@@ -46,7 +46,40 @@ class TestPatternPlugin(LuxPlugin):
         ol.begin(ol.LINESTRIP)
         self.square(size,size,-size,-size)
         ol.end()
-        
+
+        # Red dots
+        ol.loadIdentity()
+        ol.loadIdentity3()
+
+        ol.color3(1.0, 0.0, 0.0);
+        ol.begin(ol.POINTS)
+        for y in range(0, 20):
+#            ol.color3(0.0, float(y)/20.0, 0.0);
+            ol.vertex3((-0.6, (float(y) / 20.0) - 0.5, -1.0))
+        ol.end()
+
+        # Green dots
+        ol.color3(0.0, 1.0, 0.0);
+        ol.begin(ol.POINTS)
+        for y in range(0, 20):
+            ol.color3(0.0, float(y)/20.0, 0.0);
+            ol.vertex3((-0.4, (float(y) / 20.0) - 0.5, -1.0))
+        ol.end()
+
+        # Blue dots
+        ol.color3(0.0, 0.0, 1.0);
+        ol.begin(ol.POINTS)
+        for y in range(0, 20):
+#            ol.color3(0.0, 0.0, float(y)/20.0);
+            ol.vertex3((-0.2, (float(y) / 20.0) - 0.5, -1.0))
+        ol.end()
+
+        # vertical line
+        ol.begin(ol.LINESTRIP)
+        ol.vertex((0,-1))
+        ol.vertex((0,1))        
+        ol.end()
+
 
     def square(self,x1,y1,x2,y2):
         ol.begin(ol.LINESTRIP)

@@ -29,37 +29,17 @@ class LuxEngine(QtCore.QThread):
         if (ol.init(3,30000) != 0):
             raise Exception("Could not initialize openlase")
 
-        # Set up rendering parameters
-        # params = ol.getRenderParams()
-        # params.rate = 48000;
-	# params.on_speed = 1.0/100.0;
-	# params.off_speed = 2.0/20.0;
-	# params.start_wait = 8;
-	# params.start_dwell = 3;
-	# params.curve_dwell = 0;
-	# params.corner_dwell = 4;
-	# params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
-	# params.end_dwell = 3;
-	# params.end_wait = 7;
-	# params.snap = 1/100000.0;
-        # #	params.render_flags = ol.RENDER_NOREORDER;
-        # ol.setRenderParams(params)
 
-        params = ol.getRenderParams()
-        params.rate = 30000;
-	params.on_speed = 1.0/20.0;
-	params.off_speed = 1.0/5.0;
-	params.start_wait = 5;
-	params.start_dwell = 5;
-	params.curve_dwell = 0;
-	params.corner_dwell = 2;
-	params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
-	params.end_dwell = 5;
-	params.end_wait = 15;
-	params.snap = 1/100000.0;
-        #	params.render_flags = ol.RENDER_NOREORDER;
-        ol.setRenderParams(params)
-
+        self.settings['calibration'].refreshWithDefault('olRate', 30000 / 30000.0 * 99.0)
+        self.settings['calibration'].refreshWithDefault('olOnSpeed', 100)
+        self.settings['calibration'].refreshWithDefault('olOffSpeed', 20)
+        self.settings['calibration'].refreshWithDefault('olStartDwell', 3)
+        self.settings['calibration'].refreshWithDefault('olEndDwell', 3)
+        self.settings['calibration'].refreshWithDefault('olCornerDwell', 4)
+        self.settings['calibration'].refreshWithDefault('olCurveDwell', 0)
+        self.settings['calibration'].refreshWithDefault('olStartWait', 8)
+        self.settings['calibration'].refreshWithDefault('olEndWait', 7)
+        
         # create a mutex and semaphore for managing this thread.
         self.lock = QtCore.QMutex()
         self.exiting = False
