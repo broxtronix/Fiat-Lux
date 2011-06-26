@@ -2,11 +2,12 @@ compiling on ubuntu
 -------------------
 you will need at least the following packages to compile fiat lux:
 scons libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-filesystem-dev \
-libaubio-dev libeigen2-dev \
-libjack-dev libjack-jackd2-dev python-qt4 python-qt4-gl python-cython libglu1-mesa-dev \
+libaubio-dev libeigen2-dev libcv-dev libhighgui-dev\
+libjack-dev libjack-jackd2-dev python-qt4 python-qt4-gl python-cython libglu1-mesa-dev pyqt4-dev-tools \
 jackd cmake libncurses5 yasm pyqt4-dev-tools \
 libavcodec-dev libavformat-dev ffmpeg
 libglu1-mesa-dev libxmu-dev libxi-dev libqt4-dev libavformat-dev
+libasound2-dev #to shut up midiview example
 
 if you're running maverick you'll need to compile cython-0.14 from source since 0.12 is the latest package
 
@@ -14,6 +15,9 @@ if you're running maverick you'll need to compile cython-0.14 from source since 
 
 to start compiling lux, type:
 scons
+
+export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/:/home/fenn/code/Fiat-Lux/xenon/Python/:/home/fenn/code/Fiat-Lux/openlase/python/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fenn/code/Fiat-Lux/openlase/libol/:/home/fenn/code/Fiat-Lux/xenon/
 
 assuming everything went well, now we need to let python know where stuff went:
 export PYTHONPATH=$PYTHONPATH:$path_to_lux/
