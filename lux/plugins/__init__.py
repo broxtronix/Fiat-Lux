@@ -7,6 +7,7 @@ import simple
 import testpattern
 import two_cubes
 import guilloche
+import party_in_your_pants
 #import mesh
 
 # -----------------------------------------
