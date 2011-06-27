@@ -246,7 +246,7 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
       // Run the openlase filters 
       //
       // **** TODO: What does this do??
-      //filter(&x, &y);
+      filter(&x, &y);
     
       *o_x++ = x;
       *o_y++ = y;
