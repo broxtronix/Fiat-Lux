@@ -6,4 +6,5 @@
 CMakeFiles*
 CMakeCache*
 *.cmake
-lux/panels/*
+lux/panels/*.py
+lux/panels/*.py
