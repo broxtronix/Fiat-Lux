@@ -86,7 +86,10 @@ try:
 
 except:
     # First, disable the laser if we can
-    output_engine.setOutputEnable(False)
+#    try: 
+#        output_engine.setOutputEnable(False)
+#    except NameError:
+#        pass
     
     exc_type, exc_value, exc_traceback = sys.exc_info()
     error_string = '-' * 60 + '\n'

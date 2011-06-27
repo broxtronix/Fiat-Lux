@@ -1,11 +1,14 @@
-from lux_plugin import LuxPlugin
+from lux_plugin import LuxPlugin, ColorDriftPlugin
 import pylase as ol
 from audio import audio_engine
 
 from parameters import lux, Parameter
 from math import *
+import numpy as np
+import colorsys
+import random
 
-class Scope(LuxPlugin):
+class Scope(LuxPlugin, ColorDriftPlugin):
 
     # Plugin Name
     name = "Oscilloscope"
@@ -17,12 +20,15 @@ class Scope(LuxPlugin):
 
     # Constructor
     def __init__(self):
-        # This is how you register a parameter with the lux engine.
-        # Parameters can be controlled using OSC or in the GUI.
-        lux.register(Parameter( name = "simple_rate",
-                                description = "0..1   controls the rate of spinning cubes",
-                                default_value = 1.0 ))
-        
+        LuxPlugin.__init__(self)
+        ColorDriftPlugin.__init__(self)
+
+        # Reset things
+        audio_engine.clear_all()
+        self.x_coord = -0.9
+        self.step = 1/512.0
+        self.subsamp = 3
+
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
         ol.loadIdentity3()
@@ -39,23 +45,20 @@ class Scope(LuxPlugin):
 
         # Openlase can only draw 30000 points in one cycle (less that
         # that, actually!).  Clear the audio buffer and try again!
-        if left.shape[0] > 10000:
-            audio_engine.clear_all()
-            return
-
-        if left.shape[0] != right.shape[0]:
+        if mono.shape[0] > 10000:
             audio_engine.clear_all()
             return
 
         ol.loadIdentity3()
-        ol.perspective(60, 1, 1, 100)
-        ol.translate3((0, 0, -5))
+        ol.color3(*(self.color_cycle()))
 
-        ol.color3(1.0,0.0,1.0);
-
-        ol.begin(ol.LINESTRIP)
-        for i in range(left.shape[0]):
-            pass
-#            if (i % 10 == 0):
- #               ol.vertex3((left[i]*100, right[i]*100, -1))
+        ol.begin(ol.POINTS)
+        for i in range(0, mono.shape[0]-1, self.subsamp):
+            scale_factor = pow(0.9-abs(self.x_coord),0.5)
+            if (mono[i] <= -1.0):
+                mono[i] = 1.0
+            ol.vertex3((self.x_coord, tanh(mono[i]*scale_factor), -1))
+#            ol.vertex3((self.x_coord, log(mono[i]*scale_factor+1.0), -1))
+            self.x_coord = self.x_coord + self.step
+            if (self.x_coord > 0.9) : self.x_coord = -0.9
         ol.end()
