@@ -1,3 +1,4 @@
+#copyright ben lipkowitz 2011
 #derived from works by Toms Baugis and Michael Broxton
 #copyright license: GNU GPL 2
 from __future__ import division
