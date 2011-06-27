@@ -22,6 +22,7 @@ class Particle:
     self.moving = False
     self.color=color
     self.follow=follow
+    self.wait=0
 
   def __repr__(self):
     return "Particle(%.02f, %.02f)" % (self.x, self.y)
@@ -48,6 +49,7 @@ class Particle:
   
   def finish(self, val):
     self.moving = False
+    #self.draw('wah')
     return self
 
 class Chain:
@@ -86,7 +88,7 @@ class Chain:
         particle.draw('blah')
 
         if abs(particle.x - new_x) > 0.01 or abs(particle.y - new_y) > 0.01:
-            self.tweener.add_tween(particle, x=new_x, y=new_y, duration=0.9, \
+            self.tweener.add_tween(particle, x=new_x, y=new_y, duration=0.6, \
                 easing=pytweener.Easing.Cubic.ease_out, on_complete=particle.finish, on_update=particle.draw)
             
             #self.animate(particle, x = new_x, y = new_y, duration = 0.3, easing = Easing.Cubic.ease_out)
@@ -123,8 +125,12 @@ class SimplePlugin(LuxPlugin):
         ol.loadIdentity3()
         ol.loadIdentity()
         
-        if not self.particle.moving:
+        if not self.particle.moving and self.particle.wait > 0.5:
+          self.particle.wait = 0
           self.bounce()
+
+#        dt = lux.time - self.last_time
+        self.particle.wait += lux.time - self.last_time
 
         self.chain.draw(target=(self.particle.x, self.particle.y))
         foo= self.tweener.update(lux.time - self.last_time)
