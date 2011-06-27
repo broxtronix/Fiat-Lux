@@ -512,6 +512,18 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 
+        if (jack_connect(client, "playilda:out_x", "system:playback_1"))
+          printf("connect_ports - could not connect out_x\n");
+        if (jack_connect(client, "playilda:out_y", "system:playback_2"))
+          printf("connect_ports - could not connect out_y\n");
+        //        if (jack_connect(client, "playilda:out_r", "system:playback_3"))
+        //          printf("connect_ports - could not connect out_r\n");
+        if (jack_connect(client, "playilda:out_g", "system:playback_4"))
+          printf("connect_ports - could not connect out_g\n");
+        // if (jack_connect(client, "playilda:out_b", "system:playback_5"))
+        //   printf("connect_ports - could not connect out_b\n");
+
+
 	while (1) {
 		stat(fname, &st2);
 		if(st1.st_mtime != st2.st_mtime) {

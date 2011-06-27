@@ -26,7 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 
 #ifdef HAVE_MALLOC_H
+#ifdef __APPLE__
+#include <malloc/malloc.h>
+#else
 # include <malloc.h>
+#endif
 #endif
 
 

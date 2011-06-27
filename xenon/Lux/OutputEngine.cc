@@ -43,7 +43,7 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
 
   m_blank_invert = false;
   m_blank_enable = false;
-  m_output_enable = true;
+  m_output_enable = false;
 
   m_size_multiplier = 1.0;
   m_red_intensity_multiplier = 1.0;

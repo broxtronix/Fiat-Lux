@@ -26,7 +26,7 @@ class LuxEngine(QtCore.QThread):
         self.settings['video'].refreshWithDefault('maxNum', 10)
         
         # Initialize OpenLase
-        if (ol.init(3,30000) != 0):
+        if (ol.init(3, 96000) != 0):
             raise Exception("Could not initialize openlase")
 
         self.settings['calibration'].refreshWithDefault('olRate', 30000 / 30000.0 * 99.0)

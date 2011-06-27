@@ -85,6 +85,9 @@ try:
     lux_engine.exit()
 
 except:
+    # First, disable the laser if we can
+    output_engine.setOutputEnable(False)
+    
     exc_type, exc_value, exc_traceback = sys.exc_info()
     error_string = '-' * 60 + '\n'
     error_string += "An exception occurred:\n\n"
