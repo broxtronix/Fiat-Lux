@@ -26,7 +26,7 @@ class LuxEngine(QtCore.QThread):
         self.settings['video'].refreshWithDefault('maxNum', 10)
         
         # Initialize OpenLase
-        if (ol.init(3,30000) != 0):
+        if (ol.init(3, 96000) != 0):
             raise Exception("Could not initialize openlase")
 
         self.settings['calibration'].refreshWithDefault('olRate', 30000 / 30000.0 * 99.0)
@@ -72,6 +72,7 @@ class LuxEngine(QtCore.QThread):
             if (self.ol_update_params):
                 params = ol.getRenderParams()
                 params.rate = self.settings['calibration'].olRate
+                #params.max_framelen = self.settings['calibration'].olRate
                 params.on_speed = 1.0/self.settings['calibration'].olOnSpeed
                 params.off_speed = 1.0/self.settings['calibration'].olOffSpeed
                 params.start_wait = self.settings['calibration'].olStartWait
@@ -86,11 +87,7 @@ class LuxEngine(QtCore.QThread):
                 ol.setRenderParams(params)
                 self.ol_update_params = False
                 
-
-
-            
             if (self.current_plugin):
-
                 if (self.settings['video'].videoMode):
                     self.video_engine.draw_lasers()
                 else:

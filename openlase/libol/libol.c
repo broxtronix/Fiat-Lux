@@ -148,7 +148,7 @@ static Point *ps_alloc(int count)
   Point *ret;
   if ((count + wframe.psnext) > wframe.psmax) {
     olLog("Point buffer overflow (temp): need %d points, have %d\n", count + wframe.psnext, wframe.psmax);
-    exit(1);
+    exit(0);
   }
   ret = wframe.points + wframe.psnext;
   wframe.psnext += count;
@@ -211,24 +211,59 @@ static int process (nframes_t nframes, void *arg)
       out_point = 0;
     }
     int count = nframes;
+
+    float mul = (float)params.rate / (float)jack_rate;
     int left = frames[crbuf].pnext - out_point;
-    if (count > left)
-      count = left;
+    if (count > left / mul)
+      count = ceil(left / mul);
+
+    float subframe_counter = out_point;
     int i;
     for (i=0; i<count; i++) {
-      Point *p = &frames[crbuf].points[out_point];
-      *o_x++ = p->x;
-      *o_y++ = p->y;
+      float subframe_offset = subframe_counter - floor(subframe_counter);
+      Point *start_p = &frames[crbuf].points[out_point];
+      Point *end_p = &frames[crbuf].points[out_point+1];
 
-      *o_r++ = ((p->color >> 16) & 0xff) / 255.0f;
-      *o_g++ = ((p->color >> 8) & 0xff) / 255.0f;
-      *o_b++ = (p->color & 0xff) / 255.0f;
+      *o_x++ = start_p->x * (1 - subframe_offset) + end_p->x * subframe_offset;
+      *o_y++ = start_p->y * (1 - subframe_offset) + end_p->y * subframe_offset;
 
-      *o_al++ = frames[crbuf].audio_l[out_point];
-      *o_ar++ = frames[crbuf].audio_r[out_point];
-      out_point++;
-      //olLog("%06x %f %f\n", p->x, p->y, p->color);
+      float red1 = ((start_p->color >> 16) & 0xff) / 255.0f;
+      float red2 = ((end_p->color >> 16) & 0xff) / 255.0f;
+      float green1 = ((start_p->color >> 8) & 0xff) / 255.0f;
+      float green2 = ((end_p->color >> 8) & 0xff) / 255.0f;
+      float blue1 = (start_p->color & 0xff) / 255.0f;
+      float blue2 = (end_p->color & 0xff) / 255.0f;
+      *o_r++ = red1 * (1-subframe_offset) + red2 * subframe_offset;
+      *o_g++ = green1 * (1-subframe_offset) + green2 * subframe_offset;
+      *o_b++ = blue1 * (1-subframe_offset) + blue2 * subframe_offset;
+
+      //      *o_al++ = frames[crbuf].audio_l[out_point];
+      //      *o_ar++ = frames[crbuf].audio_r[out_point];
+      
+      if (subframe_counter + mul >= floor(subframe_counter) + 1)
+        out_point++;
+      subframe_counter += mul;
+      // olLog("%06x %f %f\n", p->x, p->y, p->color);
     }
+
+    // int left = frames[crbuf].pnext - out_point;
+    // if (count > left)
+    //   count = left;
+    // int i;
+    // for (i=0; i<count; i++) {
+    //   Point *p = &frames[crbuf].points[out_point];
+    //   *o_x++ = p->x;
+    //   *o_y++ = p->y;
+
+    //   *o_r++ = ((p->color >> 16) & 0xff) / 255.0f;
+    //   *o_g++ = ((p->color >> 8) & 0xff) / 255.0f;
+    //   *o_b++ = (p->color & 0xff) / 255.0f;
+
+    //   *o_al++ = frames[crbuf].audio_l[out_point];
+    //   *o_ar++ = frames[crbuf].audio_r[out_point];
+    //   out_point++;
+    //   //olLog("%06x %f %f\n", p->x, p->y, p->color);
+    // }
     if (out_point == frames[crbuf].pnext)
       out_point = -1;
     nframes -= count;
@@ -363,10 +398,12 @@ static int near(Point a, Point b)
 static void addpoint(float x, float y, uint32_t color)
 {
   Point *pnt = ps_alloc(1);
-  pnt->x = x;
-  pnt->y = y;
-  pnt->color = color;
-  dstate.curobj->pointcnt++;
+  if (pnt) {
+    pnt->x = x;
+    pnt->y = y;
+    pnt->color = color;
+    dstate.curobj->pointcnt++;
+  }
 }
 
 static int get_dwell(float x, float y)
@@ -818,44 +855,43 @@ float olRenderFrame(int max_fps)
   count = frames[cwbuf].pnext;
   last_info.points = count;
 
-  if (params.max_framelen && count > params.max_framelen)
-    {
-      int in_count = count;
-      int out_count = params.max_framelen;
-      check_points(count);
+  if (params.max_framelen && count > params.max_framelen) {
+    int in_count = count;
+    int out_count = params.max_framelen;
+    check_points(count);
+    
+    Point *pin = frames[cwbuf].points;
+    Point *pout = &pin[in_count];
+    
+    float pos = 0;
+    float delta = count / (float)out_count;
+    
+    count = 0;
+    while (pos < (in_count - 1)) {
+      int ipos = pos;
+      float rest = pos - ipos;
 
-      Point *pin = frames[cwbuf].points;
-      Point *pout = &pin[in_count];
+      pout->x = pin[ipos].x * (1-rest) + pin[ipos+1].x * rest;
+      pout->y = pin[ipos].y * (1-rest) + pin[ipos+1].y * rest;
 
-      float pos = 0;
-      float delta = count / (float)out_count;
-
-      count = 0;
-      while (pos < (in_count - 1)) {
-        int ipos = pos;
-        float rest = pos - ipos;
-
-        pout->x = pin[ipos].x * (1-rest) + pin[ipos+1].x * rest;
-        pout->y = pin[ipos].y * (1-rest) + pin[ipos+1].y * rest;
-
-        if (pin[ipos].color == C_BLACK || pin[ipos+1].color == C_BLACK) {
-          pout->color = C_BLACK;
-          pos += 1;
-          last_info.resampled_blacks++;
-        } else {
-          pout->color = pin[ipos].color;
-          pos += delta;
-        }
-
-        pout++;
-        count++;
+      if (pin[ipos].color == C_BLACK || pin[ipos+1].color == C_BLACK) {
+        pout->color = C_BLACK;
+        pos += 1;
+        last_info.resampled_blacks++;
+      } else {
+        pout->color = pin[ipos].color;
+        pos += delta;
       }
 
-      memcpy(pin, &pin[in_count], count * sizeof(*pin));
-      frames[cwbuf].pnext = count;
-      check_points(0);
-      last_info.resampled_points = count;
+      pout++;
+      count++;
     }
+    
+    memcpy(pin, &pin[in_count], count * sizeof(*pin));
+    frames[cwbuf].pnext = count;
+    check_points(0);
+    last_info.resampled_points = count;
+  }
 
   float last_x, last_y;
   if (count) {

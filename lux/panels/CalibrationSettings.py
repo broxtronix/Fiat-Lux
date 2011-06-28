@@ -35,7 +35,7 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
         # slots below.
 
         # OPENLASE PARAMETERS
-        self.olRateSlider.setValue(self.settings['calibration'].refreshWithDefault('olRate', 30000 / 30000.0 * 99.0))
+        self.olRateSlider.setValue(self.settings['calibration'].refreshWithDefault('olRate', 30000)/1000.0)
         self.olOnSpeedSlider.setValue(self.settings['calibration'].refreshWithDefault('olOnSpeed', 100))
         self.olOffSpeedSlider.setValue(self.settings['calibration'].refreshWithDefault('olOffSpeed', 20))
         self.olStartDwellSlider.setValue(self.settings['calibration'].refreshWithDefault('olStartDwell', 3))
@@ -64,7 +64,7 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
     # OPENLASE PARAMS
 
     def on_olRateSlider_valueChanged(self, value):
-        v = float(value) / 99.0 * 30000.0
+        v = float(value) * 1000.0
         self.settings['calibration'].olRate = v
         self.olRateLabel.setText('%0.0f' % v)
         self.emit(QtCore.SIGNAL('olParamsChanged()'))

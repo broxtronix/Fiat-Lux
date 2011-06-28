@@ -1,3 +1,6 @@
+import colorsys
+import random
+
 # PluginMount Class
 #
 class PluginMount(type):
@@ -31,4 +34,28 @@ class LuxPlugin(object):
 
     def draw(self):
         pass
+
+
+# ColorDriftPlugin
+#
+# Mixin class useful for giving plugins some color.  Call
+# color_cycle() here to return an rgb tuple that automatically
+# evolves.
+class ColorDriftPlugin(object):
+    def __init__(self):
+        self.current_hue = 0.0
+        self.hue_target = 0.5
+        self.hue_step = .0001
+
+    # Slow, random evolution of hue. 
+    def color_cycle(self):
+        if (abs(self.hue_target - self.current_hue) < self.hue_step):
+            self.hue_target = random.random()
+        
+        if (self.hue_target > self.current_hue):
+            self.current_hue = self.current_hue + self.hue_step
+        else:
+            self.current_hue = self.current_hue - self.hue_step
+            
+        return colorsys.hsv_to_rgb(self.current_hue, 1.0, 1.0)
 

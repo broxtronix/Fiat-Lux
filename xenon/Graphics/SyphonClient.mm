@@ -77,8 +77,8 @@ void xenon::graphics::XenonSyphonClient::bind() {
     mTex.texData.height = texSize.height;
     mTex.texData.tex_w = texSize.width;
     mTex.texData.tex_h = texSize.height;
-    mTex.texData.tex_u = texSize.width;
-    mTex.texData.tex_t = texSize.height;
+    mTex.texData.tex_u = texSize.height;
+    mTex.texData.tex_t = texSize.width;
     mTex.texData.glType = GL_RGBA;
     mTex.texData.pixelType = GL_UNSIGNED_BYTE;
     mTex.texData.bFlipTexture = NO;
@@ -158,4 +158,12 @@ void xenon::graphics::XenonSyphonClient::draw(float x, float y, float w, float h
 
 void xenon::graphics::XenonSyphonClient::draw(float x, float y) {
   draw(x,y, mTex.texData.width, mTex.texData.height);
+}
+
+int xenon::graphics::XenonSyphonClient::getHeight() {
+  return mTex.texData.height; 
+}
+
+int xenon::graphics::XenonSyphonClient::getWidth() {
+  return mTex.texData.width;
 }

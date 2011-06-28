@@ -85,6 +85,7 @@ cdef extern from "xenon/Lux.h" namespace "lux":
 
     cdef cppclass VideoEngine:
         VideoEngine(string, string) except +RuntimeError
+        void initialize_gl() except +RuntimeError
         void draw_gl() except +RuntimeError
         void draw_lasers() except +RuntimeError
         void resize_gl(int, int) except +RuntimeError
@@ -94,6 +95,7 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void setContourMinArea(float) except +RuntimeError
         void setContourMaxArea(float) except +RuntimeError
         void setContourNumConsidered(int) except +RuntimeError
+        void setEdgeDetectionMode(int) except +RuntimeError
         void setContourMode(int) except +RuntimeError
         void setContourMethod(int) except +RuntimeError
 
@@ -267,6 +269,8 @@ cdef class LuxVideoEngine:
     def __dealloc__(self):
         del self.thisptr
 
+    def initialize_gl(self):
+        self.thisptr.initialize_gl()
     def draw_gl(self):
         self.thisptr.draw_gl()
     def draw_lasers(self):
@@ -288,6 +292,9 @@ cdef class LuxVideoEngine:
 
     def setContourNumConsidered(self, value):
         self.thisptr.setContourNumConsidered(value)
+
+    def setEdgeDetectionMode(self, value):
+        self.thisptr.setEdgeDetectionMode(value)
 
     def setContourMode(self, value):
         self.thisptr.setContourMode(value)

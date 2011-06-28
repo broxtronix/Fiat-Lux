@@ -457,6 +457,12 @@
         </item>
         <item>
          <widget class="QSlider" name="olRateSlider">
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -846,7 +852,7 @@
         <item>
          <widget class="QSlider" name="olStartWaitSlider">
           <property name="maximum">
-           <number>20</number>
+           <number>100</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -901,7 +907,7 @@
         <item>
          <widget class="QSlider" name="olEndWaitSlider">
           <property name="maximum">
-           <number>20</number>
+           <number>100</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>

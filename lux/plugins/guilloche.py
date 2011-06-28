@@ -77,8 +77,8 @@ class SimplePlugin(LuxPlugin):
             y = (R + r) * math.sin(theta) + (r + p) * math.sin((R+r)/r * theta)
             
             if first:
-                #ol.begin(ol.LINESTRIP)
-                ol.begin(ol.POINTS)
+                ol.begin(ol.LINESTRIP)
+                #ol.begin(ol.POINTS)
                 first = False
             #red = math.sin(ctf*time*n/37) * math.sin(csf*theta*n/37)
             #green = math.sin(ctf*time*n/23) * math.sin(csf*theta*n/23)

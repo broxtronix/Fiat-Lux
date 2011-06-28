@@ -21,39 +21,39 @@ lux::AudioEngine::AudioEngine(std::string const& jack_endpoint_name) :
   // ------------
   // Set up Aubio
   // ------------
-  // m_overlap_size = m_buffer_size;
-  // m_channels = 1;
-  // m_ibuf          = new_fvec(m_overlap_size, m_channels);
-  // m_fftgrain      = new_cvec(m_buffer_size, m_channels);
-  // m_onset_kl      = new_fvec(1 , m_channels);
-  // m_onset_complex = new_fvec(1 , m_channels);
-  // m_tempobuf      = new_fvec(2, m_channels);
+  m_overlap_size = m_buffer_size;
+  m_channels = 1;
+  m_ibuf          = new_fvec(m_overlap_size, m_channels);
+  m_fftgrain      = new_cvec(m_buffer_size, m_channels);
+  m_onset_kl      = new_fvec(1 , m_channels);
+  m_onset_complex = new_fvec(1 , m_channels);
+  m_tempobuf      = new_fvec(2, m_channels);
   
-  // // energy,specdiff,hfc,complexdomain,phase
-  // m_threshold                           = 0.3;
-  // m_silence                             = -90.;
-  // m_median                              = 6;
+  // energy,specdiff,hfc,complexdomain,phase
+  m_threshold                           = 0.3;
+  m_silence                             = -90.;
+  m_median                              = 6;
   
-  // // Onset
-  // aubio_onsetdetection_type type_onset_kl  = aubio_onset_kl;
-  // aubio_onsetdetection_type type_onset_complex = aubio_onset_complex;
-  // m_onset_detection_kl = new_aubio_onsetdetection(type_onset_kl,m_buffer_size, m_channels);
-  // m_onset_detection_complex = new_aubio_onsetdetection(type_onset_complex, m_buffer_size, m_channels);
-  // m_peak_picker = new_aubio_peakpicker(m_threshold);
-  // m_phase_vocoder = new_aubio_pvoc(m_buffer_size, m_overlap_size, m_channels);
+  // Onset
+  aubio_onsetdetection_type type_onset_kl  = aubio_onset_kl;
+  aubio_onsetdetection_type type_onset_complex = aubio_onset_complex;
+  m_onset_detection_kl = new_aubio_onsetdetection(type_onset_kl,m_buffer_size, m_channels);
+  m_onset_detection_complex = new_aubio_onsetdetection(type_onset_complex, m_buffer_size, m_channels);
+  m_peak_picker = new_aubio_peakpicker(m_threshold);
+  m_phase_vocoder = new_aubio_pvoc(m_buffer_size, m_overlap_size, m_channels);
 
-  // // Pitch
-  // aubio_pitchdetection_type type_pitch = aubio_pitch_yinfft; // aubio_pitch_mcomb
-  // aubio_pitchdetection_mode mode_pitch = aubio_pitchm_freq;
-  // m_pitch_detection = new_aubio_pitchdetection(m_buffer_size*4, m_overlap_size, m_channels, 
-  //                                              m_sample_rate, type_pitch, mode_pitch);
-  // aubio_pitchdetection_set_yinthresh(m_pitch_detection, 0.7);
+  // Pitch
+  aubio_pitchdetection_type type_pitch = aubio_pitch_yinfft; // aubio_pitch_mcomb
+  aubio_pitchdetection_mode mode_pitch = aubio_pitchm_freq;
+  m_pitch_detection = new_aubio_pitchdetection(m_buffer_size*4, m_overlap_size, m_channels, 
+                                               m_sample_rate, type_pitch, mode_pitch);
+  aubio_pitchdetection_set_yinthresh(m_pitch_detection, 0.7);
   
-  // // FFT
-  // m_mfft = new_aubio_mfft(m_overlap_size, m_channels);
+  // FFT
+  m_mfft = new_aubio_mfft(m_overlap_size, m_channels);
 
   // Tempo
-  //  m_tempo = new_aubio_tempo(type_onset_complex, m_overlap_size, m_overlap_size / 4, m_channels);
+   m_tempo = new_aubio_tempo(type_onset_complex, m_overlap_size, m_overlap_size / 4, m_channels);
 
   // Now that everything is set up, it's safe to start the jack callbacks.
   m_initialized = 1;
@@ -64,19 +64,19 @@ lux::AudioEngine::~AudioEngine() {
 
   xenon::Mutex::Lock lock(m_mutex);
   this->stop();
-  // del_aubio_onsetdetection(m_onset_detection_kl);
-  // del_aubio_onsetdetection(m_onset_detection_complex);
-  // del_aubio_peakpicker(m_peak_picker);
-  // del_aubio_pitchdetection(m_pitch_detection);
-  // del_aubio_pvoc(m_phase_vocoder);
-  // del_aubio_mfft(m_mfft);
-  // //  del_aubio_tempo(m_tempo);
-  // del_fvec(m_tempobuf);
-  // del_fvec(m_ibuf);
-  // del_cvec(m_fftgrain);
-  // del_fvec(m_onset_kl);
-  // del_fvec(m_onset_complex);
-  // aubio_cleanup();
+  del_aubio_onsetdetection(m_onset_detection_kl);
+  del_aubio_onsetdetection(m_onset_detection_complex);
+  del_aubio_peakpicker(m_peak_picker);
+  del_aubio_pitchdetection(m_pitch_detection);
+  del_aubio_pvoc(m_phase_vocoder);
+  del_aubio_mfft(m_mfft);
+  //  del_aubio_tempo(m_tempo);
+  del_fvec(m_tempobuf);
+  del_fvec(m_ibuf);
+  del_cvec(m_fftgrain);
+  del_fvec(m_onset_kl);
+  del_fvec(m_onset_complex);
+  aubio_cleanup();
 }
 
 // Called by Jack as new audio frames arrive.  We buffer the audio
@@ -106,41 +106,41 @@ int lux::AudioEngine::process_callback(nframes_t nframes) {
     }
   }
 
-  // // SILENCE DETECTION
-  // int is_silent = aubio_silence_detection(m_ibuf, m_silence);
+  // SILENCE DETECTION
+  int is_silent = aubio_silence_detection(m_ibuf, m_silence);
    
-  // // ONSET DETECTION
-  // aubio_pvoc_do (m_phase_vocoder, m_ibuf, m_fftgrain);
-  // aubio_onsetdetection(m_onset_detection_complex, m_fftgrain, m_onset_kl);
-  // aubio_onsetdetection(m_onset_detection_complex, m_fftgrain, m_onset_complex);
-  // m_onset_kl->data[0][0] *= m_onset_complex->data[0][0];  
-  // int is_onset = aubio_peakpick_pimrt(m_onset_kl, m_peak_picker); /* ** */
-  // if ( is_onset && is_silent )    // Test for silence 
-  //   is_onset = 0;   
-  // {
-  //   xenon::Mutex::Lock lock(m_mutex);
-  //   m_onset_buffer.push_back(is_onset);
-  // }
+  // ONSET DETECTION
+  aubio_pvoc_do (m_phase_vocoder, m_ibuf, m_fftgrain);
+  aubio_onsetdetection(m_onset_detection_complex, m_fftgrain, m_onset_kl);
+  aubio_onsetdetection(m_onset_detection_complex, m_fftgrain, m_onset_complex);
+  m_onset_kl->data[0][0] *= m_onset_complex->data[0][0];  
+  int is_onset = aubio_peakpick_pimrt(m_onset_kl, m_peak_picker); /* ** */
+  if ( is_onset && is_silent )    // Test for silence 
+    is_onset = 0;   
+  {
+    xenon::Mutex::Lock lock(m_mutex);
+    m_onset_buffer.push_back(is_onset);
+  }
 
-  // // PITCH DETECTION
-  // smpl_t pitch = aubio_pitchdetection(m_pitch_detection, m_ibuf);  /* ** */
-  // {
-  //   xenon::Mutex::Lock lock(m_mutex);
-  //   m_pitch_buffer.push_back(pitch);
-  // }
+  // PITCH DETECTION
+  smpl_t pitch = aubio_pitchdetection(m_pitch_detection, m_ibuf);  /* ** */
+  {
+    xenon::Mutex::Lock lock(m_mutex);
+    m_pitch_buffer.push_back(pitch);
+  }
 
-  // // FFT
-  // aubio_mfft_do (m_mfft, m_ibuf, m_fftgrain);
+  // FFT
+  aubio_mfft_do (m_mfft, m_ibuf, m_fftgrain);
    
   // TEMPO (ALSO SEEMS USEFUL FOR ONSET DETECTION)
-  // aubio_tempo (m_tempo, m_ibuf, m_tempobuf);
-  // int tempo_tactus = m_tempobuf->data[0][0]; /* ** */
-  // int tempo_onset = m_tempobuf->data[0][1];  /* ** */
-  // {
-  //   xenon::Mutex::Lock lock(m_mutex);
-  //   m_tempo_tactus_buffer.push_back(tempo_tactus);
-  //   m_tempo_onset_buffer.push_back(tempo_onset);
-  // }
+  aubio_tempo (m_tempo, m_ibuf, m_tempobuf);
+  int tempo_tactus = m_tempobuf->data[0][0]; /* ** */
+  int tempo_onset = m_tempobuf->data[0][1];  /* ** */
+  {
+    xenon::Mutex::Lock lock(m_mutex);
+    m_tempo_tactus_buffer.push_back(tempo_tactus);
+    m_tempo_onset_buffer.push_back(tempo_onset);
+  }
 
   return 0;
 }
