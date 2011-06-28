@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from settings import LuxSettings
 import PluginPanel
 import random
+import math
         
 class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
     """
@@ -47,11 +48,15 @@ class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
         self.manualModeButton.setChecked(self.settings['plugins'].refreshWithDefault('manual_mode', True));
 
         self.videoMode.setChecked(self.settings['video'].refreshWithDefault('videoMode', False));
-        self.thresholdSlider.setValue(self.settings['video'].refreshWithDefault('threshold', 0.2 * 99.0));
-        self.blurSlider.setValue(self.settings['video'].refreshWithDefault('blur', 1.5 / 5.0 * 99.0));
-        self.minAreaSlider.setValue(self.settings['video'].refreshWithDefault('minArea', 100 / (640*480) * 99.0));
-        self.maxAreaSlider.setValue(self.settings['video'].refreshWithDefault('maxArea', 99.0));
+        self.thresholdSlider.setValue(self.settings['video'].refreshWithDefault('threshold', 0.2) * 99)
+        self.blurSlider.setValue(self.settings['video'].refreshWithDefault('blur', 1.5) * 99 / 5.0)
+        self.minAreaSlider.setValue(self.settings['video'].refreshWithDefault('minArea', 100) / (640*480)*99.0)
+        self.maxAreaSlider.setValue(self.settings['video'].refreshWithDefault('maxArea', 99.0) / (640*480)*99.0)
         self.maxNumSlider.setValue(self.settings['video'].refreshWithDefault('maxNum', 10));
+
+        self.edgeSelection.setCurrentIndex(self.settings['video'].refreshWithDefault('edgeDetectionMode', 0))
+        self.modeSelection.setCurrentIndex(self.settings['video'].refreshWithDefault('contourMode', 1))
+        self.methodSelection.setCurrentIndex(self.settings['video'].refreshWithDefault('contourMethod', 2))
 
         self.connect(self.prevButton, QtCore.SIGNAL('clicked()'), self.prevClicked)
         self.connect(self.nextButton, QtCore.SIGNAL('clicked()'), self.nextClicked)
@@ -130,25 +135,33 @@ class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
         v = value / 99.0 * 640*480;
         self.settings['video'].minArea = v;
         self.video_engine.setContourMinArea(v);
-        self.minAreaLabel.setText('%0.2f' % (v))
+        self.minAreaLabel.setText('%d^2' % int(math.sqrt(v)))
 
     def on_maxAreaSlider_valueChanged(self, value):
         v = value / 99.0 * 640*480;
         self.settings['video'].maxArea = v;
         self.video_engine.setContourMaxArea(v);
-        self.maxAreaLabel.setText('%0.2f' % (v))
+        self.maxAreaLabel.setText('%d^2' % int(math.sqrt(v)))
 
     def on_maxNumSlider_valueChanged(self, value):
         self.settings['video'].maxNum = value;
-#        self.video_engine.setContourNumConsidered(value);
+        self.video_engine.setContourNumConsidered(value);
         self.maxNumLabel.setText('%d' % value)
+
+    def on_edgeSelection_currentIndexChanged(self, index):
+        # Ignore signals with string arguments
+        if (type(index) is not int):
+            return
+
+        self.video_engine.setEdgeDetectionMode(index)
+        self.settings['video'].edgeDetectionMode = index
 
     def on_modeSelection_currentIndexChanged(self, index):
         # Ignore signals with string arguments
         if (type(index) is not int):
             return
 
-#        self.video_engine.setContourMode(index)
+        self.video_engine.setContourMode(index)
         self.settings['video'].contourMode = index
 
     def on_methodSelection_currentIndexChanged(self, index):
@@ -156,6 +169,6 @@ class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
         if (type(index) is not int):
             return
 
-#        self.video_engine.setContourMethod(index)
+        self.video_engine.setContourMethod(index)
         self.settings['video'].contourMethod = index
 

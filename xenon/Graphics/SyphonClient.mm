@@ -159,3 +159,17 @@ void xenon::graphics::XenonSyphonClient::draw(float x, float y, float w, float h
 void xenon::graphics::XenonSyphonClient::draw(float x, float y) {
   draw(x,y, mTex.texData.width, mTex.texData.height);
 }
+
+int xenon::graphics::XenonSyphonClient::getHeight() {
+  if (bSetup)
+    return mTex.getHeight();
+  else 
+    return 512;
+}
+
+int xenon::graphics::XenonSyphonClient::getWidth() {
+  if (bSetup) 
+    return mTex.getWidth();
+  else
+    return 512;
+}

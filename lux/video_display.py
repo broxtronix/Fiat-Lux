@@ -80,12 +80,8 @@ class VideoDisplay(QtOpenGL.QGLWidget):
         """Initialize the GL environment we want"""
         self.makeCurrent()
 
-	GL.glClearColor(0.0, 0.0, 0.0, 0.0);
-	GL.glClearDepth(1.0);
-	GL.glDepthFunc(GL.GL_LESS);
-	GL.glDisable(GL.GL_DEPTH_TEST);
-	GL.glEnable(GL.GL_BLEND);
-	GL.glBlendFunc (GL.GL_SRC_ALPHA, GL.GL_ONE);
+        # Pass the resize_gl call along to the C++ code
+        self.video_engine.initialize_gl()
 
     def resizeGL(self, width=None, height=None):
         '''

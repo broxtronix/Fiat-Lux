@@ -33,6 +33,9 @@ namespace graphics {
     void bind();
     void unbind();
     void draw();
+
+    int getHeight();
+    int getWidth();
     
     void draw(float x, float y, float w, float h);
     void draw(float x, float y);

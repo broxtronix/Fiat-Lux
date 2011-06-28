@@ -148,7 +148,7 @@ static Point *ps_alloc(int count)
   Point *ret;
   if ((count + wframe.psnext) > wframe.psmax) {
     olLog("Point buffer overflow (temp): need %d points, have %d\n", count + wframe.psnext, wframe.psmax);
-    exit(1);
+    exit(0);
   }
   ret = wframe.points + wframe.psnext;
   wframe.psnext += count;
@@ -398,10 +398,12 @@ static int near(Point a, Point b)
 static void addpoint(float x, float y, uint32_t color)
 {
   Point *pnt = ps_alloc(1);
-  pnt->x = x;
-  pnt->y = y;
-  pnt->color = color;
-  dstate.curobj->pointcnt++;
+  if (pnt) {
+    pnt->x = x;
+    pnt->y = y;
+    pnt->color = color;
+    dstate.curobj->pointcnt++;
+  }
 }
 
 static int get_dwell(float x, float y)
@@ -853,44 +855,43 @@ float olRenderFrame(int max_fps)
   count = frames[cwbuf].pnext;
   last_info.points = count;
 
-  if (params.max_framelen && count > params.max_framelen)
-    {
-      int in_count = count;
-      int out_count = params.max_framelen;
-      check_points(count);
+  if (params.max_framelen && count > params.max_framelen) {
+    int in_count = count;
+    int out_count = params.max_framelen;
+    check_points(count);
+    
+    Point *pin = frames[cwbuf].points;
+    Point *pout = &pin[in_count];
+    
+    float pos = 0;
+    float delta = count / (float)out_count;
+    
+    count = 0;
+    while (pos < (in_count - 1)) {
+      int ipos = pos;
+      float rest = pos - ipos;
 
-      Point *pin = frames[cwbuf].points;
-      Point *pout = &pin[in_count];
+      pout->x = pin[ipos].x * (1-rest) + pin[ipos+1].x * rest;
+      pout->y = pin[ipos].y * (1-rest) + pin[ipos+1].y * rest;
 
-      float pos = 0;
-      float delta = count / (float)out_count;
-
-      count = 0;
-      while (pos < (in_count - 1)) {
-        int ipos = pos;
-        float rest = pos - ipos;
-
-        pout->x = pin[ipos].x * (1-rest) + pin[ipos+1].x * rest;
-        pout->y = pin[ipos].y * (1-rest) + pin[ipos+1].y * rest;
-
-        if (pin[ipos].color == C_BLACK || pin[ipos+1].color == C_BLACK) {
-          pout->color = C_BLACK;
-          pos += 1;
-          last_info.resampled_blacks++;
-        } else {
-          pout->color = pin[ipos].color;
-          pos += delta;
-        }
-
-        pout++;
-        count++;
+      if (pin[ipos].color == C_BLACK || pin[ipos+1].color == C_BLACK) {
+        pout->color = C_BLACK;
+        pos += 1;
+        last_info.resampled_blacks++;
+      } else {
+        pout->color = pin[ipos].color;
+        pos += delta;
       }
 
-      memcpy(pin, &pin[in_count], count * sizeof(*pin));
-      frames[cwbuf].pnext = count;
-      check_points(0);
-      last_info.resampled_points = count;
+      pout++;
+      count++;
     }
+    
+    memcpy(pin, &pin[in_count], count * sizeof(*pin));
+    frames[cwbuf].pnext = count;
+    check_points(0);
+    last_info.resampled_points = count;
+  }
 
   float last_x, last_y;
   if (count) {

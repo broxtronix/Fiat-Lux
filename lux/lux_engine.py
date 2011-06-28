@@ -71,7 +71,7 @@ class LuxEngine(QtCore.QThread):
             # Check to see if we need to update OL parameters
             if (self.ol_update_params):
                 params = ol.getRenderParams()
-                params.rate = self.settings['calibration'].olRate
+                params.max_framelen = self.settings['calibration'].olRate
                 params.on_speed = 1.0/self.settings['calibration'].olOnSpeed
                 params.off_speed = 1.0/self.settings['calibration'].olOffSpeed
                 params.start_wait = self.settings['calibration'].olStartWait
@@ -86,11 +86,7 @@ class LuxEngine(QtCore.QThread):
                 ol.setRenderParams(params)
                 self.ol_update_params = False
                 
-
-
-            
             if (self.current_plugin):
-
                 if (self.settings['video'].videoMode):
                     self.video_engine.draw_lasers()
                 else:

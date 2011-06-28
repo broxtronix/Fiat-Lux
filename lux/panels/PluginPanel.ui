@@ -184,9 +184,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>580</y>
+     <y>630</y>
      <width>350</width>
-     <height>321</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -226,7 +226,7 @@
      <x>10</x>
      <y>300</y>
      <width>350</width>
-     <height>271</height>
+     <height>321</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -259,6 +259,48 @@
          <string>Enable Video Mode</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Edge Detector:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="edgeSelection">
+          <item>
+           <property name="text">
+            <string>Threshold</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Adaptive Threshold</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Canny</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_18">
@@ -298,13 +340,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>16777215</height>
            </size>
           </property>
@@ -350,13 +392,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>16777215</height>
            </size>
           </property>
@@ -402,13 +444,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>16777215</height>
            </size>
           </property>
@@ -454,13 +496,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>16777215</height>
            </size>
           </property>
@@ -485,7 +527,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Nax Num:</string>
+           <string>Max Num:</string>
           </property>
          </widget>
         </item>
@@ -506,13 +548,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>50</width>
             <height>16777215</height>
            </size>
           </property>
