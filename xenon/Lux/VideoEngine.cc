@@ -123,6 +123,7 @@ void lux::VideoEngine::resize_gl(int width, int height) {
 //                             DRAWING ROUTINES
 // ---------------------------------------------------------------------------
 
+
 template <class T>
 bool compareCvContours(T a, T b) {
   if (a.size() > b.size())
@@ -131,6 +132,32 @@ bool compareCvContours(T a, T b) {
     return false;
 }
 
+
+void lux::VideoEngine::add_contours(cv::Mat image, std::vector<std::vector<cv::Point> > &contours, float threshold) {
+
+  cv::Mat contour_input = image.clone();
+
+  if (m_edge_detection_mode == 1) {        // ADAPTIVE_THRESHOLD
+    cv::adaptiveThreshold(contour_input, contour_input, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, 
+                          cv::THRESH_BINARY, 3, threshold * 2 - 1.0);
+  } else if (m_edge_detection_mode == 2) { // CANNY
+    cv::Canny(contour_input, contour_input, 0.5 * 255 * threshold, 255 * threshold);
+  } else {                                 // THRESHOLD
+    cv::threshold(contour_input, contour_input, 255 * threshold, 255, cv::THRESH_BINARY);
+  }
+  
+  // OpenCV clobbers the contour image, so we make a copy of it here.
+  std::vector<std::vector<cv::Point> > new_contours;
+  cv::findContours(contour_input, new_contours, m_contour_mode, m_contour_method);
+
+  // Do a by-hand merge for now.  We should be using stl lists instead...
+  for (int i = 0; i < new_contours.size(); ++i) {
+    contours.push_back(new_contours[i]);
+  }
+
+  // Sort contours from longest to shortest
+  std::sort(contours.begin(), contours.end(), compareCvContours<std::vector<cv::Point> >);
+}
 
 void lux::VideoEngine::draw_gl() {
 
@@ -216,23 +243,15 @@ void lux::VideoEngine::draw_gl() {
     avg_image = grayscale_image;
     m_previous_image = grayscale_image;
   }
-
-  if (m_edge_detection_mode == 1) {        // ADAPTIVE_THRESHOLD
-    cv::adaptiveThreshold(avg_image, avg_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, 
-                          cv::THRESH_BINARY, 3, m_contour_threshold * 2 - 1.0);
-  } else if (m_edge_detection_mode == 2) { // CANNY
-    cv::Canny(avg_image, avg_image, 0.5 * 255 * m_contour_threshold, 255 * m_contour_threshold);
-  } else {                                 // THRESHOLD
-    cv::threshold(avg_image, avg_image, 255 * m_contour_threshold, 255, cv::THRESH_BINARY);
-  }
   //  cv::imwrite(ostr.str(), avg_image);
-  
-  // OpenCV clobbers the contour image, so we make a copy of it here.
-  std::vector<std::vector<cv::Point> > raw_contours;
-  cv::findContours(avg_image, raw_contours, m_contour_mode, m_contour_method);
 
-  // Sort contours from longest to shortest
-  std::sort(raw_contours.begin(), raw_contours.end(), compareCvContours<std::vector<cv::Point> >);
+  // Extract contours 
+  std::vector<std::vector<cv::Point> > raw_contours;
+  //  std::cout << "contour " << m_contour_threshold << "\n";
+  // for (float thresh = 0.05; thresh < 0.095; thresh += 0.2) {
+  //   add_contours(avg_image, raw_contours, thresh);
+  // }
+  add_contours(avg_image, raw_contours, m_contour_threshold);
 
   // Count up the total number of points to render, so we can determine a reasonable subsamplig factor
   std::vector<std::vector<cv::Point> >::iterator iter = raw_contours.begin();
@@ -328,6 +347,7 @@ void lux::VideoEngine::draw_lasers() {
     for (int cc = 0; cc < m_contours_to_draw[c].size(); ++cc) {
       olVertex3(m_contours_to_draw[c][cc][0]*2, m_contours_to_draw[c][cc][1]*2, -1);
     }
+    olVertex3(m_contours_to_draw[c][0][0]*2, m_contours_to_draw[c][0][1]*2, -1);
     olEnd();
   }
 }

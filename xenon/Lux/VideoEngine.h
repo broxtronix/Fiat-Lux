@@ -45,6 +45,8 @@ namespace lux {
     xenon::graphics::XenonSyphonClient m_syphon_client;
 #endif 
 
+    void add_contours(cv::Mat image, std::vector<std::vector<cv::Point> > &contours, float threshold);
+
   public:
 
     VideoEngine(std::string application_name, std::string server_name);

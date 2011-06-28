@@ -13,6 +13,7 @@ import party_in_your_pants
 import butterfly_curve
 import harmonograph
 import mesh
+import swallow_tail
 
 # -----------------------------------------
 
