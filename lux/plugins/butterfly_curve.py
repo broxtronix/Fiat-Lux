@@ -25,8 +25,8 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
         ColorDriftPlugin.__init__(self)
 
         # Parameters
-        self.MAX_THETA = 8.0 * pi
-        self.SAMPLES_PER_FRAME = 100
+        self.MAX_THETA = 4.0 * pi
+        self.SAMPLES_PER_FRAME = 400
 
         self.RATE = 0.2
         self.last_time = 0

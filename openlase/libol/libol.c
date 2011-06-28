@@ -212,58 +212,58 @@ static int process (nframes_t nframes, void *arg)
     }
     int count = nframes;
 
-    // float mul = (float)params.rate / (float)jack_rate;
-    // int left = frames[crbuf].pnext - out_point;
-    // if (count > left / mul)
-    //   count = ceil(left / mul);
-
-    // float subframe_counter = out_point;
-    // int i;
-    // for (i=0; i<count; i++) {
-    //   float subframe_offset = subframe_counter - floor(subframe_counter);
-    //   Point *start_p = &frames[crbuf].points[out_point];
-    //   Point *end_p = &frames[crbuf].points[out_point+1];
-
-    //   *o_x++ = start_p->x * (1 - subframe_offset) + end_p->x * subframe_offset;
-    //   *o_y++ = start_p->y * (1 - subframe_offset) + end_p->y * subframe_offset;
-
-    //   float red1 = ((start_p->color >> 16) & 0xff) / 255.0f;
-    //   float red2 = ((end_p->color >> 16) & 0xff) / 255.0f;
-    //   float green1 = ((start_p->color >> 8) & 0xff) / 255.0f;
-    //   float green2 = ((end_p->color >> 8) & 0xff) / 255.0f;
-    //   float blue1 = (start_p->color & 0xff) / 255.0f;
-    //   float blue2 = (end_p->color & 0xff) / 255.0f;
-    //   *o_r++ = red1 * (1-subframe_offset) + red2 * subframe_offset;
-    //   *o_g++ = green1 * (1-subframe_offset) + green2 * subframe_offset;
-    //   *o_b++ = blue1 * (1-subframe_offset) + blue2 * subframe_offset;
-
-    //   //      *o_al++ = frames[crbuf].audio_l[out_point];
-    //   //      *o_ar++ = frames[crbuf].audio_r[out_point];
-      
-    //   if (subframe_counter + mul >= floor(subframe_counter) + 1)
-    //     out_point++;
-    //   subframe_counter += mul;
-    //   // olLog("%06x %f %f\n", p->x, p->y, p->color);
-    // }
-
+    float mul = (float)params.rate / (float)jack_rate;
     int left = frames[crbuf].pnext - out_point;
-    if (count > left)
-      count = left;
+    if (count > left / mul)
+      count = ceil(left / mul);
+
+    float subframe_counter = out_point;
     int i;
     for (i=0; i<count; i++) {
-      Point *p = &frames[crbuf].points[out_point];
-      *o_x++ = p->x;
-      *o_y++ = p->y;
+      float subframe_offset = subframe_counter - floor(subframe_counter);
+      Point *start_p = &frames[crbuf].points[out_point];
+      Point *end_p = &frames[crbuf].points[out_point+1];
 
-      *o_r++ = ((p->color >> 16) & 0xff) / 255.0f;
-      *o_g++ = ((p->color >> 8) & 0xff) / 255.0f;
-      *o_b++ = (p->color & 0xff) / 255.0f;
+      *o_x++ = start_p->x * (1 - subframe_offset) + end_p->x * subframe_offset;
+      *o_y++ = start_p->y * (1 - subframe_offset) + end_p->y * subframe_offset;
 
-      *o_al++ = frames[crbuf].audio_l[out_point];
-      *o_ar++ = frames[crbuf].audio_r[out_point];
-      out_point++;
-      //olLog("%06x %f %f\n", p->x, p->y, p->color);
+      float red1 = ((start_p->color >> 16) & 0xff) / 255.0f;
+      float red2 = ((end_p->color >> 16) & 0xff) / 255.0f;
+      float green1 = ((start_p->color >> 8) & 0xff) / 255.0f;
+      float green2 = ((end_p->color >> 8) & 0xff) / 255.0f;
+      float blue1 = (start_p->color & 0xff) / 255.0f;
+      float blue2 = (end_p->color & 0xff) / 255.0f;
+      *o_r++ = red1 * (1-subframe_offset) + red2 * subframe_offset;
+      *o_g++ = green1 * (1-subframe_offset) + green2 * subframe_offset;
+      *o_b++ = blue1 * (1-subframe_offset) + blue2 * subframe_offset;
+
+      //      *o_al++ = frames[crbuf].audio_l[out_point];
+      //      *o_ar++ = frames[crbuf].audio_r[out_point];
+      
+      if (subframe_counter + mul >= floor(subframe_counter) + 1)
+        out_point++;
+      subframe_counter += mul;
+      // olLog("%06x %f %f\n", p->x, p->y, p->color);
     }
+
+    // int left = frames[crbuf].pnext - out_point;
+    // if (count > left)
+    //   count = left;
+    // int i;
+    // for (i=0; i<count; i++) {
+    //   Point *p = &frames[crbuf].points[out_point];
+    //   *o_x++ = p->x;
+    //   *o_y++ = p->y;
+
+    //   *o_r++ = ((p->color >> 16) & 0xff) / 255.0f;
+    //   *o_g++ = ((p->color >> 8) & 0xff) / 255.0f;
+    //   *o_b++ = (p->color & 0xff) / 255.0f;
+
+    //   *o_al++ = frames[crbuf].audio_l[out_point];
+    //   *o_ar++ = frames[crbuf].audio_r[out_point];
+    //   out_point++;
+    //   //olLog("%06x %f %f\n", p->x, p->y, p->color);
+    // }
     if (out_point == frames[crbuf].pnext)
       out_point = -1;
     nframes -= count;

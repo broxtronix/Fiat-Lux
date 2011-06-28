@@ -71,7 +71,8 @@ class LuxEngine(QtCore.QThread):
             # Check to see if we need to update OL parameters
             if (self.ol_update_params):
                 params = ol.getRenderParams()
-                params.max_framelen = self.settings['calibration'].olRate
+                params.rate = self.settings['calibration'].olRate
+                #params.max_framelen = self.settings['calibration'].olRate
                 params.on_speed = 1.0/self.settings['calibration'].olOnSpeed
                 params.off_speed = 1.0/self.settings['calibration'].olOffSpeed
                 params.start_wait = self.settings['calibration'].olStartWait

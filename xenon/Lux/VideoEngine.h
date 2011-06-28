@@ -25,7 +25,6 @@ namespace lux {
     GLuint m_framebuffer0;
     GLuint m_framebuffer_texture0;
 
-
     // Contouring parameters
     double m_contour_threshold;       // 0.2
     double m_contour_blur_sigma;      // 1.5

@@ -58,7 +58,7 @@ lux::VideoEngine::VideoEngine(std::string application_name, std::string server_n
   m_contour_blur_sigma =  1.5;
   m_contour_min_area = 10;
   m_contour_max_area = 640*480;
-  m_contour_num_considered = 100;
+  m_contour_num_considered = 300;
   m_contour_mode = CV_RETR_EXTERNAL;
   m_contour_method = CV_CHAIN_APPROX_SIMPLE;
   m_edge_detection_mode = 0;  // 0 == THRESHOLD, 1 == ADAPTIVE_THRESHOLD, 2 == CANNY
@@ -77,6 +77,8 @@ void lux::VideoEngine::initialize_gl() {
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   m_initialized = true;
@@ -135,8 +137,13 @@ void lux::VideoEngine::draw_gl() {
   if (!m_initialized)
     return;
 
-  // FIRST: DRAW INTO THE RENDER BUFFER (AT LOW RES) AND READ OUT THE PIXELS
+  int syphon_width = m_syphon_client.getWidth();
+  int syphon_height = m_syphon_client.getHeight();
+  float syphon_aspect = 1.0;
+  if (syphon_width != 0 && syphon_height != 0)
+    syphon_aspect = float(syphon_width) / syphon_height;
 
+  // FIRST: DRAW INTO THE RENDER BUFFER (AT LOW RES) AND READ OUT THE PIXELS
   glViewport(0, 0, m_viewport_width, m_viewport_height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -148,7 +155,7 @@ void lux::VideoEngine::draw_gl() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #ifdef __APPLE__
   glColor4f(1.0, 1.0, 1.0, 1.0);
-  m_syphon_client.draw(-0.5,-0.5,1.0,1.0);
+  m_syphon_client.draw(-1.0,-1.0/syphon_aspect,2.0,2.0/syphon_aspect);
 #endif
 
   // SECOND: DRAW INTO THE RENDER BUFFER (AT LOW RES) AND READ OUT THE PIXELS
@@ -167,11 +174,10 @@ void lux::VideoEngine::draw_gl() {
   glClearColor(0.0,0.0,0.1,1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #ifdef __APPLE__
-  // float syphon_aspect = m_syphon_client.getWidth() / m_syphon_client.getHeight();
-  // std::cout << "Syphon aspect = " << syphon_aspect << "\n";
-  //  m_syphon_client.draw(-1.0,-1.0/syphon_aspect,2.0,2.0/syphon_aspect);
+  
   glColor4f(1.0, 1.0, 1.0, 1.0);
-  m_syphon_client.draw(-1.0,-1.0,2.0,2.0);
+  m_syphon_client.draw(-1.0,-1.0/syphon_aspect,2.0,2.0/syphon_aspect);
+  //  m_syphon_client.draw(-1.0,-1.0, 2.0,2.0);
 #endif
 
   // Read back the image so that we can find its contours.
@@ -193,7 +199,7 @@ void lux::VideoEngine::draw_gl() {
 
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
-  // FINALLY : EXTRACT CONTOURS
+  // THIRD : EXTRACT CONTOURS
 
   // Compute the threhold image.
   cv::Mat grayscale_image;
@@ -211,12 +217,12 @@ void lux::VideoEngine::draw_gl() {
     m_previous_image = grayscale_image;
   }
 
-  if (m_edge_detection_mode == 1) { // ADAPTIVE_THRESHOLD
+  if (m_edge_detection_mode == 1) {        // ADAPTIVE_THRESHOLD
     cv::adaptiveThreshold(avg_image, avg_image, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, 
                           cv::THRESH_BINARY, 3, m_contour_threshold * 2 - 1.0);
   } else if (m_edge_detection_mode == 2) { // CANNY
     cv::Canny(avg_image, avg_image, 0.5 * 255 * m_contour_threshold, 255 * m_contour_threshold);
-  } else {                          // THRESHOLD
+  } else {                                 // THRESHOLD
     cv::threshold(avg_image, avg_image, 255 * m_contour_threshold, 255, cv::THRESH_BINARY);
   }
   //  cv::imwrite(ostr.str(), avg_image);
@@ -228,47 +234,71 @@ void lux::VideoEngine::draw_gl() {
   // Sort contours from longest to shortest
   std::sort(raw_contours.begin(), raw_contours.end(), compareCvContours<std::vector<cv::Point> >);
 
-  // put the contours from the linked list, into an array for sorting
-  std::cout << "Processing " << raw_contours.size() << " raw contours.\n";
+  // Count up the total number of points to render, so we can determine a reasonable subsamplig factor
   std::vector<std::vector<cv::Point> >::iterator iter = raw_contours.begin();
+  int total_num_points = 0;
+  while (iter != raw_contours.end()) {
+    float area = cv::contourArea(cv::Mat(*iter));
+    if( (area > m_contour_min_area) && (area < m_contour_max_area) ) {
+      total_num_points += iter->size();
+    }
+    ++iter;
+  }
+
+  int subsampling_factor = total_num_points / m_contour_num_considered;
+  if (subsampling_factor == 0) subsampling_factor = 1;
+
+  // Clear the old points out before adding points from this frame
+  { 
+    xenon::Mutex::Lock lock(m_mutex);
+    m_contours_to_draw.clear();
+  }
+
+
+  // put the contours from the linked list, into an array for sorting
+  //std::cout << "Processing " << raw_contours.size() << " raw contours.\n";
+  iter = raw_contours.begin();
   while (iter != raw_contours.end()) {
     //    std::cout << "\tRaw contour: " << iter->size() << "\n";
 
     float area = cv::contourArea(cv::Mat(*iter));
     if( (area > m_contour_min_area) && (area < m_contour_max_area) ) {
-
+      
       // Rescale the contours 
       std::vector<xenon::Vector2> contour_2f;
+      xenon::Vector2 avg_sum;
+      int avg_count = 0;
       for (int i = 0; i < iter->size(); ++i) {
-        xenon::Vector2 p;
-        p[0] = float((*iter)[i].x) / m_framebuffer_width * 2.0 - 1.0;
-        p[1] = float((*iter)[i].y) / m_framebuffer_height * 2.0 - 1.0;
-        if (abs(p[0]) > 0.1 && abs(p[1]) > 0.1 && i % 1 == 0)
+        
+        if (avg_count >= subsampling_factor) {
+          xenon::Vector2 p;
+          p[0] = avg_sum[0]/avg_count;
+          p[1] = avg_sum[1]/avg_count;
           contour_2f.push_back(p);
+          avg_sum = xenon::Vector2();
+          avg_count = 0;
+        } else {
+          avg_sum[0] += float((*iter)[i].x) / m_framebuffer_width * 2.0 - 1.0;
+          avg_sum[1] += float((*iter)[i].y) / m_framebuffer_height * 2.0 - 1.0;
+          avg_count++;
+        }
       }
 
       // And add it to the final contour list
       xenon::Mutex::Lock lock(m_mutex);
-      if (m_contours_to_draw.size() < m_contour_num_considered)
+      if (contour_2f.size() > 10)  // Get rid of very small contours
         m_contours_to_draw.push_back(contour_2f);
     }
     ++iter;
   }
 
-  // DRAW THE CONTOURS
-
-
-  // xenon::xenon_out() << "Frame " << m_record_frame_number << ": " << m_contours_to_draw.size() << " contours.\n";
-  // xenon::xenon_out() << "minarea: " << m_contour_min_area << "  max area " << m_contour_max_area << "   " 
-  //                    << " contours to draw: " << m_contour_num_considered << "\n";
+  // DRAW THE CONTOURS IN THE VIDEO SCREEN (FOR DEBUGGING)
   glViewport(0, 0, m_viewport_width, m_viewport_height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho (-m_aspect, m_aspect, -1.0, 1.0, -1.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glScalef(0.5,0.5,1.0);
-  //  glTranslatef(1.0,0.0,0.0);
   glLineWidth(2.0);
   glColor4f(0.0, 1.0, 0.0, 1.0);
   for (int c = 0; c < m_contours_to_draw.size(); ++c) {
@@ -281,10 +311,7 @@ void lux::VideoEngine::draw_gl() {
     glEnd();
   }
   m_record_frame_number++;
-
-  
 }
-
 
 void lux::VideoEngine::draw_lasers() {  
 
@@ -296,21 +323,13 @@ void lux::VideoEngine::draw_lasers() {
   olColor3(0.0,1.0,0.0);
 
   xenon::Mutex::Lock lock(m_mutex);
-  //  std::cout << "there are " << m_contours_to_draw.size() << "\n";
-
-  
   for (int c = 0; c < m_contours_to_draw.size(); ++c) {
-    //    std::cout << "Drawing contour " << c << " with " << m_contours_to_draw[c].size() << " points\n";
-    if (m_contours_to_draw[c].size() > 5) {
-      olBegin(OL_POINTS);
-      for (int cc = 0; cc < m_contours_to_draw[cc].size(); ++cc) {
-        //      std::cout << "\t" << m_contours_to_draw[c][cc][0] << "  " << m_contours_to_draw[c][cc][1] << "\n";
-        //        olVertex3(m_contours_to_draw[c][cc][0], m_contours_to_draw[c][cc][1], -1);
-      }
-      olEnd();
+    olBegin(OL_LINESTRIP);
+    for (int cc = 0; cc < m_contours_to_draw[c].size(); ++cc) {
+      olVertex3(m_contours_to_draw[c][cc][0]*2, m_contours_to_draw[c][cc][1]*2, -1);
     }
+    olEnd();
   }
-  m_contours_to_draw.clear();
 }
 
 

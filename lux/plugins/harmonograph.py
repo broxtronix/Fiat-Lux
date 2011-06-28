@@ -63,12 +63,16 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
 
         ol.begin(ol.POINTS)
         decay_factor = 1
+        first_point = None
         for i in range(self.SAMPLES_PER_FRAME):
             theta = float(i) / self.SAMPLES_PER_FRAME * self.MAX_THETA
             x = sin(self.x_ratio * theta + self.x_phase)
             y = sin(self.y_ratio * theta + self.y_phase)
             z = sin(self.z_ratio * theta + self.z_phase)
+            if (i == 0):
+                first_point = (x * decay_factor, y * decay_factor, z * decay_factor)
             ol.vertex3((x * decay_factor, y * decay_factor, z * decay_factor))
             decay_factor = decay_factor * self.decay
+        ol.vertex3(first_point)
         ol.end()
         

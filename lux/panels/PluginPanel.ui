@@ -527,12 +527,15 @@
            </size>
           </property>
           <property name="text">
-           <string>Max Num:</string>
+           <string>Max Points:</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QSlider" name="maxNumSlider">
+          <property name="maximum">
+           <number>500</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
