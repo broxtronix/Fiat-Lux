@@ -12,7 +12,7 @@ conf = Configure(xenon_env)
 
 if sys.platform == "darwin":
   conf.env.Append(CPPPATH=["/usr/local/include/aubio"])
-  conf.env.Append(CPPPATH=["/usr/local/include/eigen2"])
+  conf.env.Append(CPPPATH=["/usr/local/include/eigen3"])
 if sys.platform == "linux2":
   conf.env.Append(CPPPATH=["/usr/include/aubio"])
   conf.env.Append(CPPPATH=["/usr/include/eigen2"])
@@ -138,6 +138,7 @@ python_env = xenon_env.Clone()
 python_env.Append(CPPPATH = [".."])
 if sys.platform == "darwin":
     python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6")
+    python_env.Append(CXXFLAGS = " -I/System/Library/Frameworks/Python.framework/Versions/2.6/Extras/lib/python/numpy/core/include/")
     python_env.Append(CXXFLAGS = " -I/Library/Python/2.6/site-packages/numpy/core/include")
     python_env.Append(LINKFLAGS = " -framework Python")
 elif sys.platform == "linux2":
