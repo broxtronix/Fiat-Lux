@@ -15,6 +15,10 @@ import harmonograph
 import mesh
 import swallow_tail
 
+# local only
+import physics
+import sandbox
+
 # -----------------------------------------
 
 

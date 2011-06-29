@@ -17,11 +17,11 @@ class BouncyBall(LuxPlugin):
     """
 
     # Working vars
-    interval = .120
+    interval = .100
     nextSnapshot = 0
     samples = 512
     skip = 1
-    renderPointCount = int(ceil(samples/skip))
+    renderPointCount = ceil(samples/skip)
     restRadius = .6
     currentWave = zeros(shape=(renderPointCount))
     nextWave = zeros(shape=(renderPointCount))
@@ -34,11 +34,13 @@ class BouncyBall(LuxPlugin):
     def draw(self):
         ol.loadIdentity()
 
-        # Grab the raw audio buffers
+        ol.rotate(lux.time/10)
+
+        # Grab the raw audio buffer
         mono = audio_engine.mono_buffer()
 
-        # Make sure they aren't empty!!
-        if (mono.shape[0] == 0):
+        # Make sure it ain't empty!!
+        if mono.shape[0] == 0:
             return
 
         # Openlase can only draw 30000 points in one cycle (less that
@@ -47,7 +49,7 @@ class BouncyBall(LuxPlugin):
             audio_engine.clear_all()
             return
 
-        ol.color3(1.0,1.0,1.0)
+        ol.color3(sin(lux.time/10),cos(lux.time/63),sin(lux.time/55))
         ol.perspective(60, 1, 1, 100)
         ol.translate3((0, 0, -3))
         
@@ -57,15 +59,15 @@ class BouncyBall(LuxPlugin):
             self.currentWave = self.nextWave
             self.nextWave = zeros(shape=(self.renderPointCount))
             # load in new values
-            for i in range(self.renderPointCount):
+            for i in range(self.renderPointCount-1):
                 self.nextWave[i] = mono[i*self.skip]
                     
         # draw shape
         fracIntervalComplete = (lux.time - (self.nextSnapshot - self.interval)) / self.interval
-        #        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextSnapshot)
+#        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextSnapshot)
         coordsToRender = zeros(shape=(self.renderPointCount,2))
         firstVal = None
-        for i in range(self.renderPointCount):
+        for i in range(self.renderPointCount-1):
             val = ((self.nextWave[i] - self.currentWave[i]) * fracIntervalComplete) + self.currentWave[i]
             if (firstVal is None): firstVal = val
             #print "next: %f  curr:  %f   frac: %f" % (self.nextWave[i], self.currentWave[i], fracIntervalComplete)
@@ -75,11 +77,9 @@ class BouncyBall(LuxPlugin):
         coordsToRender[self.renderPointCount-1] = coordsToRender[0]
 
         # render shape
-        ol.begin(ol.POINTS)
+        ol.begin(ol.LINESTRIP)
         for i in range(self.renderPointCount):
 #            print '%f: %f,%f' % (i,coordsToRender[i][0], coordsToRender[i][1])
-            ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
-        for i in range(3):  # Close the gap
             ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
         ol.end()
         
@@ -90,14 +90,16 @@ class BouncyBall(LuxPlugin):
             multiplier = self.restRadius * 1.5
         else:
             # we are contracting
-            multiplier = self.restRadius - .5
+            multiplier = self.restRadius * -2
         
         # bias
+        '''
         smudge = .2 # modify this to change how much room the smudge has
         if ((fracCircleComplete > (1.0 - smudge)) and (smudgeVal is not None)):
             fracSmudge = (fracCircleComplete - (1.0 - smudge)) / smudge
             oldval = val
             val = val + ((smudgeVal - val) * fracSmudge)
+       '''
         
         hLen = (val * multipler) + self.restRadius
                 
