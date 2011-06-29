@@ -35,7 +35,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>350</y>
+     <y>390</y>
      <width>350</width>
      <height>201</height>
     </rect>
@@ -185,7 +185,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>550</y>
+     <y>600</y>
      <width>350</width>
      <height>251</height>
     </rect>
@@ -407,7 +407,7 @@
      <x>10</x>
      <y>10</y>
      <width>350</width>
-     <height>331</height>
+     <height>371</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -434,6 +434,23 @@
    <layout class="QHBoxLayout" name="horizontalLayout_24">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_28">
+        <item>
+         <widget class="QCheckBox" name="parameterOverride">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Enable Parameter Override</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_25">
         <item>

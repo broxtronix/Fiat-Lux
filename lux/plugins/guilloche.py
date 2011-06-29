@@ -44,7 +44,7 @@ class SimplePlugin(LuxPlugin):
         self.g_prime = 2 #23 
         self.b_prime = 1 #128 
         
-        self.scale = 1
+        self.scale = 2
         self.width = self.scale
         self.height = self.scale
         self.bass = 1 # plz hack this to do fft power binning kthx

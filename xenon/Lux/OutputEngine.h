@@ -48,6 +48,7 @@ namespace lux {
     bool m_blank_invert;
     bool m_blank_enable;
     bool m_output_enable;
+    bool m_output_initialized;
 
     float m_size_multiplier;
     float m_red_intensity_multiplier;
@@ -89,6 +90,10 @@ namespace lux {
     void setBlankInvert(int state) { m_blank_invert = state; }
     void setBlankEnable(int state) { m_blank_enable = state; }
     void setOutputEnable(int state) { m_output_enable = state; }
+
+    // Hardware safety intelock.  The lasers will not receive any
+    // control signals if this is set to false.
+    void setOutputInitialized(int state) { m_output_initialized = state; }
 
     void setSizeMultiplier(float value);
     void redIntensityMultiplier(float value);

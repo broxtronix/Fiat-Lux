@@ -59,19 +59,14 @@ try:
     print '\t--> Starting Video Engine'
     from video import video_engine
 
-    # Start up the LUX main engine.  This starts a thread that runs lux plugins.
-    import lux_engine
-    lux_engine = lux_engine.LuxEngine(audio_engine, video_engine)
-    lux_engine.start()
-
     # Create the output engine
     import xenon_lux
     output_engine = xenon_lux.LuxOutputEngine("lux_output")
-    output_engine.connect_ports("lux_engine:out_x", "lux_output:in_x")
-    output_engine.connect_ports("lux_engine:out_y", "lux_output:in_y")
-    output_engine.connect_ports("lux_engine:out_r", "lux_output:in_r")
-    output_engine.connect_ports("lux_engine:out_g", "lux_output:in_g")
-    output_engine.connect_ports("lux_engine:out_b", "lux_output:in_b")
+
+    # Start up the LUX main engine.  This starts a thread that runs lux plugins.
+    import lux_engine
+    lux_engine = lux_engine.LuxEngine(audio_engine, video_engine, output_engine)
+    lux_engine.start()
 
     # Start up the rest of the GUI
     import mainwindow
@@ -85,11 +80,8 @@ try:
     lux_engine.exit()
 
 except:
-    # First, disable the laser if we can
-#    try: 
-#        output_engine.setOutputEnable(False)
-#    except NameError:
-#        pass
+    # First, disable the laser output.  We don't want to put any eyes out! 
+    output_engine.setOutputInitialized(False)
     
     exc_type, exc_value, exc_traceback = sys.exc_info()
     error_string = '-' * 60 + '\n'
@@ -100,5 +92,9 @@ except:
         print error_string
     else:
         QtGui.QMessageBox.critical(None, 'Plugin Error',  error_string)
+finally:
 
+    print "An exception occurred that could not be handled.  Exiting.\n";
+    sys.exit(0);
 
+    

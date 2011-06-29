@@ -1,5 +1,8 @@
 import colorsys
 import random
+import pylase as ol
+from settings import LuxSettings
+import math
 
 # PluginMount Class
 #
@@ -34,6 +37,31 @@ class LuxPlugin(object):
 
     def draw(self):
         pass
+
+    # Override this method if you want to set parameters yourself in
+    # your plugin.  The default behavior is that the plugin uses the
+    # current parameters set in the GUI (regardless of whether the
+    # override button is pressed.
+    def setParameters(self):
+        self.setParametersToGuiValues()
+
+    def setParametersToGuiValues(self):
+        settings = LuxSettings()
+        params = ol.getRenderParams()
+        params.rate = settings['calibration'].olRate
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/settings['calibration'].olOnSpeed
+        params.off_speed = 1.0/settings['calibration'].olOffSpeed
+        params.start_wait = settings['calibration'].olStartWait
+        params.start_dwell = settings['calibration'].olStartDwell
+        params.curve_dwell = settings['calibration'].olCurveDwell
+        params.corner_dwell = settings['calibration'].olCornerDwell
+        params.curve_angle = math.cos(30.0*(math.pi/180.0)); # 30 deg
+        params.end_dwell = settings['calibration'].olEndDwell
+        params.end_wait = settings['calibration'].olEndWait
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
 
 # ColorDriftPlugin

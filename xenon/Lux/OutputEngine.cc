@@ -44,6 +44,7 @@ lux::OutputEngine::OutputEngine(std::string const& jack_endpoint_name) :
   m_blank_invert = false;
   m_blank_enable = false;
   m_output_enable = false;
+  m_output_initialized = false;
 
   m_size_multiplier = 1.0;
   m_red_intensity_multiplier = 1.0;
@@ -148,6 +149,11 @@ static inline void filter(float *x, float *y)
 // here, and process it into summary statistics.
 int lux::OutputEngine::process_callback(nframes_t nframes) {
   xenon::Mutex::Lock lock(m_mutex);
+
+  // If the rest of the GUI hasn't been initialized yet, we shouldn't
+  // be displaying anything on the screen at all!
+  if (!m_output_initialized)
+    return 0;
 
   sample_t *i_x = (sample_t *) jack_port_get_buffer (m_ports["in_x"], nframes);
   sample_t *i_y = (sample_t *) jack_port_get_buffer (m_ports["in_y"], nframes);

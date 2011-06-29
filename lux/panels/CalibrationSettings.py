@@ -24,8 +24,10 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
 
         # Check boxes are a little tricky, and it is safest to
         # explicitly set the state of the output engine here.
+        self.settings['calibration'].parameterOverride = False
         self.settings['calibration'].preampCalibration = False
         self.settings['calibration'].laserCalibration = False
+	self.parameterOverride.setChecked(False)
 	self.preampCalibration.setChecked(False)
         self.output_engine.setPreampCalibration(False)
 	self.laserCalibration.setChecked(False)
@@ -62,6 +64,10 @@ class CalibrationSettings(QtGui.QWidget, CalibrationPanel.Ui_calibrationPanel):
     # --------------------------------------------------------------------
 
     # OPENLASE PARAMS
+
+    def on_parameterOverride_toggled(self, state):
+        self.settings['calibration'].parameterOverride = state
+        self.emit(QtCore.SIGNAL('olParamsChanged()'))
 
     def on_olRateSlider_valueChanged(self, value):
         v = float(value) * 1000.0

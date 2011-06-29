@@ -3,7 +3,7 @@ from parameters import lux, Parameter
 from audio import audio_engine
 
 import pylase as ol
-from math import pi
+from math import *
 
 class SimplePlugin(LuxPlugin):
 
@@ -23,6 +23,24 @@ class SimplePlugin(LuxPlugin):
         lux.register(Parameter( name = "simple_rate",
                                 description = "0..1   controls the rate of spinning cubes",
                                 default_value = 1.0 ))
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 50000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/28.0
+        params.off_speed = 1.0/8.0
+        params.start_dwell = 8
+        params.end_dwell = 6
+        params.corner_dwell = 9
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 14
+        params.end_wait = 29
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     # The draw method gets called roughly 30 times a second.  
     def draw(self):

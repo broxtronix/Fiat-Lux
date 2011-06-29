@@ -70,6 +70,7 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void setBlankInvert(int) except +RuntimeError
         void setBlankEnable(int) except +RuntimeError
         void setOutputEnable(int) except +RuntimeError
+        void setOutputInitialized(int) except +RuntimeError
 
         void setSizeMultiplier(float) except +RuntimeError
         void redIntensityMultiplier(float) except +RuntimeError
@@ -240,6 +241,8 @@ cdef class LuxOutputEngine:
         self.thisptr.setBlankEnable(int(val))
     def setOutputEnable(self, val):
         self.thisptr.setOutputEnable(int(val))
+    def setOutputInitialized(self, val):
+        self.thisptr.setOutputInitialized(int(val))
 
     def setSizeMultiplier(self, val):
         self.thisptr.setSizeMultiplier(val)
