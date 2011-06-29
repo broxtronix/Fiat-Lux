@@ -3,7 +3,7 @@ from parameters import lux, Parameter
 from audio import audio_engine
 
 import pylase as ol
-from math import pi,sin
+from math import *
 
 class TestPatternPlugin(LuxPlugin):
 
@@ -17,6 +17,24 @@ class TestPatternPlugin(LuxPlugin):
 
     def __init__(self):
         pass
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 50000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/48.0
+        params.off_speed = 1.0/7.0
+        params.start_dwell = 8
+        params.end_dwell = 11
+        params.corner_dwell = 9
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 14
+        params.end_wait = 54
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     def draw(self):
         ol.loadIdentity()

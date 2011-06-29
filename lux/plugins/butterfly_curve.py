@@ -29,41 +29,52 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
         self.SAMPLES_PER_FRAME = 400
 
         self.RATE = 0.2
-        self.last_time = 0
-        self.test = 0
+        self.reset()
+
+        
+    def reset(self):
+        self.alpha = random.uniform(1.0,10.0)
+        self.beta = random.uniform(5.0,15.0)
+        self.gamma = random.uniform(10.0,50.0)
+        self.rho = random.uniform(0.5, 1.5)
+        self.overall_amplitude = 0.45
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 25000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/1.0
+        params.off_speed = 1.0/6.0
+        params.start_dwell = 13
+        params.end_dwell = 20
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 35
+        params.end_wait = 20
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
-        delta = 0.03
-        self.last_time = lux.time
 
-        self.test = self.test + delta / 10.0 * self.RATE
-        while(self.test > 2 * pi):
-            self.test = self.test - 2*pi
-
-        #        print lux.time, cos(lux.time / 10.0 * self.RATE)
-        self.a = 3.1 * cos(lux.time / 10.0 * self.RATE)
-        self.b = 9 * sin(lux.time / 7.0 * self.RATE) + 10
-        self.c = 30 * cos(lux.time / 11.0 * self.RATE)
-        self.A = 1
-        self.overall_amplitude = 0.5
-
-
-        # self.a = 3.1 + 3.0 * cos(lux.time / 10 * self.RATE)
-        # self.b = 15 + 10 * sin(lux.time / 7 * self.RATE)
-        # self.c = 25 + 20 * cos(lux.time / 11 * self.RATE)
-        # self.A = 0.8#  + 0.5*sin(lux.time/21.0 * self.RATE)
-        # self.overall_amplitude = 0.5
+        a = self.alpha * cos(lux.time / 10.0 * self.RATE)
+        b = self.beta * sin(lux.time / 7.0 * self.RATE) + 10
+        c = self.gamma * cos(lux.time / 11.0 * self.RATE)
+        A = self.rho
 
         ol.loadIdentity3()
         ol.loadIdentity()
+        ol.rotate3Z(lux.time * pi * 0.03)
         ol.color3(*(self.color_cycle()))
 
         ol.begin(ol.LINESTRIP)
         for i in range(self.SAMPLES_PER_FRAME):
             theta = float(i) / self.SAMPLES_PER_FRAME * self.MAX_THETA
-            r = exp(cos(self.a * theta)) - self.A * cos(self.b*theta) + pow(abs(sin(theta/self.c)),self.b)
-            r = r / (2.7 - self.A + pow(1,self.b)) * self.overall_amplitude
+            r = exp(cos(a * theta)) - A * cos(b*theta) + pow(abs(sin(theta/c)),b)
+            r = r / (2.7 - A + pow(1,b)) * self.overall_amplitude
 
             ol.vertex3((r * cos(theta), r * sin(theta), -1))
         ol.end()

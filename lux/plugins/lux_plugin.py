@@ -71,9 +71,9 @@ class LuxPlugin(object):
 # evolves.
 class ColorDriftPlugin(object):
     def __init__(self):
-        self.current_hue = 0.5
-        self.hue_target = 0.9
-        self.hue_step = .0001
+        self.current_hue = random.random()
+        self.hue_target = random.random()
+        self.hue_step = 1.0/10000.0
 
     # Slow, random evolution of hue. 
     def color_cycle(self):

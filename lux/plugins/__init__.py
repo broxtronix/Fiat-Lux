@@ -1,19 +1,31 @@
 # -----------------------------------------
 
 # List plugins to be imported here
-import bouncyball
-import scope
-import circlescope
+
+# Original (or modified) Openlase Plugins
 import simple
-import testpattern
 import two_cubes
+import circlescope
+
+# Plugins by Broxton
+import butterfly_curve
+import harmonograph
+import scope
+
+# Plugins by Tim J.
+import bouncyball
+import testpattern
+
+# Plugins by Fenn
 import guilloche
 import tween_chain
 import party_in_your_pants
-import butterfly_curve
-import harmonograph
-import mesh
+
+# Plugins by Tristan U.
 import swallow_tail
+
+# Plugins by Matty G.
+#import mesh
 
 # -----------------------------------------
 

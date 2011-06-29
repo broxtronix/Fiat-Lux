@@ -7,7 +7,7 @@ from parameters import lux, Parameter
 from audio import audio_engine
 
 import pylase as ol
-from math import pi
+from math import *
 import math
 
 class SimplePlugin(LuxPlugin):
@@ -21,11 +21,11 @@ class SimplePlugin(LuxPlugin):
                                 description = "0..1   controls the rate of spinning cubes",
                                 default_value = 1.0 ))
         #eventually i'll port these to lux parameters, but right now there doesn't seem to be any reason to since there are no GUI sliders
-        self.max_segments = 600 #tweak according to openlase calibration parameters; too high can cause ol to crash
+        self.max_segments = 800 #tweak according to openlase calibration parameters; too high can cause ol to crash
         self.max_cycles = 5 # set high (~50) for maximum glitch factor
         self.time = 1
         self.time_step = 1/30
-        self.time_scale = 1
+        self.time_scale = 0.4
         self.theta_step = 0.01
         self.R = 0.25 # big steps
         self.R_frequency =  1/100
@@ -49,6 +49,24 @@ class SimplePlugin(LuxPlugin):
         self.height = self.scale
         self.bass = 1 # plz hack this to do fft power binning kthx
         #note to self, could modulate radius with average of n_samples/n_segments
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 30000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/1.0
+        params.off_speed = 1.0/6.0
+        params.start_dwell = 10
+        params.end_dwell = 8
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 11
+        params.end_wait = 7
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     def draw(self):
         time = lux.time

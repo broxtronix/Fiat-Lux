@@ -79,31 +79,38 @@ class LuxEngine(QtCore.QThread):
 
         # Turn off the hardware safety interlock.
         self.output_engine.setOutputInitialized(True)
+
+        # Create a local settings object for this thread.
+        settings = LuxSettings()
         
         while not self.exiting:
+            # Grab local references to these class variables
             self.lock.lock()
+            current_plugin = self.current_plugin
+            video_engine = self.video_engine
+            self.lock.unlock()
             
             # SET PARAMETERS
             #
             # Check to see if the GUI parameter override has been set,
             # and we need to update OL parameters.
-            if (self.ol_update_params and self.settings['calibration'].parameterOverride and self.current_plugin):
-                self.current_plugin.setParametersToGuiValues()
+            if (self.ol_update_params and settings['calibration'].parameterOverride and current_plugin):
+                current_plugin.setParametersToGuiValues()
                 self.ol_update_params = False
 
-            if (self.current_plugin and not self.settings['calibration'].parameterOverride):
-                self.current_plugin.setParameters();
+            if (current_plugin and not settings['calibration'].parameterOverride):
+                current_plugin.setParameters();
 
             # RENDER
             #
             # We call out to the current plugin's draw() method, or
             # the video plugin, depending on the current state of the
             # GUI.
-            if (self.current_plugin):
-                if (self.settings['video'].videoMode):
-                    self.video_engine.draw_lasers()
+            if (current_plugin):
+                if (settings['video'].videoMode):
+                    video_engine.draw_lasers()
                 else:
-                    self.current_plugin.draw()
+                    current_plugin.draw()
 
                 frame_render_time = ol.renderFrame(60)   # Takes max_fps as argument
                 frames += 1
@@ -113,8 +120,6 @@ class LuxEngine(QtCore.QThread):
                 # If there is no plugin for some reason, kill time
                 # rather than burning CPU in a loop that does nothing.
                 time.sleep(0.1)
-                
-            self.lock.unlock()
             
     # ---------------  METHODS CALLED BY OTHER THREADS ----------------
 
@@ -150,6 +155,4 @@ class LuxEngine(QtCore.QThread):
         return (keys, full_names, descriptions)
 
     def updateOlParams(self):
-        self.lock.lock()
         self.ol_update_params = True
-        self.lock.unlock()
