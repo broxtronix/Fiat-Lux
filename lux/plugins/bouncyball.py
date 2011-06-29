@@ -1,12 +1,13 @@
-from lux_plugin import LuxPlugin
+from lux_plugin import LuxPlugin, ColorDriftPlugin
 import pylase as ol
 from audio import audio_engine
 
 from parameters import lux, Parameter
 from math import *
 from numpy  import *
+import colorsys
 
-class BouncyBall(LuxPlugin):
+class BouncyBall(LuxPlugin, ColorDriftPlugin):
 
     # Plugin Name
     name = "Bouncy Ball"
@@ -28,6 +29,7 @@ class BouncyBall(LuxPlugin):
 
     # Constructor
     def __init__(self):
+        ColorDriftPlugin.__init__(self)
         pass
         
     # The draw method gets called roughly 30 times a second.  
@@ -49,7 +51,7 @@ class BouncyBall(LuxPlugin):
             audio_engine.clear_all()
             return
 
-        ol.color3(sin(lux.time/10),cos(lux.time/63),sin(lux.time/55))
+        ol.color3(*(self.color_cycle()))
         ol.perspective(60, 1, 1, 100)
         ol.translate3((0, 0, -3))
         
@@ -93,13 +95,11 @@ class BouncyBall(LuxPlugin):
             multiplier = self.restRadius * -2
         
         # bias
-        '''
         smudge = .2 # modify this to change how much room the smudge has
         if ((fracCircleComplete > (1.0 - smudge)) and (smudgeVal is not None)):
             fracSmudge = (fracCircleComplete - (1.0 - smudge)) / smudge
             oldval = val
             val = val + ((smudgeVal - val) * fracSmudge)
-       '''
         
         hLen = (val * multipler) + self.restRadius
                 
