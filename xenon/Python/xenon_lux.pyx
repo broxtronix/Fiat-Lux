@@ -24,6 +24,9 @@ cdef extern from "<string>" namespace "std":
         string()
         string(char *)
         char * c_str()
+        
+cdef extern from "stdlib.h":
+    void free(void* ptr)
 
 cdef extern from "xenon/Lux.h" namespace "lux":
     cdef cppclass SimulatorEngine:
@@ -134,50 +137,64 @@ cdef class LuxAudioEngine:
         cdef float* arrsource = self.thisptr.get_left_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def right_buffer(self, clear = True):
         cdef int size
         cdef float* arrsource = self.thisptr.get_right_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def mono_buffer(self, clear = True):
         cdef int size
         cdef float* arrsource = self.thisptr.get_avg_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
+        #return newarr.copy()
 
-        
     def onset_buffer(self, clear = True):
         cdef int size
         cdef int* arrsource = self.thisptr.get_onset_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def pitch_buffer(self, clear = True):
         cdef int size
         cdef float* arrsource = self.thisptr.get_pitch_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_FLOAT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def tempo_tactus_buffer(self, clear = True):
         cdef int size
         cdef int* arrsource = self.thisptr.get_tempo_tactus_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def tempo_onset_buffer(self, clear = True):
         cdef int size
         cdef int* arrsource = self.thisptr.get_tempo_onset_buffer(size, clear)
         cdef np.npy_intp intp_size = size
         cdef np.ndarray newarr = np.PyArray_SimpleNewFromData(1, &intp_size, np.NPY_INT, <void *>arrsource)
-        return newarr.copy()
+        result = newarr.copy()
+        free(arrsource)
+        return result
 
     def clear_all(self):
         self.thisptr.clear_all()

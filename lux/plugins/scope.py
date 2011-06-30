@@ -28,6 +28,7 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         self.x_coord = -0.9
         self.step = 1/512.0
         self.subsamp = 3
+        self.sample_array = np.zeros(512)
 
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
@@ -35,12 +36,10 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         ol.loadIdentity()
 
         # Grab the raw audio buffers
-        left = audio_engine.left_buffer()
-        right = audio_engine.right_buffer()
         mono = audio_engine.mono_buffer()
 
         # Make sure they aren't empty!!
-        if (mono.shape[0] == 0 or left.shape[0] == 0 or right.shape[0] == 0):
+        if (mono.shape[0] == 0):
             return
 
         # Openlase can only draw 30000 points in one cycle (less that
