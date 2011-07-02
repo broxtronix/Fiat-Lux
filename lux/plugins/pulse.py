@@ -16,7 +16,8 @@ from math import pi
 
 clamp_display = False
 
-###parameters
+#parameters
+#----------
 scale = 1.5
 time_scale = 1
 bpm = 60
@@ -38,6 +39,8 @@ caf = 0.5  #color angle frequency
 r_prime = 3
 g_prime = 2
 b_prime = 1
+seizure_mode = True
+#----------
 
 #god this sucks
 node_red = 1
@@ -102,9 +105,13 @@ class Node(Tweenable):
         ol.color3(self.red, self.green, self.blue)
         ol.translate3((self.x, self.y, 0))
         angle = math.atan2(self.y, self.x)/(2*pi)
-        red   = abs(math.sin(2*pi*(r_prime/3+ctf*time+clf*self.n+caf*angle)))*self.red #/self.radius
+        red   = abs(math.sin(2*pi*(r_prime/3+ctf*time+clf*self.n+caf*angle)))*self.red
         green = abs(math.sin(2*pi*(g_prime/3+ctf*time+clf*self.n+caf*angle)))*self.green
         blue =  abs(math.sin(2*pi*(b_prime/3+ctf*time+clf*self.n+caf*angle)))*self.blue
+        if seizure_mode:
+          red, green, blue = red/self.radius, green/self.radius, blue/self.radius
+          red, green, blue = red*(self.radius/node_big_radius), green*(self.radius/node_big_radius), blue*(self.radius/node_big_radius)
+        
         ol.color3(red, green, blue)
  
         #do squares have radii?
