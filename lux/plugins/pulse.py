@@ -109,8 +109,10 @@ class Node(Tweenable):
         green = abs(math.sin(2*pi*(g_prime/3+ctf*time+clf*self.n+caf*angle)))*self.green
         blue =  abs(math.sin(2*pi*(b_prime/3+ctf*time+clf*self.n+caf*angle)))*self.blue
         if seizure_mode:
-          red, green, blue = red/self.radius, green/self.radius, blue/self.radius
-          red, green, blue = red*(self.radius/node_big_radius), green*(self.radius/node_big_radius), blue*(self.radius/node_big_radius)
+          #red, green, blue = red/self.radius, green/self.radius, blue/self.radius
+          red = abs(red*math.tan((2*pi*self.radius/node_big_radius)))
+          green = abs(green*math.tan((2*pi*self.radius/node_big_radius)))
+          blue = abs(blue*math.tan((2*pi*self.radius/node_big_radius)))
         
         ol.color3(red, green, blue)
  
