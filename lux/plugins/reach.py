@@ -18,7 +18,8 @@ from math import pi
 import random
 
 #SEGMENT_LENGTH = 0.025
-arm_length = 1.5
+arm_length = 2.5
+num_arms = 4
 swoosh_frequency = 1/5
 parts = 20
 
@@ -28,7 +29,8 @@ class Segment():
         self.width = width
         self.previous = None
 
-    def draw(self):
+    def draw(self, color):
+        ol.color3(color[0], color[1], color[2])
         ol.begin(ol.LINESTRIP)
         try:
             ol.vertex3((self.prev_x,self.prev_y,0))
@@ -38,18 +40,16 @@ class Segment():
         ol.end()
 
 class Arm():
-    def __init__(self):
-        self.x, self.y = -1, -1
+    def __init__(self, x=0, y=0, color=(1,1,1)):
+        self.x, self.y = x, y
         self.segments = []
         for i in range(parts):
             segment = Segment(0, 0, i)
             self.segments.append(segment)
+        self.color = color
 
     def draw(self, target):
         x, y =target[0]-self.x, target[1]-self.y
-
-        def get_angle(segment, x, y):
-            return math.atan2(dy, dx)
 
         # point each segment to it's predecessor
         for segment in self.segments:
@@ -57,7 +57,6 @@ class Arm():
             dy = y - segment.y
             angle = math.atan2(dy, dx)
             segment.angle = angle
-            segment.rotation = angle
 
             x = x - math.cos(angle) * arm_length/parts
             y = y - math.sin(angle) * arm_length/parts
@@ -72,7 +71,7 @@ class Arm():
 
         ol.translate3((self.x, self.y, 0))
         for segment in self.segments:
-            segment.draw()
+            segment.draw(self.color)
 
     def on_enter_frame(self, scene, context):
         self.segments[-1].y = self.height
@@ -87,23 +86,23 @@ class SimplePlugin(LuxPlugin):
         lux.register(Parameter( name = "simple_rate",
                                 description = "0..1   controls the rate of spinning cubes",
                                 default_value = 1.0 ))
-        self.arm = Arm()
+        self.arms = []
+        for i in range(num_arms):
+          r = random.uniform(0,1)
+          g = random.uniform(0,1)
+          b = random.uniform(0,1)
+          arm = Arm(random.uniform(-1,1), random.uniform(-1,1), color=(r,g,b))
+          self.arms.append(arm)
 
     def draw(self):
         ol.loadIdentity3()
         ol.loadIdentity()
-        ol.color3(1.0, 0.0, 1.0);
+        ol.color3(0.0, 1.0, 1.0);
         ol.perspective(60, 1, 1, 100)
         ol.translate3((0, 0, -3))
 
-        #target = [random.uniform(-1, 1), random.uniform(-1, 1)]
         #target_x, target_y = random.uniform(-1, 1), random.uniform(-1, 1)
         target_x, target_y = math.sin(2*pi*swoosh_frequency*lux.time*3), math.sin(2*pi*swoosh_frequency*lux.time*5)
-        self.arm.draw([target_x, target_y])
-
-        ol.begin(ol.LINESTRIP)
-        ol.vertex3((-1,  1,  1))
-        ol.vertex3((-1,  1, -1))
-        ol.end()
+        for arm in self.arms: arm.draw([target_x, target_y])
 
 
