@@ -14,20 +14,30 @@ from audio import audio_engine
 import pylase as ol
 from math import pi
 
-draw_links = False
+clamp_display = False
 
 ###parameters
+scale = 1.5
+time_scale = 1
 bpm = 60
 pulse_radius = True
 pulse_angle = False
 pulse_distance = False
 pulse_color = True
 node_small_radius = 0.01
-node_big_radius = 0.1
+node_big_radius = 0.03
 
 max_nodes = 20
 pulse_attack = 0.2
 pulse_decay = 0.9
+throb_propagation_speed = 200
+
+ctf = 1/10  #color time frequency
+clf = 0 #3/240 #color length frequncy
+caf = 0.5  #color angle frequency
+r_prime = 3
+g_prime = 2
+b_prime = 1
 
 #god this sucks
 node_red = 1
@@ -54,18 +64,50 @@ class Node(Tweenable):
         self.red = node_red
         self.green = node_green
         self.blue = node_blue 
+        self.R = 0.25 # big steps
+        self.R_frequency =  1/100
+        self.r = 0.08 # little steps
+        self.r_frequency = 1/370
+        self.p = 0.5 # size of the ring
+        self.p_frequency = 1/2000
+
 
     def draw(self):
         '''a square'''
-        self.x = math.cos(self.angle + self.base_angle) * self.distance * self.distance_scale
-        self.y = math.sin(self.angle + self.base_angle) * self.distance * self.distance_scale
-
+        #self.x = math.cos(2*pi*rotate_frequency*lux.time + self.angle + self.base_angle) * self.distance * self.distance_scale
+        #self.y = math.sin(2*pi*rotate_frequency*lux.time + self.angle + self.base_angle) * self.distance * self.distance_scale
+        
+        #stolen from guilloche
+        time = lux.time * time_scale 
+        R = math.sin(2*pi*self.R_frequency*time) * self.R + 0.0001
+        r = math.sin(2*pi*self.r_frequency*time) * self.r + 0.0001
+        p = math.sin(2*pi*self.p_frequency*time) * self.p + 0.0001
+        self.x = (R + r) * math.cos(time) + (r + p) * math.cos((R+r)/r * time) 
+        self.y = (R + r) * math.sin(time) + (r + p) * math.sin((R+r)/r * time) 
+        
+        #clamp to display area
+        if clamp_display:
+            if self.x > 1: self.x = 1
+            if self.y > 1: self.y = 1
+            if self.x < -1: self.x = -1
+            if self.y < -1: self.y = -1
+        self.x *= scale
+        self.y *= scale
         #self.graphics.circle(0, 0, self.radius)
         ol.loadIdentity3()
         ol.loadIdentity()
+
+
         #ol.color3(self.color[0], self.color[1], self.color[2])
         ol.color3(self.red, self.green, self.blue)
         ol.translate3((self.x, self.y, 0))
+        angle = math.atan2(self.y, self.x)/(2*pi)
+        red   = abs(math.sin(2*pi*(r_prime/3+ctf*time+clf*self.n+caf*angle)))*self.red #/self.radius
+        green = abs(math.sin(2*pi*(g_prime/3+ctf*time+clf*self.n+caf*angle)))*self.green
+        blue =  abs(math.sin(2*pi*(b_prime/3+ctf*time+clf*self.n+caf*angle)))*self.blue
+        ol.color3(red, green, blue)
+ 
+        #do squares have radii?
         s = self.radius
         ol.begin(ol.POINTS)
         ol.vertex3((-s, s,0))
@@ -99,16 +141,24 @@ class Net(Tweenable):
         if len(self.nodes) < max_nodes:
             for i in range(max_nodes - len(self.nodes)):
                 angle = random.random() * math.pi * 2
-                distance = random.uniform(0, 1)
+                #distance = random.uniform(0, 1)
+                distance = i / max_nodes
 
                 node = Node(angle, distance)
                 node.phase = self.phase
                 self.nodes.append(node)
+                node.n = i
+                node.R = node.R #* node.n/max_nodes #random.uniform(0, 1)
+                node.r = node.r * node.n/max_nodes #random.uniform(0, 1)
+                node.p = node.p * node.n/max_nodes #random.uniform(0, 1)
+                #node.R_frequency = node.R_frequency * random.uniform(0, 1)
+                #node.r_frequency = node.r_frequency * random.uniform(0, 1)
+                #node.p_frequency = node.p_frequency * random.uniform(0, 1)
 
         if not self.tick:
             self.phase +=1
             #this is just a fancy timer i guess
-            self.tweener.add_tween(self, tick=550, duration=60/bpm, \
+            self.tweener.add_tween(self, tick=throb_propagation_speed, duration=60/bpm, \
                 easing=pytweener.Easing.Expo.ease_in_out, on_complete=self.reset_tick)
 
         for node in self.nodes:
@@ -122,6 +172,7 @@ class Net(Tweenable):
 #                if pulse_color:
 #                  self.tweener.add_tween(node, color=1, duration=pulse_attack, \
 #                    easing=pytweener.Easing.Expo.ease_in, on_complete=self.slide_back)
+            
             node.draw()
 
 
@@ -162,7 +213,7 @@ class SimplePlugin(LuxPlugin):
 #        dt = lux.time - self.last_time
 
         self.net.draw()
-        foo= self.tweener.update(lux.time - self.last_time)
+        foo= self.tweener.update(lux.time*time_scale - self.last_time)
         
         #print list(foo)
         #bar = list(foo)[0]
@@ -171,6 +222,6 @@ class SimplePlugin(LuxPlugin):
         ol.perspective(60, 1, 1, 100)
         ol.translate3((0, 0, -3))
 
-        self.last_time = lux.time
+        self.last_time = lux.time * time_scale
 
 
