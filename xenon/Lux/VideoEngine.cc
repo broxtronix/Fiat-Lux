@@ -234,7 +234,7 @@ void lux::VideoEngine::draw_gl() {
   cv::GaussianBlur(grayscale_image, grayscale_image, cv::Size(11,11), m_contour_blur_sigma, m_contour_blur_sigma);
   
   // Average with the previous frame to smooth out the contours
-  m_contour_frame_smoothing = 1.0;
+  m_contour_frame_smoothing = 0.5;
   cv::Mat avg_image;
   if (m_previous_image.rows == grayscale_image.rows && m_previous_image.cols == grayscale_image.cols) {
     avg_image = m_contour_frame_smoothing * grayscale_image + (1-m_contour_frame_smoothing) * m_previous_image;
@@ -248,7 +248,7 @@ void lux::VideoEngine::draw_gl() {
   // Extract contours 
   std::vector<std::vector<cv::Point> > raw_contours;
   //  std::cout << "contour " << m_contour_threshold << "\n";
-  // for (float thresh = 0.05; thresh < 0.095; thresh += 0.2) {
+  // for (float thresh = 0.05; thresh < 0.95; thresh += 0.2) {
   //   add_contours(avg_image, raw_contours, thresh);
   // }
   add_contours(avg_image, raw_contours, m_contour_threshold);
@@ -334,13 +334,11 @@ void lux::VideoEngine::draw_gl() {
 
 void lux::VideoEngine::draw_lasers() {  
 
-  olLoadIdentity3();
-  olLoadIdentity();
-  olPerspective(60, 1, 1, 100);
-  olTranslate3(0, 0, -3);
+  // olLoadIdentity3();
+  // olLoadIdentity();
+  // olPerspective(60, 1, 1, 100);
+  // olTranslate3(0, 0, -3);
   
-  olColor3(0.0,1.0,0.0);
-
   xenon::Mutex::Lock lock(m_mutex);
   for (int c = 0; c < m_contours_to_draw.size(); ++c) {
     olBegin(OL_LINESTRIP);

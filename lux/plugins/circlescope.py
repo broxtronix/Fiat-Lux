@@ -68,8 +68,6 @@ class CircleScope(LuxPlugin, ColorDriftPlugin):
         ol.loadIdentity3()
         ol.color3(*(self.color_cycle()))
 
-
-
         ol.begin(ol.LINESTRIP)
         for i in range(0, mono.shape[0]-1, self.SUBSAMP):
 

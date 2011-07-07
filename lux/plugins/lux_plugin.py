@@ -73,7 +73,7 @@ class ColorDriftPlugin(object):
     def __init__(self):
         self.current_hue = random.random()
         self.hue_target = random.random()
-        self.hue_step = 1.0/10000.0
+        self.hue_step = 2.0/10000.0
 
     # Slow, random evolution of hue. 
     def color_cycle(self):

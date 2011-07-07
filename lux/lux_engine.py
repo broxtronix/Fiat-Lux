@@ -6,6 +6,7 @@ import math
 import pylase as ol
 from parameters import lux, Parameter
 from settings import LuxSettings
+from plugins.lux_plugin import ColorDriftPlugin
 
 import plugins
 from plugins.lux_plugin import LuxPlugin
@@ -48,6 +49,8 @@ class LuxEngine(QtCore.QThread):
         self.current_plugin_key = None
         self.current_plugin = None
         self.random_plugin()
+
+        self.video_color_drift = ColorDriftPlugin()
 
     def __del__(self):
         self.output_engine.setOutputInitialized(False)  # Turn on the hardware safety interlock
@@ -108,6 +111,13 @@ class LuxEngine(QtCore.QThread):
             # GUI.
             if (current_plugin):
                 if (settings['video'].videoMode):
+                    # Cause video color cycling to happen
+                    ol.loadIdentity3();
+                    ol.loadIdentity();
+                    ol.perspective(60, 1, 1, 100);
+                    ol.translate3((0, 0, -3));
+
+                    ol.color3(*(self.video_color_drift.color_cycle()))
                     video_engine.draw_lasers()
                 else:
                     current_plugin.draw()

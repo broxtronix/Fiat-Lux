@@ -26,9 +26,27 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         # Reset things
         audio_engine.clear_all()
         self.x_coord = -0.9
-        self.step = 1/512.0
-        self.subsamp = 3
+        self.step = 1/1024.0
+        self.subsamp = 1
         self.sample_array = np.zeros(512)
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 50000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1
+        params.off_speed = 1
+        params.start_dwell = 0
+        params.end_dwell = 0
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 1
+        params.end_wait = 1
+        params.snap = 1/100000.0;
+#        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
@@ -36,7 +54,8 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         ol.loadIdentity()
 
         # Grab the raw audio buffers
-        mono = audio_engine.mono_buffer()
+        mono = audio_engine.left_buffer()
+#        mono = np.zeros(512)
 
         # Make sure they aren't empty!!
         if (mono.shape[0] == 0):
@@ -51,9 +70,9 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         ol.loadIdentity3()
         ol.color3(*(self.color_cycle()))
 
-        ol.begin(ol.POINTS)
+        ol.begin(ol.LINESTRIP)
         for i in range(0, mono.shape[0]-1, self.subsamp):
-            scale_factor = pow(0.9-abs(self.x_coord),0.5)
+            scale_factor = pow(0.9-abs(self.x_coord),0.5)*2
             if (mono[i] <= -1.0):
                 mono[i] = 1.0
             ol.vertex3((self.x_coord, tanh(mono[i]*scale_factor), -1))

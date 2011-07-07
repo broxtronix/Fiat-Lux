@@ -23,7 +23,6 @@ class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
 
         (self.plugin_keys, self.plugin_names, self.plugin_descriptions) = self.lux_engine.list_plugins()
 
-
         # Populate the pull-down menu and select the previous plugin
         # we were using, if it is available.
         prev_plugin = None
@@ -70,7 +69,7 @@ class PluginSettings(QtGui.QWidget, PluginPanel.Ui_pluginPanel):
 
     # If the user has selected random mode, mix things up! 
     def timerEvent(self, event):
-        if self.randomModeButton.isChecked() and (random.random() < 0.1):
+        if self.randomModeButton.isChecked() and (random.random() < 0.01):
             self.randomClicked()
 
     # --------------------------------------------------------------------

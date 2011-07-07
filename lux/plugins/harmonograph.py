@@ -52,7 +52,7 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
         params.curve_dwell = 0
         params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
         params.start_wait = 12
-        params.end_wait = 11
+        params.end_wait = 50
         params.snap = 1/100000.0;
         params.render_flags = ol.RENDER_NOREORDER;
         ol.setRenderParams(params)
@@ -70,11 +70,11 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
 
         ol.perspective(20, 1, 1, 100)
         ol.translate3((0, 0, -10))
+        ol.scale3((0.5, 0.5, 0.5))
 
         ol.rotate3Z(lux.time * pi * 0.01)
         ol.rotate3X(lux.time * pi * 0.025)
         ol.rotate3Y(lux.time * pi * 0.013)
-
 
         ol.color3(*(self.color_cycle()))
 
