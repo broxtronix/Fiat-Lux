@@ -16,15 +16,6 @@ if you're running maverick you'll need to compile cython-0.14 from source since 
 to start compiling lux, type:
 scons
 
-export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/:/home/fenn/code/Fiat-Lux/xenon/Python/:/home/fenn/code/Fiat-Lux/openlase/python/
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fenn/code/Fiat-Lux/openlase/libol/:/home/fenn/code/Fiat-Lux/xenon/
-
-assuming everything went well, now we need to let python know where stuff went:
-export PYTHONPATH=$PYTHONPATH:$path_to_lux/
-export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/openlase/python/
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$path_to_lux/build/lib/
-sudo ldconfig
-
 cd openlase
 edit libol/trace.c, comment out #include <sys/malloc.h>
 edit tools/simulator.c, change to
@@ -43,9 +34,27 @@ edit python/CMakeLists.txt,
 
 cmake .
 make
+#this cmake stuff may be out of date, broxton mentioned something about integrating everything into scons
 
-now start jackd
+#to run lux:
+
+#first set up your environment; have to do this each time we open a shell >:6
+export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/:/home/fenn/code/Fiat-Lux/xenon/Python/:/home/fenn/code/Fiat-Lux/openlase/python/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fenn/code/Fiat-Lux/openlase/libol/:/home/fenn/code/Fiat-Lux/xenon/
+
+assuming everything went well, now we need to let python know where stuff went:
+export PYTHONPATH=$PYTHONPATH:$path_to_lux/
+export PYTHONPATH=$PYTHONPATH:/home/fenn/code/Fiat-Lux/openlase/python/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$path_to_lux/build/lib/
+sudo ldconfig
+
+#now start jack
 jackd -d alsa
+#jackd -d dummy #or you will have problems on wake from suspend/sleep
 
-you may need to shut down some applications, for some hints:
-lsof | grep snd
+python lux/lux.py
+
+#you may need to shut down some applications, for some hints:
+lsof | grep snd #or just use jackd -d dummy instead
+
+
