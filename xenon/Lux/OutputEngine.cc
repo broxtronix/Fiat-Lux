@@ -282,12 +282,20 @@ int lux::OutputEngine::process_callback(nframes_t nframes) {
         b = 0.0f;
       }
 
+      // Gain
       r *= m_red_intensity_multiplier * (1.0f-m_red_intensity_offset);
-      r += m_red_intensity_offset;
       g *= m_green_intensity_multiplier * (1.0f-m_green_intensity_offset);
-      g += m_green_intensity_offset;
       b *= m_blue_intensity_multiplier * (1.0f-m_blue_intensity_offset);
+
+      // Offset
+      r += m_red_intensity_offset;
+      g += m_green_intensity_offset;
       b += m_blue_intensity_offset;
+
+      // Gamma
+      r = pow(r, m_red_intensity_gamma);
+      g = pow(g, m_green_intensity_gamma);
+      b = pow(b, m_blue_intensity_gamma);
 
       // Limit the max output, just in case!
       if (r > 1.0) r = 1.0;
@@ -324,8 +332,6 @@ int lux::OutputEngine::sample_rate_callback(nframes_t nframes) {
   m_frames_dead = 0;
   m_dead_time = (m_sample_rate/10);
 }
-
-
 
 void lux::OutputEngine::setSizeMultiplier(float value) { 
   if (value >= 0.0 && value < 2.0) {  // A little safety check
@@ -385,6 +391,33 @@ void lux::OutputEngine::blueIntensityOffset(float value) {
     m_blue_intensity_offset = value; 
   } else {
     xenon_out() << "WARNING: Tried to set blue intensity offset to invalid value.  Value was " 
+                << value << "\n";
+  }
+}
+
+void lux::OutputEngine::redIntensityGamma(float value) { 
+  if (value >= 0.0 && value <= 2.0) {  // A little safety check
+    m_red_intensity_gamma = value; 
+  } else {
+    xenon_out() << "WARNING: Tried to set red intensity gamma to invalid value.  Value was " 
+                << value << "\n";
+  }
+}
+
+void lux::OutputEngine::greenIntensityGamma(float value) { 
+  if (value >= 0.0 && value <= 2.0) {  // A little safety check
+    m_green_intensity_gamma = value; 
+  } else {
+    xenon_out() << "WARNING: Tried to set green intensity gamma to invalid value.  Value was " 
+                << value << "\n";
+  }
+}
+
+void lux::OutputEngine::blueIntensityGamma(float value) { 
+  if (value >= 0.0 && value <= 2.0) {  // A little safety check
+    m_blue_intensity_gamma = value; 
+  } else {
+    xenon_out() << "WARNING: Tried to set blue intensity gamma to invalid value.  Value was " 
                 << value << "\n";
   }
 }

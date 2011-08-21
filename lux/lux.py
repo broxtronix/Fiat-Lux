@@ -7,7 +7,7 @@ import os.path
 import traceback
 
 # Set this to 1 to enable console exceptions.
-DEV_MODE = 0
+DEV_MODE = 1
 
 # It's important that we import the settings before anything else Qt
 # related, because the settings sets the SIP API to version 2.
@@ -92,9 +92,5 @@ except:
         print error_string
     else:
         QtGui.QMessageBox.critical(None, 'Plugin Error',  error_string)
-finally:
-
-    print "An exception occurred that could not be handled.  Exiting.\n";
-    sys.exit(0);
 
     

@@ -10,11 +10,12 @@ import two_cubes
 # Plugins by Broxton
 import butterfly_curve
 import harmonograph
+import linesweep
 #import scope
 
 # Plugins by Tim J.
-#import bouncyball
-#import testpattern
+import bouncyball
+import testpattern
 
 # Plugins by Fenn
 import guilloche
@@ -37,6 +38,8 @@ import phospho_paint
 import phospho_paint2
 
 # -----------------------------------------
+
+import david
 
 
 

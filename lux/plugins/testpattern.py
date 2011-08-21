@@ -40,7 +40,7 @@ class TestPatternPlugin(LuxPlugin):
         ol.loadIdentity()
 
         ol.color3(1.0, 1.0, 1.0);
-
+                
         # bounding box
         ol.begin(ol.LINESTRIP)
         self.square(1,1,-1,-1)
@@ -97,11 +97,17 @@ class TestPatternPlugin(LuxPlugin):
 
 
     def square(self,x1,y1,x2,y2):
+
+#        simple_rate = 3.0
+#        ol.rotate3Z(lux.time * pi * 0.1 * simple_rate)
+#        ol.rotate3X(lux.time * pi * 0.25 * simple_rate)
+#        ol.rotate3Y(lux.time * pi * 0.13 * simple_rate)
+
         ol.begin(ol.LINESTRIP)
-        ol.vertex((x1,y1))
-        ol.vertex((x1,y2))
-        ol.vertex((x2,y2))        
-        ol.vertex((x2,y1))        
-        ol.vertex((x1,y1))        
+        ol.vertex3((x1,y1,0))
+        ol.vertex3((x1,y2,0))
+        ol.vertex3((x2,y2,0))        
+        ol.vertex3((x2,y1,0))        
+        ol.vertex3((x1,y1,0))  
         ol.end()
         

@@ -118,10 +118,16 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon())
         self.setWindowTitle('Fiat Lux')
 
+        # Set tab positions
+        self.setTabPosition(QtCore.Qt.LeftDockWidgetArea, QtGui.QTabWidget.South)
+        self.setTabPosition(QtCore.Qt.RightDockWidgetArea, QtGui.QTabWidget.South)
+
         # create the display widgets in a QTabView
         self.displayTabWidget = QtGui.QTabWidget(self)
+        self.displayTabWidget.setTabPosition(QtGui.QTabWidget.South)
         self.simWidget = SimulationDisplay(self)
         self.displayTabWidget.addTab(self.simWidget, "Laser Output")
+
         # MacOS X supports video capture using syphon.  Other platforms don't (yet!)
         if sys.platform == "darwin":
             self.videoWidget = VideoDisplay(lux_engine.video_engine, self.displayTabWidget)
@@ -133,10 +139,9 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTabWidget.setCurrentIndex(self.settings['main_window'].valueWithDefault('display_tab', 0))
         self.connect(self.displayTabWidget, QtCore.SIGNAL('currentChanged(int)'), self.displayTabChanged)
 
-        # This might be fun someday...
-        #        self.ipythonWidget = IPythonConsole(self)
-        #        self.setCentralWidget(self.ipythonWidget)
-        
+        # -----------------------------------------------------------------------
+        #                              STATUS BAR
+        # -----------------------------------------------------------------------
 
         # set up the status bar
         self.statusBar_ = QtGui.QStatusBar(self)
@@ -146,41 +151,6 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar_.addWidget(self.statusLabel)
         self.setStatusBar(self.statusBar_)
 
-        # setup our actions
-        self.streamAction = QtGui.QAction(QtGui.QIcon(self.resource('play.png')),
-                                          '&Stream',
-                                          self)
-        self.streamAction.setShortcut(QtCore.Qt.ALT + QtCore.Qt.Key_S)
-        self.streamAction.setToolTip('Start/stop streaming frames from the camera.')
-        self.streamAction.setCheckable(True)
-        self.streamAction.setEnabled(False)
-        # self.connect(self.streamAction,
-        #              QtCore.SIGNAL('triggered(bool)'),
-        #              self.playTriggered)
-
-        # make a pause icon
-        self.pauseAction = QtGui.QAction(QtGui.QIcon(self.resource('pause.png')),
-                                          '&Pause',
-                                          self)
-        self.pauseAction.setShortcut(QtCore.Qt.ALT + QtCore.Qt.Key_P)
-        self.pauseAction.setToolTip('Pause/resume streaming frames from the camera.')
-        self.pauseAction.setCheckable(True)
-        self.pauseAction.setEnabled(False)
-        # self.connect(self.pauseAction,
-        #              QtCore.SIGNAL('triggered(bool)'),
-        #              self.pauseTriggered)
-
-        self.recordAction = QtGui.QAction(QtGui.QIcon(self.resource('record.png')),
-                                          '&Record',
-                                          self)
-        self.recordAction.setShortcut(QtCore.Qt.ALT + QtCore.Qt.Key_R)
-        self.recordAction.setToolTip('Record the streamed frames to disk.')
-        self.recordAction.setCheckable(True)
-        self.recordAction.setEnabled(False)
-        # self.connect(self.recordAction,
-        #              QtCore.SIGNAL('triggered(bool)'),
-        #              self.record)
-
         self.quitAction = QtGui.QAction('&Quit', self)
         self.quitAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
         self.quitAction.setToolTip('Exit the program.')
@@ -188,47 +158,10 @@ class MainWindow(QtGui.QMainWindow):
                      QtCore.SIGNAL('triggered(bool)'),
                      self.close)
 
-        # add radio buttons
-        self.displayPrefix = QtGui.QLabel(' View as: ')
-        self.displayPrefix.setAlignment(QtCore.Qt.AlignVCenter)
-        self.displayRawButton = QtGui.QRadioButton('Raw image')
-        self.displayRawButton.setToolTip('Show the raw image, either coming from\nthe camera sensor or loaded from a file.')
-        self.displayPinholeButton = QtGui.QRadioButton('Pinhole 3D (reset focus and pan)')
-        self.displayPinholeButton.setToolTip('Show the light field as viewed through a pinhole.\nThis resets the focus and pan settings in the Optics tab.') 
-        self.displayApertureButton = QtGui.QRadioButton('3D')
-        self.displayApertureButton.setToolTip('Show a rendered 3D light field.')
+        # -----------------------------------------------------------------------
+        #                              SETTINGS PANELS
+        # -----------------------------------------------------------------------
 
-        # self.connect(self.displayRawButton,
-        #              QtCore.SIGNAL('clicked()'),
-        #              self.emitDisplayModeChanged)
-        # self.connect(self.displayPinholeButton,
-        #              QtCore.SIGNAL('clicked()'),
-        #              self.emitDisplayModeChanged)
-        # self.connect(self.displayApertureButton,
-        #              QtCore.SIGNAL('clicked()'),
-        #              self.emitDisplayModeChanged)
-
-        # set up the toolbars
-        # self.controlBar = QtGui.QToolBar(self)
-        # self.controlBar.setObjectName('Control Bar')
-        # self.controlBar.addAction(self.streamAction)
-        # self.controlBar.addAction(self.pauseAction)
-        # self.displayBar = QtGui.QToolBar(self)
-        # self.displayBar.setObjectName('Display Mode Bar')
-        # self.displayBar.addWidget(self.displayPrefix)
-        # self.displayBar.addWidget(self.displayRawButton)
-        # self.displayBar.addWidget(self.displayPinholeButton)
-        # self.displayBar.addWidget(self.displayApertureButton)
-        # self.addToolBar(self.controlBar)
-        # self.addToolBar(self.displayBar)
-
-        # toolbar view control
-        # self.viewControlBarAction = self.controlBar.toggleViewAction()
-        # self.viewControlBarAction.setText('&Controls')
-        # self.viewDisplayBarAction = self.displayBar.toggleViewAction()
-        # self.viewDisplayBarAction.setText('&Display mode')
-
-        # set up the settings panels
         self.settingsManager = SettingsPanelManager(self)
         
         self.settingsManager.add(SettingsPanel(name = "Plugins",
@@ -249,7 +182,11 @@ class MainWindow(QtGui.QMainWindow):
                      QtCore.SIGNAL('olParamsChanged()'),
                      self.lux_engine.updateOlParams)
 
-        # set up the menu bar
+
+        # -----------------------------------------------------------------------
+        #                              MENU BAR
+        # -----------------------------------------------------------------------
+
         self.menuBar_ = QtGui.QMenuBar(self)
         self.viewMenu = self.menuBar_.addMenu('&View')
         for action in self.settingsManager.toggleViewActions():

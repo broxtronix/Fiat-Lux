@@ -75,13 +75,17 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.update()
 
     def resetDefaults(self):
+
         # Laser Power
 	self.redIntensitySlider.setValue(self.settings['output'].refreshWithDefault('redIntensity', 1.0) * 100);
 	self.redOffsetSlider.setValue(self.settings['output'].refreshWithDefault('redOffset', 0.0) * 100 + 50);
+	self.redGammaSlider.setValue(self.settings['output'].refreshWithDefault('redGamma', 1.0) * 100);
 	self.greenIntensitySlider.setValue(self.settings['output'].refreshWithDefault('greenIntensity', 1.0) * 100);
 	self.greenOffsetSlider.setValue(self.settings['output'].refreshWithDefault('greenOffset', 0.0) * 100 + 50);
+	self.greenGammaSlider.setValue(self.settings['output'].refreshWithDefault('greenGamma', 1.0) * 100);
 	self.blueIntensitySlider.setValue(self.settings['output'].refreshWithDefault('blueIntensity', 1.0) * 100);
 	self.blueOffsetSlider.setValue(self.settings['output'].refreshWithDefault('blueOffset', 0.0) * 100 + 50);
+	self.blueGammaSlider.setValue(self.settings['output'].refreshWithDefault('blueGamma', 1.0) * 100);
 
 	# Blanking
 	self.outputEnable.setChecked(self.settings['output'].refreshWithDefault('outputEnable', True));
@@ -341,6 +345,11 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.settings['output'].redOffset = v
         self.output_engine.redIntensityOffset(v)
 
+    def on_redGammaSlider_valueChanged(self, value):
+        v = value / 100.0
+        self.settings['output'].redGamma = v
+        self.output_engine.redIntensityGamma(v)
+
     def on_greenIntensitySlider_valueChanged(self, value):
         v = value / 100.0
         self.settings['output'].greenIntensity = v
@@ -351,6 +360,11 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         self.settings['output'].greenOffset = v
         self.output_engine.greenIntensityOffset(v)
 
+    def on_greenGammaSlider_valueChanged(self, value):
+        v = value / 100.0
+        self.settings['output'].greenGamma = v
+        self.output_engine.greenIntensityGamma(v)
+
     def on_blueIntensitySlider_valueChanged(self, value):
         v = value / 100.0
         self.settings['output'].blueIntensity = v
@@ -360,6 +374,11 @@ class OutputSettings(QtGui.QWidget, OutputPanel.Ui_outputPanel):
         v = (value-50.0) / 100.0
         self.settings['output'].blueOffset = v
         self.output_engine.blueIntensityOffset(v)
+
+    def on_blueGammaSlider_valueChanged(self, value):
+        v = value / 100.0
+        self.settings['output'].blueGamma = v
+        self.output_engine.blueIntensityGamma(v)
 
     def on_lockCalibration_toggled(self, state):
         v = value / 100.0

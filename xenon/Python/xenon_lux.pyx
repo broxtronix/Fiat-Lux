@@ -82,6 +82,9 @@ cdef extern from "xenon/Lux.h" namespace "lux":
         void redIntensityOffset(float) except +RuntimeError
         void greenIntensityOffset(float) except +RuntimeError
         void blueIntensityOffset(float) except +RuntimeError
+        void redIntensityGamma(float) except +RuntimeError
+        void greenIntensityGamma(float) except +RuntimeError
+        void blueIntensityGamma(float) except +RuntimeError
 
         void setTransformMatrix(float, float, float,
                                 float, float, float,
@@ -275,6 +278,12 @@ cdef class LuxOutputEngine:
         self.thisptr.greenIntensityOffset(val)
     def blueIntensityOffset(self, val):
         self.thisptr.blueIntensityOffset(val)
+    def redIntensityGamma(self, val):
+        self.thisptr.redIntensityGamma(val)
+    def greenIntensityGamma(self, val):
+        self.thisptr.greenIntensityGamma(val)
+    def blueIntensityGamma(self, val):
+        self.thisptr.blueIntensityGamma(val)
 
     def setTransformMatrix(self, transform_matrix):
         self.thisptr.setTransformMatrix(transform_matrix.m11(), transform_matrix.m12(), transform_matrix.m13(),

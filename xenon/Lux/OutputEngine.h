@@ -53,10 +53,13 @@ namespace lux {
     float m_size_multiplier;
     float m_red_intensity_multiplier;
     float m_red_intensity_offset;
+    float m_red_intensity_gamma;
     float m_green_intensity_multiplier;
     float m_green_intensity_offset;
+    float m_green_intensity_gamma;
     float m_blue_intensity_multiplier;
     float m_blue_intensity_offset;
+    float m_blue_intensity_gamma;
 
     void generate_enable(sample_t *buf, nframes_t nframes);
     void transform(sample_t *ox, sample_t *oy);
@@ -102,6 +105,9 @@ namespace lux {
     void redIntensityOffset(float value);
     void greenIntensityOffset(float value);
     void blueIntensityOffset(float value);
+    void redIntensityGamma(float value);
+    void greenIntensityGamma(float value);
+    void blueIntensityGamma(float value);
 
     void setTransformMatrix(float a11, float a12, float a13,
                             float a21, float a22, float a23,

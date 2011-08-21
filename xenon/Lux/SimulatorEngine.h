@@ -7,7 +7,8 @@
 
 namespace lux {
 
-#define LUX_SIMULATOR_HIST_SAMPLES (48 * 50)
+#define LUX_SIMULATOR_HIST_SAMPLES (5200)  // Approx 30 fps at 96 KHz audio rates
+  //#define LUX_SIMULATOR_HIST_SAMPLES (48 * 50)
 #define LUX_SIMULATOR_BUF_SAMPLES (LUX_SIMULATOR_HIST_SAMPLES+48000)
 
   typedef struct {
