@@ -13,7 +13,7 @@ import harmonograph
 #import scope
 
 # Plugins by Tim J.
-import bouncyball
+#import bouncyball
 #import testpattern
 
 # Plugins by Fenn
@@ -30,6 +30,11 @@ import writhe
 
 # Plugins by Matty G.
 #import mesh
+
+# Plugins by Ansi
+import platonic
+import phospho_paint
+import phospho_paint2
 
 # -----------------------------------------
 
