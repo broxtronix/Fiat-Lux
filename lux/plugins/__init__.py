@@ -11,6 +11,7 @@ import two_cubes
 import butterfly_curve
 import harmonograph
 import linesweep
+import touch_cubes
 #import scope
 
 # Plugins by Tim J.

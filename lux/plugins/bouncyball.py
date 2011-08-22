@@ -78,7 +78,7 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
             self.currentWave = self.nextWave
             self.nextWave = zeros(shape=(self.renderPointCount))
             # load in new values
-            for i in range(self.renderPointCount-1):
+            for i in range(int(self.renderPointCount-1)):
                 self.nextWave[i] = mono[i*self.skip]*2
                     
         # draw shape
@@ -86,7 +86,7 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
 #        print '%f %f %f' % (lux.time,fracIntervalComplete, self.nextSnapshot)
         coordsToRender = zeros(shape=(self.renderPointCount,2))
         firstVal = None
-        for i in range(self.renderPointCount-1):
+        for i in range(int(self.renderPointCount-1)):
             val = ((self.nextWave[i] - self.currentWave[i]) * fracIntervalComplete) + self.currentWave[i]
             if (firstVal is None): firstVal = val
             #print "next: %f  curr:  %f   frac: %f" % (self.nextWave[i], self.currentWave[i], fracIntervalComplete)
@@ -97,7 +97,7 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
 
         # render shape
         ol.begin(ol.LINESTRIP)
-        for i in range(self.renderPointCount):
+        for i in range(int(self.renderPointCount)):
 #            print '%f: %f,%f' % (i,coordsToRender[i][0], coordsToRender[i][1])
             ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
         ol.end()
