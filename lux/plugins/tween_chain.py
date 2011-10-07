@@ -116,6 +116,25 @@ class SimplePlugin(LuxPlugin):
         self.chain = Chain(self.tweener)
         self.particle = Particle()
         self.last_time = 0
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 50000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1
+        params.off_speed = 1
+        params.start_dwell = 0
+        params.end_dwell = 4
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = math.cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 11
+        params.end_wait = 0
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
+
     def bounce(self):
         '''move the yellow square to a new location'''
         self.tweener.add_tween(self.particle, x=random.uniform(-1,1), y=random.uniform(-1,1), duration=0.3, \

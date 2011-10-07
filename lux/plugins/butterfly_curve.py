@@ -26,7 +26,8 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
 
         # Parameters
         self.MAX_THETA = 4.0 * pi
-        self.SAMPLES_PER_FRAME = 400
+        self.SAMPLES_PER_FRAME = 1000
+        self.SCALE = 1.5
 
         self.RATE = 0.2
         self.reset()
@@ -42,7 +43,7 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
     # Custom parameters for the Fiat Lux lasers as tuned for Priceless
     def setParameters(self):
         params = ol.getRenderParams()
-        params.rate = 25000
+        params.rate = 40000
         #params.max_framelen = settings['calibration'].olRate
         params.on_speed = 1.0/1.0
         params.off_speed = 1.0/6.0
@@ -77,7 +78,7 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
                 r = exp(cos(a * theta)) - A * cos(b*theta) + pow(abs(sin(theta/c)),b)
                 r = r / (2.7 - A + pow(1,b)) * self.overall_amplitude
 
-                ol.vertex3((r * cos(theta), r * sin(theta), -1))
+                ol.vertex3((self.SCALE * r * cos(theta), self.SCALE * r * sin(theta), -1))
             ol.end()
         except ValueError:
             pass  # Occasinal math hiccups can be safely ignored

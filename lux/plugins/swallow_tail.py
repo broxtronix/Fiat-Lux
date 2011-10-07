@@ -64,6 +64,24 @@ class SwallowTailPlugin(LuxPlugin, ColorDriftPlugin):
         self.th4b=random.random()*2*pi;
         self.th5b=random.random()*2*pi;
 
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 50000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1
+        params.off_speed = 1
+        params.start_dwell = 0
+        params.end_dwell = 15
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 18
+        params.end_wait = 0
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
+
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
         theta = arange(0,2*pi,2*pi/self.N);

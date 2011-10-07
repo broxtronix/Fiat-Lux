@@ -11,8 +11,9 @@ import two_cubes
 import butterfly_curve
 import harmonograph
 import linesweep
-import touch_cubes
-#import scope
+#import touch_cubes
+import stimulated_emission
+import scope
 
 # Plugins by Tim J.
 import bouncyball
@@ -20,7 +21,7 @@ import testpattern
 
 # Plugins by Fenn
 import guilloche
-import guilloche_audio
+#import guilloche_audio
 import tween_chain
 #import party_in_your_pants
 import reach
@@ -38,9 +39,8 @@ import platonic
 #import phospho_paint
 #import phospho_paint2
 
-# -----------------------------------------
-
-import david
+# Plugins by David
+# import david
 
 
 

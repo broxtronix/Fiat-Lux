@@ -35,17 +35,17 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
     # Custom parameters for the Fiat Lux lasers as tuned for Priceless
     def setParameters(self):
         params = ol.getRenderParams()
-        params.rate = 30000
+        params.rate = 50000
         #params.max_framelen = settings['calibration'].olRate
         params.on_speed = 1
         params.off_speed = 1
-        params.start_dwell = 1
-        params.end_dwell = 1
+        params.start_dwell = 13
+        params.end_dwell = 8
         params.corner_dwell = 0
         params.curve_dwell = 0
         params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
-        params.start_wait = 5
-        params.end_wait = 50
+        params.start_wait = 28
+        params.end_wait = 0
         params.snap = 1/100000.0;
         params.render_flags = ol.RENDER_NOREORDER;
         ol.setRenderParams(params)
@@ -60,13 +60,13 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
 
         # Make sure it ain't empty!!
         if mono.shape[0] == 0:
+            print '--> empty buffer'
             return
 
         # Openlase can only draw 30000 points in one cycle (less that
         # that, actually!).  Clear the audio buffer and try again!
         if mono.shape[0] > 10000:
             audio_engine.clear_all()
-            return
 
         ol.color3(*(self.color_cycle()))
         ol.perspective(60, 1, 1, 100)
@@ -97,7 +97,7 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
 
         # render shape
         ol.begin(ol.LINESTRIP)
-        for i in range(int(self.renderPointCount)):
+        for i in range(0, int(self.renderPointCount), 1 ):
 #            print '%f: %f,%f' % (i,coordsToRender[i][0], coordsToRender[i][1])
             ol.vertex((coordsToRender[i][0], coordsToRender[i][1]))
         ol.end()

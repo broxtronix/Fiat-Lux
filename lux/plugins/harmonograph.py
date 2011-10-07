@@ -24,9 +24,9 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
         ColorDriftPlugin.__init__(self)
 
         # Parameters
-        self.SAMPLES_PER_FRAME = 900
-        self.MAX_THETA = 16 * pi
-        self.RATE = 0.2
+        self.SAMPLES_PER_FRAME = 1000
+        self.MAX_THETA = 8 * pi
+        self.RATE = 0.1
 
         self.x_ratio = 3
         self.x_phase = 0
@@ -42,17 +42,17 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
     # Custom parameters for the Fiat Lux lasers as tuned for Priceless
     def setParameters(self):
         params = ol.getRenderParams()
-        params.rate = 30000
+        params.rate = 50000
         #params.max_framelen = settings['calibration'].olRate
         params.on_speed = 1.0/1.0
         params.off_speed = 1.0/1.0
         params.start_dwell = 1
-        params.end_dwell = 1
+        params.end_dwell = 13
         params.corner_dwell = 0
         params.curve_dwell = 0
         params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
-        params.start_wait = 12
-        params.end_wait = 50
+        params.start_wait = 28
+        params.end_wait = 0
         params.snap = 1/100000.0;
         params.render_flags = ol.RENDER_NOREORDER;
         ol.setRenderParams(params)
@@ -70,7 +70,7 @@ class HarmonographPlugin(LuxPlugin, ColorDriftPlugin):
 
         ol.perspective(20, 1, 1, 100)
         ol.translate3((0, 0, -10))
-        ol.scale3((0.5, 0.5, 0.5))
+        #ol.scale3((0.5, 0.5, 0.5))
 
         ol.rotate3Z(lux.time * pi * 0.01)
         ol.rotate3X(lux.time * pi * 0.025)

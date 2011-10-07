@@ -247,4 +247,7 @@ class MainWindow(QtGui.QMainWindow):
             self.displayTabWidget.setCurrentIndex(0)
         if event.key() == QtCore.Qt.Key_2:
             self.displayTabWidget.setCurrentIndex(1)
+        if event.key() == QtCore.Qt.Key_R:
+            self.lux_engine.reset_plugin()
+            
 

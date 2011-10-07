@@ -23,7 +23,7 @@ class TestPatternPlugin(LuxPlugin):
         params = ol.getRenderParams()
         params.rate = 50000
         #params.max_framelen = settings['calibration'].olRate
-        params.on_speed = 1.0/48.0
+        params.on_speed = 1.0/38.0
         params.off_speed = 1.0/7.0
         params.start_dwell = 8
         params.end_dwell = 11
@@ -31,7 +31,7 @@ class TestPatternPlugin(LuxPlugin):
         params.curve_dwell = 0
         params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
         params.start_wait = 14
-        params.end_wait = 54
+        params.end_wait = 34
         params.snap = 1/100000.0;
         params.render_flags = ol.RENDER_NOREORDER;
         ol.setRenderParams(params)

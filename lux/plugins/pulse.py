@@ -74,25 +74,6 @@ class Node(Tweenable):
         self.p_frequency = 1/2000
 	self.last_sample = 1
         self.audio_gain = 20
-    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
-    def setParameters(self):
-        params = ol.getRenderParams()
-        params.rate = 40000
-        #params.max_framelen = settings['calibration'].olRate
-        params.on_speed = 1.0/1.0
-        params.off_speed = 1.0/3.0
-        params.start_dwell = 3
-        params.end_dwell = 10
-        params.corner_dwell = 0
-        params.curve_dwell = 0
-        params.curve_angle = cos(30.0*(pi/180.0)); # 30 deg
-        params.start_wait = 9
-        params.end_wait = 26
-        params.snap = 1/100000.0;
-        params.render_flags = ol.RENDER_NOREORDER;
-        ol.setRenderParams(params)
-
-
 
     def draw(self, audio):
         '''a square'''
@@ -141,7 +122,7 @@ class Node(Tweenable):
 
                 except: sample = 1
         else: sample = 1 #[0 for x in range(10000)] #empty vector 
-        print sample 
+        #print sample 
         if audio:
           red = red
           blue = blue + sample*self.audio_gain
@@ -187,7 +168,6 @@ class Net(Tweenable):
 
         # Make sure they aren't empty!!
         if (mono.shape[0] == 0 or left.shape[0] == 0 or right.shape[0] == 0):
-            print "empty audio buffer"
             return
 
         # Openlase can only draw 30000 points in one cycle (less that
@@ -195,12 +175,10 @@ class Net(Tweenable):
         if left.shape[0] > 10000:
             print "too many audio samples"
             audio_engine.clear_all()
-            return
 
         if left.shape[0] != right.shape[0]:
             print "unequal number of samples left/right"
             audio_engine.clear_all()
-            return
         return (left, right, mono)
 
     def draw(self):
@@ -272,6 +250,24 @@ class SimplePlugin(LuxPlugin):
         self.tweener = pytweener.Tweener()
         self.net = Net(self.tweener)
         self.last_time = 0
+
+    # Custom parameters for the Fiat Lux lasers as tuned for Priceless
+    def setParameters(self):
+        params = ol.getRenderParams()
+        params.rate = 40000
+        #params.max_framelen = settings['calibration'].olRate
+        params.on_speed = 1.0/1.0
+        params.off_speed = 1.0/3.0
+        params.start_dwell = 3
+        params.end_dwell = 10
+        params.corner_dwell = 0
+        params.curve_dwell = 0
+        params.curve_angle = math.cos(30.0*(pi/180.0)); # 30 deg
+        params.start_wait = 9
+        params.end_wait = 26
+        params.snap = 1/100000.0;
+        params.render_flags = ol.RENDER_NOREORDER;
+        ol.setRenderParams(params)
 
     def draw(self):
         ol.loadIdentity3()

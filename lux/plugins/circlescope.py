@@ -27,13 +27,14 @@ class CircleScope(LuxPlugin, ColorDriftPlugin):
         audio_engine.clear_all()
 
         # Constants
-        self.SUBSAMP = 3
+        self.SUBSAMP = 20
         self.BOOST = 8
         self.MIN_SIZE = 0.2
         self.MAX_SIZE = 1.0
 
         self.W = 523.251131 / 4.0 * pi;
         self.pos = 0.0
+        self.mono = None
 
     # Slow, random evolution of hue. 
     def color_cycle(self):
@@ -53,25 +54,26 @@ class CircleScope(LuxPlugin, ColorDriftPlugin):
         ol.loadIdentity()
 
         # Grab the raw audio buffers
-        mono = audio_engine.mono_buffer()
+        newbuffer = audio_engine.mono_buffer()
 
         # Make sure they aren't empty!!
-        if (mono.shape[0] == 0):
+        if (len(newbuffer) == 0):
             return
+        else:
+            self.mono = newbuffer
 
         # Openlase can only draw 30000 points in one cycle (less that
         # that, actually!).  Clear the audio buffer and try again!
-        if mono.shape[0] > 10000:
+        if self.mono.shape[0] > 10000:
             audio_engine.clear_all()
-            return
 
         ol.loadIdentity3()
         ol.color3(*(self.color_cycle()))
 
-        ol.begin(ol.LINESTRIP)
-        for i in range(0, mono.shape[0]-1, self.SUBSAMP):
+        ol.begin(ol.POINTS)
+        for i in range(0, self.mono.shape[0]-1, self.SUBSAMP):
 
-            val = tanh(mono[i] * self.BOOST)
+            val = tanh(self.mono[i] * self.BOOST)
             val = val * 0.5 + 0.5
             val = val * (self.MAX_SIZE - self.MIN_SIZE) + self.MIN_SIZE
             

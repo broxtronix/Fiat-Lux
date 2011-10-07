@@ -51,6 +51,7 @@ class LuxEngine(QtCore.QThread):
         self.random_plugin()
 
         self.video_color_drift = ColorDriftPlugin()
+        self.reset_plugin_on_next_frame = False
 
     def __del__(self):
         self.output_engine.setOutputInitialized(False)  # Turn on the hardware safety interlock
@@ -103,6 +104,10 @@ class LuxEngine(QtCore.QThread):
 
             if (current_plugin and not settings['calibration'].parameterOverride):
                 current_plugin.setParameters();
+
+            if (self.reset_plugin_on_next_frame):
+                current_plugin.reset()
+                self.reset_plugin_on_next_frame = False
 
             # RENDER
             #
@@ -163,6 +168,9 @@ class LuxEngine(QtCore.QThread):
         descriptions = [(lambda k: LuxPlugin.plugins[k].description)(key) for key in keys]
         self.lock.unlock()
         return (keys, full_names, descriptions)
+
+    def reset_plugin(self):
+        self.reset_plugin_on_next_frame = True
 
     def updateOlParams(self):
         self.ol_update_params = True

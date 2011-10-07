@@ -38,6 +38,9 @@ class LuxPlugin(object):
     def draw(self):
         pass
 
+    def reset(self):
+        pass
+
     # Override this method if you want to set parameters yourself in
     # your plugin.  The default behavior is that the plugin uses the
     # current parameters set in the GUI (regardless of whether the
