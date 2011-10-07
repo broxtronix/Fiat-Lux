@@ -157,8 +157,8 @@ class SettingsNamespace(object):
             return self.__getattr__(key)
 
     def setValue(self, key, value):
-        raise NotImplementedError("You cannot use the setValue() method with the settings object.")
+        self.__setattr__(key, value)
 
     def value(self, key):
-        raise NotImplementedError("You cannot use the value() method with the settings object.")
+        return self.__getattr__(key)
 

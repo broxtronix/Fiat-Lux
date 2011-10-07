@@ -35,8 +35,8 @@ import writhe
 
 # Plugins by Ansi
 import platonic
-import phospho_paint
-import phospho_paint2
+#import phospho_paint
+#import phospho_paint2
 
 # -----------------------------------------
 

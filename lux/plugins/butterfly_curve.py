@@ -60,22 +60,25 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
 
-        a = self.alpha * cos(lux.time / 10.0 * self.RATE)
-        b = self.beta * sin(lux.time / 7.0 * self.RATE) + 10
-        c = self.gamma * cos(lux.time / 11.0 * self.RATE)
-        A = self.rho
+        try:
+            a = self.alpha * cos(lux.time / 10.0 * self.RATE)
+            b = self.beta * sin(lux.time / 7.0 * self.RATE) + 10
+            c = self.gamma * cos(lux.time / 11.0 * self.RATE)
+            A = self.rho
 
-        ol.loadIdentity3()
-        ol.loadIdentity()
-        ol.rotate3Z(lux.time * pi * 0.03)
-        ol.color3(*(self.color_cycle()))
+            ol.loadIdentity3()
+            ol.loadIdentity()
+            ol.rotate3Z(lux.time * pi * 0.03)
+            ol.color3(*(self.color_cycle()))
 
-        ol.begin(ol.LINESTRIP)
-        for i in range(self.SAMPLES_PER_FRAME):
-            theta = float(i) / self.SAMPLES_PER_FRAME * self.MAX_THETA
-            r = exp(cos(a * theta)) - A * cos(b*theta) + pow(abs(sin(theta/c)),b)
-            r = r / (2.7 - A + pow(1,b)) * self.overall_amplitude
+            ol.begin(ol.LINESTRIP)
+            for i in range(self.SAMPLES_PER_FRAME):
+                theta = float(i) / self.SAMPLES_PER_FRAME * self.MAX_THETA
+                r = exp(cos(a * theta)) - A * cos(b*theta) + pow(abs(sin(theta/c)),b)
+                r = r / (2.7 - A + pow(1,b)) * self.overall_amplitude
 
-            ol.vertex3((r * cos(theta), r * sin(theta), -1))
-        ol.end()
+                ol.vertex3((r * cos(theta), r * sin(theta), -1))
+            ol.end()
+        except ValueError:
+            pass  # Occasinal math hiccups can be safely ignored
         

@@ -53,7 +53,7 @@ class SimplePlugin(LuxPlugin):
     # Custom parameters for the Fiat Lux lasers as tuned for Priceless
     def setParameters(self):
         params = ol.getRenderParams()
-        params.rate = 30000
+        params.rate = 24000
         #params.max_framelen = settings['calibration'].olRate
         params.on_speed = 1.0/1.0
         params.off_speed = 1.0/6.0
