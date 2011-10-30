@@ -12,8 +12,9 @@ import butterfly_curve
 import harmonograph
 import linesweep
 #import touch_cubes
-import stimulated_emission
+#import stimulated_emission
 import scope
+import daisy
 
 # Plugins by Tim J.
 import bouncyball

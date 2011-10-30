@@ -18,10 +18,10 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
     """
 
     # Working vars
-    interval = .08
+    interval = .16
     nextSnapshot = 0
     samples = 512
-    skip = 1
+    skip = 2
     renderPointCount = ceil(samples/skip)
     restRadius = .5
     currentWave = zeros(shape=(renderPointCount))
@@ -60,7 +60,6 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
 
         # Make sure it ain't empty!!
         if mono.shape[0] == 0:
-            print '--> empty buffer'
             return
 
         # Openlase can only draw 30000 points in one cycle (less that

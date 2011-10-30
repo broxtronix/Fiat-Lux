@@ -25,9 +25,9 @@ class Scope(LuxPlugin, ColorDriftPlugin):
 
         # Reset things
         audio_engine.clear_all()
-        self.x_coord = -0.9
-        self.step = 1/1024.0
-        self.subsamp = 1
+        self.x_coord = -1.0
+        self.step = 1/256.0
+        self.subsamp = 2
         self.sample_array = np.zeros(512)
 
     # Custom parameters for the Fiat Lux lasers as tuned for Priceless
@@ -45,7 +45,7 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         params.start_wait = 1
         params.end_wait = 1
         params.snap = 1/100000.0;
-#        params.render_flags = ol.RENDER_NOREORDER;
+        params.render_flags = ol.RENDER_NOREORDER;
         ol.setRenderParams(params)
 
     # The draw method gets called roughly 30 times a second.  
@@ -65,18 +65,26 @@ class Scope(LuxPlugin, ColorDriftPlugin):
         # that, actually!).  Clear the audio buffer and try again!
         if mono.shape[0] > 10000:
             audio_engine.clear_all()
-            return
-
+ 
         ol.loadIdentity3()
         ol.color3(*(self.color_cycle()))
 
-        ol.begin(ol.LINESTRIP)
-        for i in range(0, mono.shape[0]-1, self.subsamp):
-            scale_factor = pow(0.9-abs(self.x_coord),0.5)*2
-            if (mono[i] <= -1.0):
-                mono[i] = 1.0
-            ol.vertex3((self.x_coord, tanh(mono[i]*scale_factor), -1))
-#            ol.vertex3((self.x_coord, log(mono[i]*scale_factor+1.0), -1))
-            self.x_coord = self.x_coord + self.step
-            if (self.x_coord > 0.9) : self.x_coord = -0.9
+        count = 0
+        while count < mono.shape[0]:
+
+            ol.begin(ol.LINESTRIP)
+            while self.x_coord < 1.0 and count < mono.shape[0]:
+
+                scale_factor = pow(1.0-abs(self.x_coord),0.5)*2
+                #ol.vertex3((self.x_coord, mono[count]*scale_factor, -1))             # Linear
+                ol.vertex3((self.x_coord, tanh(mono[count]*scale_factor), -1))        # Tanh
+                #ol.vertex3((self.x_coord, log(mono[count]*scale_factor+1.0), -1))    # Sigmoid
+                
+                self.x_coord += self.step
+                count = count + self.subsamp
+            ol.end()
+
+            if self.x_coord >= 1.0:
+                self.x_coord = -1.0
+                
         ol.end()

@@ -27,7 +27,7 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
         # Parameters
         self.MAX_THETA = 4.0 * pi
         self.SAMPLES_PER_FRAME = 1000
-        self.SCALE = 1.5
+        self.SCALE = 1.0
 
         self.RATE = 0.2
         self.reset()
@@ -60,7 +60,6 @@ class ButterflyCurvePlugin(LuxPlugin, ColorDriftPlugin):
 
     # The draw method gets called roughly 30 times a second.  
     def draw(self):
-
         try:
             a = self.alpha * cos(lux.time / 10.0 * self.RATE)
             b = self.beta * sin(lux.time / 7.0 * self.RATE) + 10
