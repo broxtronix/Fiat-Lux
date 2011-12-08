@@ -18,7 +18,7 @@ class BouncyBall(LuxPlugin, ColorDriftPlugin):
     """
 
     # Working vars
-    interval = .16
+    interval = .08
     nextSnapshot = 0
     samples = 512
     skip = 2

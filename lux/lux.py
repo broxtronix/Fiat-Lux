@@ -16,9 +16,13 @@ DEV_MODE = 1
 from settings import *
 settings = LuxSettings()
 
-# allow eggs to be dropped into application folder, as well as script
-# overrides, etc.
-sys.path = ['.'] + sys.path
+# Set the system path.  This helps scope.py to find the wrapped C++
+# modules, and allow eggs to be dropped into application folder, as
+# well as script overrides, etc.
+sys.path = [os.getcwd(),
+            os.path.join(os.getcwd(), '..', 'openlase', 'python'),
+            os.path.join(os.getcwd(), '..', 'xenon', 'Python')] + sys.path
+
 
 # Create the application.  Note thet we set the plugin path explicitly
 # here so that the app doesn't get confused once we bundle it using
@@ -79,7 +83,9 @@ try:
     result=app.exec_()
     lux_engine.exit()
 
-except:
+except Exception, e:
+    print str(e)
+    
     # First, disable the laser output.  We don't want to put any eyes out! 
     output_engine.setOutputInitialized(False)
     

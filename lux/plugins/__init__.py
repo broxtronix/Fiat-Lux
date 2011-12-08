@@ -14,11 +14,11 @@ import linesweep
 #import touch_cubes
 #import stimulated_emission
 import scope
-import daisy
+#import daisy
 
 # Plugins by Tim J.
 import bouncyball
-import testpattern
+#import testpattern
 
 # Plugins by Fenn
 import guilloche
